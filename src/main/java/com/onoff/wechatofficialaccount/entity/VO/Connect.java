@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 @Data
 public class Connect {
 
-    //
     private String signature;
 
     private String timestamp;

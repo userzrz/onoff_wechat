@@ -34,7 +34,7 @@ public class WeChatController {
      * @param connect
      * @return
      */
-    @GetMapping(value = "/")
+    @GetMapping(value = "/wechat/check")
     public String check(Connect connect) {
         if (service.check(connect)) {
             log.info("->微信验证成功");
@@ -48,7 +48,7 @@ public class WeChatController {
     /**
      * 接受消息和事件推送
      */
-    @PostMapping(value = "/")
+    @PostMapping(value = "/wechat/check")
     public void recvMessage(HttpServletRequest request,HttpServletResponse response) throws UnsupportedEncodingException {
         request.setCharacterEncoding("utf8");
         response.setCharacterEncoding("utf8");

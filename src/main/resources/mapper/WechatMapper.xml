@@ -3,8 +3,11 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onoff.wechatofficialaccount.mapper.WechatMapper">
     <insert id="addUser" parameterType="com.onoff.wechatofficialaccount.entity.User">
-        INSERT INTO wechatuser(openid,nickname,sex,headimgurl,subscribe_time,subscribe_scene,qr_scene,
+        INSERT INTO user(openid,nickname,sex,headimgurl,subscribe_time,subscribe_scene,qr_scene,
         qr_scene_str)VALUES(#{openId},#{nickName},#{sex},#{headImgUrl},
         #{subScribeTime},#{subscribeScene},#{qrScene},#{qrSceneStr})
     </insert>
+    <delete id="delUser" parameterType="String">
+        DELETE FROM user WHERE openid=#{openId}
+    </delete>
 </mapper>

@@ -2,7 +2,10 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.*;
+import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
+import com.onoff.wechatofficialaccount.mapper.WechatMapper;
+import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
 import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.WeChatUtils;
@@ -12,7 +15,9 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.File;
@@ -35,6 +40,11 @@ import java.util.Map;
 @Service
 public class WeChatServiceImpl implements WeChatService {
 
+    @Autowired
+    WechatMapper wechatMapper;
+
+    @Autowired
+    BAMService bamService;
 
     @Override
     public boolean check(Connect connect) {
@@ -113,7 +123,37 @@ public class WeChatServiceImpl implements WeChatService {
         switch (msgType) {
             //处理文本消息
             case "text":
-                msg = new TextMessage(requestMap,requestMap.get("Content"));
+                if(requestMap.get("Content").equals("海报")){
+                    msg = new TextMessage(requestMap,"活动介绍........");
+                    List<Material> list=bamService.getMaterial();
+                    int size=list.size();
+                    //随机数：Math.random()*(n+1-m)+m
+                    int ran2 = (int) (Math.random()*(size));
+                    Material material=list.get(ran2);
+                    //获取用户信息
+                    String openId=requestMap.get("FromUserName");
+                    User user=getUserInfo(openId);
+                    String ticket=this.getQrCodeTicket(openId);
+                    String QR_URL="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET";
+                    QR_URL=QR_URL.replace("TICKET",ticket);
+                    File file=CommonUtils.overlapImage(material.getUrl(),user.getHeadImgUrl(),QR_URL,user.getNickName());
+                    String re=this.uploadMaterial(0,file,"image");
+                    JSONObject jsonObject = JSONObject.parseObject(re);
+                    String media=jsonObject.getString("media_id");
+                    String data="{\n" +
+                            "    \"touser\":\""+requestMap.get("FromUserName")+"\",\n" +
+                            "    \"msgtype\":\"image\",\n" +
+                            "    \"image\":\n" +
+                            "    {\n" +
+                            "         \"media_id\":\""+media+"\"\n" +
+                            "    }\n" +
+                            "}";
+                    log.info(data);
+                    int errcode=kfSendMsg(data);
+                    log.info("客服发送--------》"+errcode);
+                }else {
+                    msg = new TextMessage(requestMap,requestMap.get("Content"));
+                }
                 break;
             case "image":
                 msg = new TextMessage(requestMap,"您发送的图片，我们已接收");
@@ -134,9 +174,44 @@ public class WeChatServiceImpl implements WeChatService {
                 msg = new TextMessage(requestMap,"您发送的链接，我们已接收");
                 break;
             case "event":
-                User User=getUserInfo(requestMap.get("FromUserName"));
-
-                msg = new TextMessage(requestMap,"您发送的语音消息，我们已接收");
+                String openId=requestMap.get("FromUserName");
+                if(requestMap.get("Event").equals("subscribe")){
+                    User user=getUserInfo(openId);
+                    int res=wechatMapper.addUser(user);
+                    if(res>0){
+                        log.info("新增用户信息成功");
+                    }
+                    msg = new TextMessage(requestMap,"你好 "+user.getNickName()+" 欢迎关注我们");
+                    if(requestMap.get("EventKey")!=null){
+                        //邀请人openid
+                        String eventKey=requestMap.get("EventKey");
+                        eventKey=eventKey.substring(8);
+                        String data="{\n" +
+                                "    \"touser\":\""+eventKey+"\",\n" +
+                                "    \"msgtype\":\"text\",\n" +
+                                "    \"text\":\n" +
+                                "    {\n" +
+                                "         \"content\":\"你的好友 "+user.getNickName()+" 刚刚为你助力\"\n" +
+                                "    }\n" +
+                                "}";
+                        log.info(data);
+                        int errcode=kfSendMsg(data);
+                        log.info("客服发送给邀请人--------》"+errcode);
+                        String data2="{\n" +
+                                "    \"touser\":\""+user.getOpenId()+"\",\n" +
+                                "    \"msgtype\":\"text\",\n" +
+                                "    \"text\":\n" +
+                                "    {\n" +
+                                "         \"content\":\"你已帮助好友助力\"\n" +
+                                "    }\n" +
+                                "}";
+                        log.info(data2);
+                        int ercode=kfSendMsg(data2);
+                        log.info("客服发送给助力人--------》"+ercode);
+                    }
+                }else if(requestMap.get("Event").equals("unsubscribe")){
+                    wechatMapper.delUser(openId);
+                }
                 break;
             default:
                 break;
@@ -183,12 +258,35 @@ public class WeChatServiceImpl implements WeChatService {
         return null;
     }
 
+    @Override
+    public String addKf(String data) {
+        String url="https://api.weixin.qq.com/customservice/kfaccount/add?access_token=ACCESS_TOKEN";
+        url=url.replace("ACCESS_TOKEN",getAccessToken());
+        String result=WeChatUtils.post(url,data);
+        return result;
+    }
 
-    public  String upload(String path,String type) {
-        File file = new File(path);
-        //地址
-        String url="https://api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&type=TYPE";
-        url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("TYPE", type);
+    @Override
+    public int kfSendMsg(String data) {
+        String url="https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
+        url=url.replace("ACCESS_TOKEN",getAccessToken());
+        String result=WeChatUtils.post(url,data);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        return jsonObject.getByte("errcode");
+    }
+
+
+    public  String uploadMaterial(int typeCode,File file,String type) {
+        String url="";
+        if(typeCode==0){
+            //临时素材地址
+            url="https://api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&type=TYPE";
+            url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("TYPE", type);
+        }else if(typeCode==1){
+            //永久素材地址
+            url="https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN&type=TYPE";
+            url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("TYPE", type);
+        }
         try {
             URL urlObj = new URL(url);
             //强转为案例连接
@@ -230,14 +328,48 @@ public class WeChatServiceImpl implements WeChatService {
             out.close();
             //读取数据
             InputStream is2 = conn.getInputStream();
-            StringBuilder resp = new StringBuilder();
+            StringBuilder result = new StringBuilder();
             while((len=is2.read(b))!=-1) {
-                resp.append(new String(b,0,len));
+                result.append(new String(b,0,len));
             }
-            return resp.toString();
+            return result.toString();
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
+    }
+
+    @Override
+    public int delMaterial(String data) {
+        String url="https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=ACCESS_TOKEN";
+        url=url.replace("ACCESS_TOKEN",getAccessToken());
+        String data1="{\n" +
+                "  \"media_id\":\""+data+"\"\n" +
+                "}";
+        log.info(data1);
+        String result=WeChatUtils.post(url,data1);
+        log.info("删除素材返回结果-------->"+result);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        return jsonObject.getByte("errcode");
+    }
+
+    @Override
+    public String getQrCodeTicket(String openid) {
+        String url="https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token=ACCESS_TOKEN";
+        url=url.replace("ACCESS_TOKEN",getAccessToken());
+        String data="{\n" +
+                "\t\"expire_seconds\": 2592000,\n" +
+                "\t\"action_name\": \"QR_STR_SCENE\",\n" +
+                "\t\"action_info\": {\n" +
+                "\t\t\"scene\": {\n" +
+                "\t\t\t\"scene_str\": \""+openid+"\"\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "}";
+        String result = WeChatUtils.post(url, data);
+        log.info("-->"+result);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        String ticket = jsonObject.getString("ticket");
+        return ticket;
     }
 }

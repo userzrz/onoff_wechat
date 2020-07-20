@@ -4,6 +4,7 @@ import com.onoff.wechatofficialaccount.entity.BaseMessage;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -59,12 +60,42 @@ public interface WeChatService {
      */
     String chat(String msg);
 
+
     /**
-     * 上传临时素材
-     * @param path 文件路径
-     * @param type 文件类型
+     * 添加客服号
      * @return
      */
-    String upload(String path,String type);
+    String addKf(String data);
+
+    /**
+     * 客服发送消息
+     * @param data 消息内容
+     * @return 0：成功，其他为错误
+     */
+    int kfSendMsg(String data);
+
+    /**
+     *上传素材
+     * @param typeCode 0为临时素材，1为永久素材
+     * @param file
+     * @param type
+     * @return
+     */
+    String uploadMaterial(int typeCode,File file,String type);
+
+
+    /**
+     * 删除永久素材
+     * @param data
+     * @return
+     */
+    int delMaterial(String data);
+
+    /**
+     * 生成带参数二维码
+     * @param openid 用户openid为蚕食
+     * @return
+     */
+    String getQrCodeTicket(String openid);
 
 }

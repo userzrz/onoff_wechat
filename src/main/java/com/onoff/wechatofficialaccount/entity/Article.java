@@ -4,6 +4,8 @@ import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @Description TODO
  * @Author ZHENG
@@ -13,7 +15,7 @@ import lombok.Data;
 @XStreamAlias("item")
 @AllArgsConstructor
 @Data
-public class Article {
+public class Article  implements Serializable {
 
     private String title;
 

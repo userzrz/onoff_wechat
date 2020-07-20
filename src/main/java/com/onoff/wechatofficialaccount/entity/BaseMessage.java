@@ -3,6 +3,7 @@ package com.onoff.wechatofficialaccount.entity;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -12,7 +13,7 @@ import java.util.Map;
  * @VERSION 1.0
  **/
 @Data
-public class BaseMessage {
+public class BaseMessage  implements Serializable {
 
     @XStreamAlias("ToUserName")
     private String toUserName;

@@ -3,6 +3,7 @@ package com.onoff.wechatofficialaccount.entity;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
@@ -13,7 +14,7 @@ import java.util.Map;
  **/
 @Data
 @XStreamAlias("xml")
-public class VoiceMessage extends BaseMessage {
+public class VoiceMessage extends BaseMessage  implements Serializable {
 
     @XStreamAlias("MediaId")
     private String mediaId;

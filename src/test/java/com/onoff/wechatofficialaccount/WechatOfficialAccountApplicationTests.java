@@ -1,6 +1,7 @@
 package com.onoff.wechatofficialaccount;
 
 import com.onoff.wechatofficialaccount.entity.TextMessage;
+import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.service.WeChatService;
 import com.onoff.wechatofficialaccount.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -18,23 +19,44 @@ class WechatOfficialAccountApplicationTests {
     @Autowired
     WeChatService service;
 
+
+    /**
+     * 客服发送消息
+     */
     @Test
-    public void test() {
-        log.info(System.currentTimeMillis()+"");
+    public void kfSend() {
+        String data="{\n" +
+                "    \"touser\":\""+"ol6oswhUiS-T9TeMfyM5GgrH3eGw"+"\",\n" +
+                "    \"msgtype\":\"text\",\n" +
+                "    \"text\":\n" +
+                "    {\n" +
+                "         \"content\":\"Hello World\"\n" +
+                "    }\n" +
+                "}";
+        log.info(data);
+        service.kfSendMsg(data);
     }
 
+
+
+    /**
+     * 获取用户信息
+     */
     @Test
     public void testGetUserInfo() {
-        String user="ol6oswnPXDcyaUxvS5xhnoMfO4f8";
-        String info = service.getUserInfo(user);
-        System.out.println(info);
+        String openID="ol6oswhUiS-T9TeMfyM5GgrH3eGw";
+        User user= service.getUserInfo(openID);
+        System.out.println(user);
     }
 
+    /**
+     * 添加临时素材
+     */
     @Test
     public void testUpload() {
-        String file = "C:\\Users\\lev\\Pictures\\20.7.7\\444667181938.png";
-        String result = service.upload(file, "image");
-        log.info(result);
+//        String file = "";
+//        String result = service.upload(file, "image");
+//        log.info(result);
     }
 
     /**
@@ -62,6 +84,7 @@ class WechatOfficialAccountApplicationTests {
         String result = WeChatUtils.get(url);
         System.out.println(result);
     }
+
 
     @Test
     public  void testToken() {

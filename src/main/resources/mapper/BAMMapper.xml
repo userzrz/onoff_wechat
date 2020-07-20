@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.onoff.wechatofficialaccount.mapper.BAMMapper">
+    <select id="getAdmin" resultType="com.onoff.wechatofficialaccount.entity.BAM.Admin">
+       SELECT * FROM admin  WHERE account=#{a} AND password=#{p}
+    </select>
+
+    <select id="getMaterial" resultType="com.onoff.wechatofficialaccount.entity.BAM.Material"
+            resultMap="getMaterialMap">
+       SELECT * FROM material
+    </select>
+    <resultMap id="getMaterialMap" type="com.onoff.wechatofficialaccount.entity.BAM.Material">
+        <result property="mediaId" column="media_id"/>
+        <result property="url" column="url"/>
+    </resultMap>
+
+    <insert id="saveMaterial" parameterType="com.onoff.wechatofficialaccount.entity.BAM.Material">
+        INSERT INTO material(media_id,url)VALUES(#{mediaId},#{url})
+    </insert>
+
+    <delete id="delMaterial" parameterType="String">
+        DELETE FROM material WHERE media_id=#{mediaId}
+    </delete>
+</mapper>

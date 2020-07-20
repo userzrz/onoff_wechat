@@ -3,6 +3,7 @@ package com.onoff.wechatofficialaccount.entity;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import java.util.Map;
  **/
 @Data
 @XStreamAlias("xml")
-public class NewsMessage extends  BaseMessage{
+public class NewsMessage extends  BaseMessage  implements Serializable {
 
     @XStreamAlias("ArticleCount")
     private String articleCount;

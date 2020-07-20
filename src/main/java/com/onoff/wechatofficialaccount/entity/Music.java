@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.annotation.security.DenyAll;
+import java.io.Serializable;
 
 /**
  * @Description TODO
@@ -15,7 +16,7 @@ import javax.annotation.security.DenyAll;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Music {
+public class Music  implements Serializable {
 
     private String title;
 

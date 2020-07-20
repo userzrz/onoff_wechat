@@ -2,7 +2,11 @@ package com.onoff.wechatofficialaccount.mapper;
 
 
 import com.onoff.wechatofficialaccount.entity.User;
+import org.apache.ibatis.annotations.Mapper;
+import org.springframework.stereotype.Repository;
 
+@Mapper
+@Repository()
 public interface WechatMapper {
 
     /**
@@ -11,4 +15,11 @@ public interface WechatMapper {
      * @return
      */
     int addUser(User user);
+
+    /**
+     * 删除用户
+     * @param openId
+     * @return
+     */
+    int delUser(String openId);
 }
