@@ -1,6 +1,8 @@
 package com.onoff.wechatofficialaccount.config;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -12,6 +14,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
  **/
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+
+    @Autowired
+    private LoginInterceptor loginInterceptor;
+
     /**
      * 配置静态访问资源
      *
@@ -19,7 +25,17 @@ public class WebConfig implements WebMvcConfigurer {
      */
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // classpath表示在resource目录下，/static/** 表示在URL路径中访问如
-        registry.addResourceHandler("/static/**").addResourceLocations("classpath:/static/");
+        registry.addResourceHandler("/static/**")
+                .addResourceLocations("classpath:/static/");
+    }
+
+    /**
+     * 拦截器
+     *
+     * @param registry
+     */
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/*").excludePathPatterns("/", "/login.html", "/wechat/check","/middle", "/static/**");
     }
 
 }

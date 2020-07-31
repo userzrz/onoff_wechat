@@ -3,8 +3,24 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onoff.wechatofficialaccount.mapper.BAMMapper">
     <select id="getAdmin" resultType="com.onoff.wechatofficialaccount.entity.BAM.Admin">
-       SELECT * FROM admin  WHERE account=#{a} AND password=#{p}
+       SELECT * FROM admin  WHERE account=#{a} AND password=#{b}
     </select>
+
+    <select id="getUser" resultType="com.onoff.wechatofficialaccount.entity.User"
+    resultMap="getUserMap">
+       SELECT * FROM user  WHERE openid=#{openId}
+    </select>
+    <resultMap id="getUserMap" type="com.onoff.wechatofficialaccount.entity.User">
+        <result property="openId" column="openid"/>
+        <result property="nickName" column="nickname"/>
+        <result property="sex" column="sex"/>
+        <result property="headImgUrl" column="headimgurl"/>
+        <result property="subScribeTime" column="subscribe_time"/>
+        <result property="subscribeScene" column="subscribe_scene"/>
+        <result property="qrScene" column="qr_scene"/>
+        <result property="qrSceneStr" column="qr_scene_str"/>
+        <result property="unionId" column="unionid"/>
+    </resultMap>
 
     <select id="getMaterial" resultType="com.onoff.wechatofficialaccount.entity.BAM.Material"
             resultMap="getMaterialMap">
@@ -21,5 +37,17 @@
 
     <delete id="delMaterial" parameterType="String">
         DELETE FROM material WHERE media_id=#{mediaId}
+    </delete>
+
+    <insert id="saveUserRelation" parameterType="String">
+        INSERT INTO user_relation(openid,unionid)VALUES(#{a},#{b})
+    </insert>
+
+    <select id="getUserRelation" resultType="com.onoff.wechatofficialaccount.entity.BAM.UserRelation">
+       SELECT * FROM user_relation where unionid=#{unionId}
+    </select>
+
+    <delete id="delUserRelation" parameterType="String">
+        DELETE FROM user_relation WHERE unionid=#{unionId}
     </delete>
 </mapper>

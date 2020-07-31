@@ -24,12 +24,25 @@ public class User implements Serializable {
     private String sex;
     //头像url
     private String headImgUrl;
+    //所在城市
+    private String city;
+    //所在省份
+    private String province;
+    //所在国家
+    private String country;
+    //用户的语言
+    private String language;
     //关注时间
     private String subScribeTime;
     //来源方式
     private String subscribeScene;
-    //二维码场景值
-    private String qrScene;
-    //二维码描述
-    private String qrSceneStr;
+    //unionid
+    private String unionId;
+    //所在的分组ID
+    private String groupId;
+    //标签ID列表
+    private String tagid_list;
+    //运营者对粉丝的备注
+    private String remark;
+
 }

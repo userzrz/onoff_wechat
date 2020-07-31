@@ -10,6 +10,7 @@ import java.util.Map;
 
 
 public interface WeChatService {
+
     /**
      * 验证消息是否来自微信服务器
      *
@@ -32,33 +33,11 @@ public interface WeChatService {
     String getAccessToken();
 
     /**
-     * 解析xml数据包
-     *
-     * @param is
-     * @return
-     */
-    Map<String, String> parseRequest(InputStream is);
-
-    /**
-     * 将对象转为xml
-     * @param msg
-     * @return
-     */
-    String beanToXml(BaseMessage msg);
-
-    /**
      * 用于处理所有的事件和消息的回复
      * @param requestMap
      * @return 返回的是xml数据包
      */
     String getRespose(Map<String, String> requestMap);
-
-    /**
-     * 调用聊天机器人
-     * @param msg
-     * @return
-     */
-    String chat(String msg);
 
 
     /**
@@ -89,13 +68,28 @@ public interface WeChatService {
      * @param data
      * @return
      */
-    int delMaterial(String data);
+    String delMaterial(String data);
 
     /**
-     * 生成带参数二维码
+     * 生成带参数二维码（限制为服务号使用）
      * @param openid 用户openid为蚕食
      * @return
      */
     String getQrCodeTicket(String openid);
+
+    /**
+     * 解析xml数据包
+     *
+     * @param is
+     * @return
+     */
+    Map<String, String> parseRequest(InputStream is);
+
+    /**
+     * 将对象转为xml
+     * @param msg
+     * @return
+     */
+    String beanToXml(BaseMessage msg);
 
 }

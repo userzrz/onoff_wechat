@@ -1,0 +1,29 @@
+.span{
+    font-weight: 500;
+    font-size: 30px;
+    border-radius: 20px;
+    border: 2px solid black;
+    text-align:center;
+    padding: auto;
+    margin: auto;
+    width: 250px;
+    height: 120px;
+}
+#span_1{
+    background-color: #FF6138;
+}
+#span_2{
+    background-color: #FFFF9D;
+}
+#span_3{
+    background-color: #9ec4f6;
+}
+#span_4{
+    background-color: #79BD8F;
+}
+#span_5{
+    background-color: #777777;
+}
+.div_1{
+    display: flex;
+}

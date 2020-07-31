@@ -1,6 +1,5 @@
 package com.onoff.wechatofficialaccount.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
@@ -8,7 +7,6 @@ import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
 import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.MD5Utils;
-import com.sun.org.apache.xpath.internal.operations.Mod;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,41 +33,72 @@ public class BAMController {
     @Autowired
     WeChatService weChatService;
 
-    @GetMapping({"/","/login.html"})
-    public String login(HttpSession session){
+    @GetMapping({"/middle"})
+    public String middlePage(@RequestParam(value = "state") String state, @RequestParam(value = "code") String code) {
+        int result = service.middlePage(state, code);
+        if (result==3) {
+            log.info("------------->用户关系存在了");
+        }else if(result > 0){
+            log.info("--------->用户关系建立成功");
+        }
+        return "middle";
+    }
+
+    @GetMapping({"/", "/login.html"})
+    public String login(HttpSession session) {
         if (session.getAttribute(CommonUtils.ADMIN_SESSION) != null) {
             return "redirect:/index";
         }
         return "login";
     }
 
+    @GetMapping(value = "/exit")
+    public String exit(HttpSession session) {
+        session.invalidate();
+        return "login";
+    }
+
     @GetMapping("/index.html")
-    public String index(){
+    public String index(Model model) {
+        model.addAttribute("Material", service.getMaterial());
         return "index";
     }
 
+    @ResponseBody
+    @GetMapping("/setMenu")
+    public String setMenu() {
+        String result = service.setMenu();
+        return result;
+    }
 
     /**
      * 上传海报素材
+     *
      * @param file
      * @return
      */
     @PostMapping("/upload")
-    public String upload(@RequestParam(value = "myfile",required = true) MultipartFile file,Model model){
+    public String upload(@RequestParam(value = "inputGroupFile02", required = true) MultipartFile file, Model model) {
         //设置0为临时素材，设置1为永久素材
-         int typeCode=1;
-         int result2=0;
+        int typeCode = 1;
+        int result2 = 0;
         try {
-            String result=weChatService.uploadMaterial(typeCode,CommonUtils.multipartFileToFile(file),"image");
-            Material material= JSONObject.parseObject(result, Material.class);
-            if(material.getMediaId()==null){
-                    model.addAttribute("msg","添加失败"+result);
-                    return "index";
+            String result = weChatService.uploadMaterial(typeCode, CommonUtils.multipartFileToFile(file), "image");
+            JSONObject jsonObject = JSONObject.parseObject(result);
+            String err = result.substring(2, 9);
+            if (err.equals("errcode")) {
+                model.addAttribute("msg", jsonObject.getString("errmsg"));
+                return "index";
             }
-                 result2=service.saveMaterial(material);
-                if (result2>0){
-                    model.addAttribute("msg", "添加成功");
-                }
+            Material material = JSONObject.parseObject(result, Material.class);
+            if (material.getMediaId() == null) {
+                model.addAttribute("msg", "本地数据库新增失败");
+                return "index";
+            }
+            result2 = service.saveMaterial(material);
+            if (result2 > 0) {
+                return "redirect:/index.html";
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -77,25 +106,29 @@ public class BAMController {
     }
 
     @ResponseBody
-    @PostMapping(("/delmaterial"))
-    public int delMaterial(@RequestParam(value = "mediaId",required = true) String mediaId, Model model){
-        int result=weChatService.delMaterial(mediaId);
-        if (result==0){
-            int result2=service.delMaterial(mediaId);
-            if(result2>0){
-                model.addAttribute("msg","删除成功");
-                return 0;
-            }else {
-                model.addAttribute("msg","数据库删除素材失败");
-            }
-        }else {
-            model.addAttribute("msg","微信服务器素材删除失败");
+    @GetMapping(("/delmaterial"))
+    public int delMaterial(@RequestParam(value = "mediaId", required = true) String mediaId) {
+        int result2 = service.delMaterial(mediaId);
+        String result = weChatService.delMaterial(mediaId);
+        JSONObject jsonObject = JSONObject.parseObject(result);
+        int errcode = jsonObject.getInteger("errcode");
+        if (result2 > 0 && errcode == 0) {
+            return 0;
+        } else if (errcode != 0 && result2 > 0) {
+            log.error("------------->Local material was removed successfully;The WeChat interface invokes an exception!" + errcode);
+            return 0;
+        } else if (result2 <= 0 && errcode == 0) {
+            log.error("------------->Local material deletion failed!The WeChat interface call is normal");
+            return 1;
+        } else {
+            log.error("------------->Local material deletion failed;The WeChat interface invokes an exception!" + errcode);
+            return 1;
         }
-        return 1;
     }
 
     /**
      * 登录
+     *
      * @param admin
      * @param session
      * @param response

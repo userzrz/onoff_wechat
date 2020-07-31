@@ -1,8 +1,8 @@
 package com.onoff.wechatofficialaccount.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
@@ -16,6 +16,7 @@ import java.security.NoSuchAlgorithmException;
  * @Data 2020/7/13 12:09
  * @VERSION 1.0
  **/
+@Slf4j
 public class WeChatUtils {
 
     //验证微信请求TOKEN
@@ -24,11 +25,12 @@ public class WeChatUtils {
     public static final String APPID = "wx66b425717de760ce";
     //公众号APPSECRET
     public static final String APPSECRET = "2ebd982fc738d5ed36a04e9764cd0092";
-     //用于存储access_token
+    //服务号APPID
+    public static final String FWAPPID ="wx66b425717de760ce";
+    //用于存储access_token
     public static String access_token;
     //用于存储access_token过期时间
     public static long expireTime;
-
 
 
     /**
@@ -45,7 +47,9 @@ public class WeChatUtils {
         String expireIn = jsonObject.getString("expires_in");
         //计算access_token过期时间
         expireTime=System.currentTimeMillis()+(Integer.parseInt(expireIn)-60)*1000;
+        log.info("------------------->生成一次TOKEN");
     }
+
     /**
      * 向指定的地址发送一个post请求，带着data数据
      *

@@ -17,7 +17,13 @@ import java.io.Serializable;
 @Data
 public class Material implements Serializable {
 
+    /**
+     * 素材id
+     */
     private String mediaId;
 
+    /**
+     * 素材ulr地址
+     */
     private String url;
 }
