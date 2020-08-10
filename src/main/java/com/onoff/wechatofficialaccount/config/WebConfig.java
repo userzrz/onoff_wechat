@@ -35,7 +35,7 @@ public class WebConfig implements WebMvcConfigurer {
      * @param registry
      */
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginInterceptor).addPathPatterns("/*").excludePathPatterns("/", "/login.html", "/wechat/check","/middle", "/static/**");
+        registry.addInterceptor(loginInterceptor).addPathPatterns("/*").excludePathPatterns("/", "/login.html", "/wechat/check","/middle","/list.html","/static/**","/MP_verify_5z40QMC3xdtOZ81T.txt");
     }
 
 }

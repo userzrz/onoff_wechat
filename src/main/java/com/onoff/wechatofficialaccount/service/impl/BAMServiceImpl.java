@@ -2,13 +2,16 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
-import com.onoff.wechatofficialaccount.entity.BAM.UserRelation;
+import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.Menus.ImageMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.Menus;
 import com.onoff.wechatofficialaccount.entity.Menus.OneMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.TwoMenus;
 import com.onoff.wechatofficialaccount.entity.User;
+import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import com.onoff.wechatofficialaccount.mapper.BAMMapper;
 import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
@@ -42,33 +45,28 @@ public class BAMServiceImpl implements BAMService {
 
     @Override
     public int middlePage(String state, String code) {
-        //返回static+code
-        log.info("state-------------->" + state);
-        log.info("code-------------->" + code);
         //第一步：使用code换取access_token及用户openId
-        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=APPID&secret=SECRET&code=CODE&grant_type=authorization_code";
+        String url = Https.tokenHttps;
         url = url.replace("APPID", WeChatUtils.FWAPPID)
-                .replace("SECRET", "2ebd982fc738d5ed36a04e9764cd0092")
+                .replace("SECRET", WeChatUtils.FWAPPSECRET)
                 .replace("CODE", code);
         String data = WeChatUtils.get(url);
-        log.info("使用code获取到的数据-------------->" + data);
         JSONObject jsonObject = JSONObject.parseObject(data);
         //第二步：拉取用户信息
-        url = "https://api.weixin.qq.com/sns/userinfo?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
+        url = Https.webUserInfoHttps;
         url = url.replace("ACCESS_TOKEN", jsonObject.getString("access_token"))
                 .replace("OPENID", jsonObject.getString("openid"));
         data = WeChatUtils.get(url);
-        log.info("拉取到的用户信息--------------------->" + data);
+        log.info("网页授权获取到的用户信息-->" + data);
         jsonObject = JSONObject.parseObject(data);
-        //取出unionid，测试时使用openid
-        String unionid=jsonObject.getString("openid");
-        UserRelation userRelation=mapper.getUserRelation(unionid);
-        if(userRelation==null){
+        //取出unionid
+        String unionid = jsonObject.getString("unionid");
+        Relation relation = mapper.getRelation(unionid);
+        if (relation == null) {
             //建立用户关系
-            int result=mapper.saveUserRelation(state,unionid);
-            return result;
-        }else {
-            return 3;
+            return mapper.saveRelation(state, unionid,System.currentTimeMillis()+"");
+        } else {
+            return 1;
         }
     }
 
@@ -118,7 +116,7 @@ public class BAMServiceImpl implements BAMService {
         //第二个一级菜单
         OneMenus oneMenus2 = new OneMenus("click", "\uD83D\uDD1D", "002", twoMenusLIst2);
         //第三个一级菜单
-        ImageMenus imageMenus = new ImageMenus("media_id", "\uD83D\uDD1C", "vShrcmjVz7pud19EDyuE5RISBGGcRhoYiUKeeaj3J_M");
+        ImageMenus imageMenus = new ImageMenus("media_id", "\uD83D\uDD1C", "HN9m5_ibLmdzXtGb8kuCxKajEIfzmPfAF_qTwKZQ364");
         //添加一级菜单
         oneMenus.add(oneMenus1);
         oneMenus.add(oneMenus2);
@@ -128,30 +126,61 @@ public class BAMServiceImpl implements BAMService {
         // 转为json
         JSONObject jsonObject = (JSONObject) JSONObject.toJSON(menus);
         log.info("设置菜单-------->", jsonObject);
-        String url = "https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
+        String url = Https.menuHttps;
         url = url.replace("ACCESS_TOKEN", service.getAccessToken());
         String result = WeChatUtils.post(url, jsonObject.toJSONString());
         return result;
     }
 
     @Override
-    public UserRelation getUserRelation(String unionId) {
-        return mapper.getUserRelation(unionId);
+    public Relation getRelation(String unionId) {
+        return mapper.getRelation(unionId);
     }
 
     @Override
-    public int delUserRelation(String unionId) {
-        return mapper.delUserRelation(unionId);
+    public int delRelation(String unionId) {
+        return mapper.delRelation(unionId);
     }
 
     @Override
-    public String generateHttp(String openId) {
-        String http = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=APPID&redirect_uri=REDIRECT_URI&response_type=code&scope=SCOPE&state=STATE#wechat_redire";
+    public int putRelation(int type, String unionId,String time) {
+        return mapper.putRelation(type,unionId,time);
+    }
+
+    @Override
+    public int saveIntegral(String openId,int record,int source,String time) {
+        return mapper.saveIntegral(openId,record,source,time);
+    }
+
+    @Override
+    public int getIntegralUser(String openId) {
+        return mapper.getIntegralUser(openId);
+    }
+
+    @Override
+    public int getIntegral(String openId) {
+        return mapper.getIntegral(openId);
+    }
+
+    @Override
+    public List<Leaderboard> getLeaderboard() {
+        return mapper.getLeaderboard();
+    }
+
+    @Override
+    public Leaderboard getRanking(String openId) {
+        return mapper.getRanking(openId);
+    }
+
+    @Override
+    public String generateHttp(String openId,String url,String scope) {
+        String http = Https.codeHttps;
         //这里写服务号APPID
         http = http.replace("APPID", WeChatUtils.FWAPPID)
-                .replace("REDIRECT_URI", "http%3a%2f%2f3281p3c855.zicp.vip%2fmiddle")
-                .replace("SCOPE", "snsapi_userinfo")//snsapi_userinfo snsapi_base
+                .replace("REDIRECT_URI", url)
+                .replace("SCOPE", scope)//snsapi_userinfo snsapi_base
                 .replace("STATE", openId);
+        log.info("----------->http------》"+http);
         return http;
     }
 

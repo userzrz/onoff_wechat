@@ -1,9 +1,11 @@
 package com.onoff.wechatofficialaccount.mapper;
 
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.User;
-import com.onoff.wechatofficialaccount.entity.BAM.UserRelation;
+import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
@@ -52,19 +54,61 @@ public interface BAMMapper {
      * 新增用户关系
      * @return
      */
-    int saveUserRelation(@Param("a")String openId,@Param("b")String unionId);
+    int saveRelation(@Param("a")String openId,@Param("b")String unionId,@Param("c")String time);
 
     /**
-     * 查询关注者的邀请人openId
+     * 查询关系是否存在
      * @param unionId
      * @return
      */
-    UserRelation getUserRelation(String unionId);
+    Relation getRelation(String unionId);
 
     /**
      * 删除用户关联关系
      * @param unionId
      * @return
      */
-    int delUserRelation(String unionId);
+    int delRelation(String unionId);
+
+
+    /**
+     * 修改关系类型
+     * @param unionId
+     * @return
+     */
+    int putRelation(@Param("a") int type,@Param("b") String unionId,@Param("c")String time);
+
+    /**
+     * 查询用户是否存在积分表中
+     * @param openId
+     * @return
+     */
+    int getIntegralUser(String openId);
+
+    /**
+     * 新增用户积分
+     *
+     * @return
+     */
+    int saveIntegral(@Param("a") String openId,@Param("b") int record,@Param("c") int source,@Param("d")String time);
+
+    /**
+     * 查询用户积分总和
+     *
+     * @return
+     */
+    int getIntegral(String openId);
+
+    /**
+     * 获取积分排行榜前100
+     * @return
+     */
+    List<Leaderboard> getLeaderboard();
+
+    /**
+     * 查询指定用户的名次
+     * @param openId
+     * @return
+     */
+    Leaderboard getRanking(String openId);
 }

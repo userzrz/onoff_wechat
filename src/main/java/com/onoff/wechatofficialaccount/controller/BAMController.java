@@ -16,6 +16,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @Description TODO
@@ -33,16 +35,39 @@ public class BAMController {
     @Autowired
     WeChatService weChatService;
 
-    @GetMapping({"/middle"})
+    @ResponseBody
+    @RequestMapping("/MP_verify_5z40QMC3xdtOZ81T.txt")
+    public String text() {
+        return "5z40QMC3xdtOZ81T";
+    }
+
+    /**
+     * 建立关系
+     *
+     * @param state
+     * @param code
+     * @return
+     */
+    @GetMapping("/middle")
     public String middlePage(@RequestParam(value = "state") String state, @RequestParam(value = "code") String code) {
         int result = service.middlePage(state, code);
-        if (result==3) {
-            log.info("------------->用户关系存在了");
-        }else if(result > 0){
+        if (result == 1) {
+            log.info("--------->用户关系存在了");
+        } else {
             log.info("--------->用户关系建立成功");
         }
         return "middle";
     }
+
+    @GetMapping("/list.html")
+    public String Leaderboard(@RequestParam(value = "code") String openId, Model model) {
+        model.addAttribute("Relation", service.getRanking(openId));
+        model.addAttribute("Leaderboard", service.getLeaderboard());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+        return "list";
+    }
+
 
     @GetMapping({"/", "/login.html"})
     public String login(HttpSession session) {
@@ -68,6 +93,7 @@ public class BAMController {
     @GetMapping("/setMenu")
     public String setMenu() {
         String result = service.setMenu();
+        log.info("设置自定义菜单------->" + result);
         return result;
     }
 
@@ -96,7 +122,7 @@ public class BAMController {
                 return "index";
             }
             result2 = service.saveMaterial(material);
-            if (result2 > 0) {
+            if (result2 == 1) {
                 return "redirect:/index.html";
             }
         } catch (Exception e) {
@@ -112,9 +138,9 @@ public class BAMController {
         String result = weChatService.delMaterial(mediaId);
         JSONObject jsonObject = JSONObject.parseObject(result);
         int errcode = jsonObject.getInteger("errcode");
-        if (result2 > 0 && errcode == 0) {
+        if (result2 == 1 && errcode == 0) {
             return 0;
-        } else if (errcode != 0 && result2 > 0) {
+        } else if (errcode != 0 && result2 == 1) {
             log.error("------------->Local material was removed successfully;The WeChat interface invokes an exception!" + errcode);
             return 0;
         } else if (result2 <= 0 && errcode == 0) {

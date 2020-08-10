@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-dns-prefetch-control" content="on">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>ONOFF变装积分榜</title>
+    <link rel="stylesheet" type="text/css" href="../static/css/list.css" th:href="@{../static/css/list.css}">
+
+</head>
+<body>
+<div class="sup-container">
+    <header class="sup-header">
+        <div>
+            <img src="" th:src="${Relation.getHeadImgUrl()}" id="headimgurl">
+        </div>
+        <div style="height: 1rem">
+        </div>
+    </header>
+    <div class="sup-sup">
+        <ul id="tag">
+            <li class="">积分排行榜</li>
+        </ul>
+        <div id="box">
+            <div id="supporters" style="display: none;"></div>
+            <div id="paihang" style="display: block;" class="div_box">
+                <div style="border-bottom-style:solid;border-width:1px;border-color: #888888">
+                    <span th:text="${Relation.getRanking()}"></span>
+                    <img
+                            src="" th:src="${Relation.getHeadImgUrl()}">
+                    <div>
+                        <div><span class="span_name1" >我</span><span class="span_name2"  th:text="${Relation.getRecord()}"></span>
+                        </div>
+                    </div>
+                </div>
+                <br/>
+                <div th:each="l,iterStat:${Leaderboard}">
+                    <!--<span th:text="${iterStat.count}"></span>-->
+                    <span th:text="${l.getRanking()}"></span>
+                    <img
+                            src="" th:src="${l.getHeadImgUrl()}">
+                    <div>
+                        <div>
+                            <span class="span_name1" th:text="${l.getNickName()}"></span>
+                            <span class="span_name2" th:text="${l.getRecord()}"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="top-warning"
+                 style="text-align: center; color: #FF6138; font-size: .7rem; margin: 0 !important;" th:text="${Date}">
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

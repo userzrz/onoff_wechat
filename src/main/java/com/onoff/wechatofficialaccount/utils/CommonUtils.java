@@ -12,12 +12,8 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.Hashtable;
-import java.util.Map;
-
 /**
  * @Description TODO
  * @Author ZHENG
@@ -28,26 +24,41 @@ public class CommonUtils {
     //后台管理员信息
     public final static String ADMIN_SESSION = "adminSession";
     //海报活动介绍内容
-    public static String intro="";
+    public static String intro = "";
+
 
 
     /**
      * 生成二维码
-     * @param content	源内容
-     * @return		返回二维码图片
+     *
+     * @param content 源内容
+     * @return 返回二维码图片
      * @throws Exception
      */
-    public static BufferedImage createImage(String content){
-        Hashtable hints = new Hashtable();
+    public static BufferedImage createImage(String content) {
+        Hashtable<EncodeHintType,Object> hints = new Hashtable<EncodeHintType,Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        hints.put(EncodeHintType.MARGIN, 1);
+        hints.put(EncodeHintType.MARGIN, 0);
         BitMatrix bitMatrix = null;
         try {
-            bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 300, 300,
+            bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 256, 256,
                     hints);
         } catch (WriterException e) {
             e.printStackTrace();
+        }
+        //去白边
+        int[] rec = bitMatrix.getEnclosingRectangle();
+        int resWidth = rec[2] + 1;
+        int resHeight = rec[3] + 1;
+        BitMatrix resMatrix = new BitMatrix(resWidth, resHeight);
+        resMatrix.clear();
+        for (int i = 0; i < resWidth; i++) {
+            for (int j = 0; j < resHeight; j++) {
+                if (bitMatrix.get(i + rec[0], j + rec[1])) {
+                    resMatrix.set(i, j);
+                }
+            }
         }
         int width = bitMatrix.getWidth();
         int height = bitMatrix.getHeight();
@@ -63,12 +74,13 @@ public class CommonUtils {
 
     /**
      * 拼图
-     * @param bigURL    背景图url
+     *
+     * @param bigURL     背景图url
      * @param headImgURL 头像url
-     * @param qr    二维码url
-     * @param nickname  昵称
+     * @param qr         二维码url
+     * @param nickname   昵称
      */
-    public static File overlapImage(String bigURL, String headImgURL, BufferedImage qr,String nickname) {
+    public static File overlapImage(String bigURL, String headImgURL, BufferedImage qr, String nickname) {
         try {
             URL bigUrl = new URL(bigURL);
             URL headUrl = new URL(headImgURL);
@@ -83,18 +95,18 @@ public class CommonUtils {
             Graphics2D g = bufferedImage2.createGraphics();
             g.drawImage(bigImage, 0, 0, null);
             //等比宽度
-            int pWidth=width/5;
-            int pWidthQR=width/3;
+            int pWidth = width / 5;
+            int pWidthQR = width / 3;
             //等比高度
-            int pHeight=height/5;
-            g.drawImage(headImg, pWidth/2, height-(pWidth+pWidth/2),pWidth, pWidth, null);
-            g.drawImage(qr, width-(pWidthQR+pWidth/2), height-(pWidthQR+pWidth/2), pWidthQR, pWidthQR, null);
-            Font font = new Font("宋体", Font.BOLD, 30);
+            int pHeight = height / 5;
+            g.drawImage(headImg, pWidth / 2, height - (pWidth + pWidth / 2), pWidth, pWidth, null);
+            g.drawImage(qr, width - (pWidthQR + pWidth / 2), height - (pWidthQR + pWidth / 2), pWidthQR, pWidthQR, null);
+            Font font = new Font("宋体", Font.PLAIN, 30);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
-            g.drawString(nickname, pWidth/2, height-(pWidth+pWidth/2+pWidth/4));
+            g.drawString(nickname, pWidth / 2, height - (pWidth + pWidth / 2 + pWidth / 4));
             g.dispose();
-            File outputfile = File.createTempFile("img",".jpg");
+            File outputfile = File.createTempFile("img", ".jpg");
             ImageIO.write(bufferedImage2, "jpg", outputfile);
             return outputfile;
         } catch (Exception e) {

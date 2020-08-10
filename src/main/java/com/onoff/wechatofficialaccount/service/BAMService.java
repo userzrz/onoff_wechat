@@ -1,9 +1,11 @@
 package com.onoff.wechatofficialaccount.service;
 
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
-import com.onoff.wechatofficialaccount.entity.BAM.UserRelation;
+import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.User;
+import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 
 import java.util.List;
 
@@ -25,7 +27,7 @@ public interface BAMService {
     Admin getAdmin(String account, String passWord);
 
     /**
-     * 处理中间页信息
+     * 处理中间页信息(建立用户关系)
      * @param state
      * @param code
      */
@@ -65,7 +67,7 @@ public interface BAMService {
      * @param openId
      * @return
      */
-    String generateHttp(String openId);
+    String generateHttp(String openId,String url,String scope);
 
     /**
      * 设置菜单
@@ -78,13 +80,56 @@ public interface BAMService {
      * @param unionId
      * @return
      */
-    UserRelation getUserRelation(String unionId);
+    Relation getRelation(String unionId);
 
     /**
      * 删除用户关联关系
      * @param unionId
      * @return
      */
-    int delUserRelation(String unionId);
+    int delRelation(String unionId);
+
+    /**
+     * 修改关系类型
+     * @param unionId
+     * @return
+     */
+    int putRelation(int type,String unionId,String time);
+
+
+    /**
+     * 新增用户积分
+     * @param openId
+     * @param record
+     * @return
+     */
+    int saveIntegral(String openId,int record,int source,String time);
+
+    /**
+     * 查询用户是否存在积分表中
+     * @param openId
+     * @return
+     */
+    int getIntegralUser(String openId);
+
+    /**
+     * 查询用户积分总和
+     *
+     * @return
+     */
+    int getIntegral(String openId);
+
+    /**
+     * 获取积分排行榜
+     * @return
+     */
+    List<Leaderboard> getLeaderboard();
+
+    /**
+     * 查询指定用户的名次
+     * @param openId
+     * @return
+     */
+    Leaderboard getRanking(String openId);
 
 }

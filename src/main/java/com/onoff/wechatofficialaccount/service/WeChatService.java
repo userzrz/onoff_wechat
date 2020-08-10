@@ -92,4 +92,13 @@ public interface WeChatService {
      */
     String beanToXml(BaseMessage msg);
 
+    /**
+     * 验证并获取用户信息，不存在获取保存本地，存在直接返回
+     */
+    User verifyUser(String openId);
+
+    /**
+     * 初始化用户积分
+     */
+    void initializeIntegral(String openId);
 }

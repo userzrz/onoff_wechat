@@ -7,7 +7,7 @@
     </select>
 
     <select id="getUser" resultType="com.onoff.wechatofficialaccount.entity.User"
-    resultMap="getUserMap">
+            resultMap="getUserMap">
        SELECT * FROM user  WHERE openid=#{openId}
     </select>
     <resultMap id="getUserMap" type="com.onoff.wechatofficialaccount.entity.User">
@@ -39,15 +39,88 @@
         DELETE FROM material WHERE media_id=#{mediaId}
     </delete>
 
-    <insert id="saveUserRelation" parameterType="String">
-        INSERT INTO user_relation(openid,unionid)VALUES(#{a},#{b})
+    <insert id="saveRelation" parameterType="String">
+        INSERT INTO relation(openid,unionid,time)VALUES(#{a},#{b},#{c})
     </insert>
 
-    <select id="getUserRelation" resultType="com.onoff.wechatofficialaccount.entity.BAM.UserRelation">
-       SELECT * FROM user_relation where unionid=#{unionId}
+    <select id="getRelation" resultType="com.onoff.wechatofficialaccount.entity.BAM.Relation"
+            resultMap="getRelationMap">
+       SELECT * FROM relation where unionid=#{unionId}
     </select>
 
-    <delete id="delUserRelation" parameterType="String">
-        DELETE FROM user_relation WHERE unionid=#{unionId}
+    <resultMap id="getRelationMap" type="com.onoff.wechatofficialaccount.entity.BAM.Relation">
+        <result property="id" column="id"/>
+        <result property="openId" column="openid"/>
+        <result property="unionId" column="unionid"/>
+        <result property="rType" column="rtype"/>
+    </resultMap>
+
+    <delete id="delRelation" parameterType="String">
+        DELETE FROM relation WHERE unionid=#{unionId}
     </delete>
+    <update id="putRelation">
+        update relation set rtype=#{a},time=#{c} where unionid=#{b}
+    </update>
+
+    <insert id="saveIntegral">
+        insert into integral(openid,record,source,time)values (#{a},#{b},#{c},#{d})
+    </insert>
+    <select id="getIntegral" resultType="java.lang.Integer">
+      SELECT SUM(record) FROM integral WHERE openid=#{openId}
+    </select>
+
+    <select id="getIntegralUser" resultType="java.lang.Integer">
+      SELECT count(1) FROM integral WHERE openid=#{openId}
+    </select>
+
+    <select id="getLeaderboard" resultType="com.onoff.wechatofficialaccount.entity.VO.Leaderboard"
+            resultMap="getLeaderboardMap">
+SELECT
+	@i := @i + 1 AS ranking,
+	u.nickname AS nickname,
+	u.headimgurl AS headimgurl,
+	i.record AS record
+FROM
+	( SELECT @i := 0 ) t2,
+	( SELECT openid, SUM( record ) AS record FROM integral GROUP BY openid ) i
+	JOIN `user` u ON u.openid = i.openid
+ORDER BY
+	record DESC
+	LIMIT 10;
+    </select>
+
+    <resultMap id="getLeaderboardMap" type="com.onoff.wechatofficialaccount.entity.VO.Leaderboard">
+        <result property="ranking" column="ranking"/>
+        <result property="nickName" column="nickname"/>
+        <result property="headImgUrl" column="headimgurl"/>
+        <result property="record" column="record"/>
+    </resultMap>
+
+    <select id="getRanking" resultType="com.onoff.wechatofficialaccount.entity.VO.Leaderboard"
+            resultMap="getLeaderboardMap">
+SELECT
+	i.num AS ranking,
+	u.nickname AS nickname,
+	u.headimgurl AS headimgurl,
+	i.record AS record
+FROM
+	(
+	SELECT
+		@i := @i + 1 AS num,
+		i.openid AS openid,
+		i.record AS record
+	FROM
+		( SELECT openid, SUM( record ) AS record FROM integral GROUP BY openid ORDER BY record DESC ) i,
+		( SELECT @i := 0 ) t2
+	GROUP BY
+		i.openid
+	ORDER BY
+		num
+	) i
+	JOIN `user` u ON u.openid = i.openid
+WHERE
+	i.openid = #{openId}
+ORDER BY
+	record DESC;
+    </select>
 </mapper>

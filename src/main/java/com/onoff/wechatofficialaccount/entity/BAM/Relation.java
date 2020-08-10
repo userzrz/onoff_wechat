@@ -15,7 +15,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class UserRelation implements Serializable {
+public class Relation implements Serializable {
 
     private String id;
 
@@ -23,8 +23,8 @@ public class UserRelation implements Serializable {
     private String openId;
 
     //受邀请人unionid
-    private String unionid;
+    private String unionId;
 
-    //关系是否建立1为建立
-    private String establish;
+    //关系类型  0、建立关系   1、确立关系  2、失效用户
+    private int rType;
 }

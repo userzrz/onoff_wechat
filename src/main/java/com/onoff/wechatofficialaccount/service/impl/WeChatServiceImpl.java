@@ -2,8 +2,9 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.*;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
-import com.onoff.wechatofficialaccount.entity.BAM.UserRelation;
+import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
 import com.onoff.wechatofficialaccount.mapper.WechatMapper;
 import com.onoff.wechatofficialaccount.service.BAMService;
@@ -30,6 +31,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Description TODO
@@ -49,7 +52,7 @@ public class WeChatServiceImpl implements WeChatService {
 
     @Override
     public User getUserInfo(String openid) {
-        String url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=ACCESS_TOKEN&openid=OPENID&lang=zh_CN";
+        String url = Https.userInfoHttps;
         url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("OPENID", openid);
         String result = WeChatUtils.get(url);
         JSONObject jsonObject = JSONObject.parseObject(result);
@@ -114,78 +117,14 @@ public class WeChatServiceImpl implements WeChatService {
                 switch (eventType) {
                     //关注事件
                     case "subscribe":
-                        User user = getUserInfo(openId);
-                        int res = wechatMapper.addUser(user);
-                        if (res > 0) {
-                            log.info("-------------》新增用户信息成功");
-                        } else {
-                            log.error("-------------》新增用户信息失败");
-                        }
-                        String data = "{\n" +
-                                "    \"touser\":\"" + user.getOpenId() + "\",\n" +
-                                "    \"msgtype\":\"text\",\n" +
-                                "    \"text\":\n" +
-                                "    {\n" +
-                                "         \"content\":\"你好 " + user.getNickName() + " 欢迎关注我们\"\n" +
-                                "    }\n" +
-                                "}";
-                        log.info(data);
-                        int errcode = kfSendMsg(data);
                         msg = new TextMessage(requestMap, "ON靠态度，OFF从来不，\n《ONOFF变装》一个会上瘾的时尚媒体 。");
-                        log.info("Customer service sends messages to followers--------------->" + errcode);
-                        //查询用户是否有关联关系（测试使用openId）
-                        UserRelation userRelation = bamService.getUserRelation(user.getOpenId());
-                        if (userRelation != null) {
-                            //邀请人openid
-                            String inviterOpenId = userRelation.getOpenId();
-                            data = "{\n" +
-                                    "    \"touser\":\"" + inviterOpenId + "\",\n" +
-                                    "    \"msgtype\":\"text\",\n" +
-                                    "    \"text\":\n" +
-                                    "    {\n" +
-                                    "         \"content\":\"你的好友 " + user.getNickName() + " 刚刚为你助力\"\n" +
-                                    "    }\n" +
-                                    "}";
-                            log.info(data);
-                            errcode = kfSendMsg(data);
-                            log.info("Customer service message sending inviter----------------->" + errcode);
-                            data = "{\n" +
-                                    "    \"touser\":\"" + user.getOpenId() + "\",\n" +
-                                    "    \"msgtype\":\"text\",\n" +
-                                    "    \"text\":\n" +
-                                    "    {\n" +
-                                    "         \"content\":\"你已帮助好友助力\"\n" +
-                                    "    }\n" +
-                                    "}";
-                            log.info(data);
-                            errcode = kfSendMsg(data);
-                            log.info("Customer service sends messages to support friends--------------->" + errcode);
-                        }
+                        subscribeEvent(openId);
                         break;
+                    //取关事件
                     case "unsubscribe":
-                        User user2 = bamService.getUser(openId);
-                        if (user2 == null) {
+                        String r = unsubscribeEvent(openId);
+                        if(r!=null&&r.equals("success")){
                             return "success";
-                        }
-                        //查询用户是否有关联关系（测试使用openId）
-                        UserRelation userRelation2 = bamService.getUserRelation(openId);
-                        if (userRelation2 == null) {
-                            wechatMapper.delUser(openId);
-                        } else {
-                            String inviterOpenId = userRelation2.getOpenId();
-                            data = "{\n" +
-                                    "    \"touser\":\"" + inviterOpenId + "\",\n" +
-                                    "    \"msgtype\":\"text\",\n" +
-                                    "    \"text\":\n" +
-                                    "    {\n" +
-                                    "         \"content\":\"你的好友 " + user2.getNickName() + " 取消了关注,助力失效\"\n" +
-                                    "    }\n" +
-                                    "}";
-                            log.info(data);
-                            errcode = kfSendMsg(data);
-                            log.info("客服发送给邀请人--------》" + errcode);
-                            bamService.delUserRelation(userRelation2.getUnionid());
-                            wechatMapper.delUser(openId);
                         }
                         break;
                 }
@@ -202,7 +141,7 @@ public class WeChatServiceImpl implements WeChatService {
 
     @Override
     public String addKf(String data) {
-        String url = "https://api.weixin.qq.com/customservice/kfaccount/add?access_token=ACCESS_TOKEN";
+        String url = Https.addkfHttps;
         url = url.replace("ACCESS_TOKEN", getAccessToken());
         String result = WeChatUtils.post(url, data);
         return result;
@@ -210,7 +149,7 @@ public class WeChatServiceImpl implements WeChatService {
 
     @Override
     public int kfSendMsg(String data) {
-        String url = "https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token=ACCESS_TOKEN";
+        String url = Https.kfHttps;
         url = url.replace("ACCESS_TOKEN", getAccessToken());
         String result = WeChatUtils.post(url, data);
         JSONObject jsonObject = JSONObject.parseObject(result);
@@ -222,11 +161,11 @@ public class WeChatServiceImpl implements WeChatService {
         String url = "";
         if (typeCode == 0) {
             //临时素材地址
-            url = "https://api.weixin.qq.com/cgi-bin/media/upload?access_token=ACCESS_TOKEN&type=TYPE";
+            url = Https.mediaHttps;
             url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("TYPE", type);
         } else if (typeCode == 1) {
             //永久素材地址
-            url = "https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=ACCESS_TOKEN&type=TYPE";
+            url = Https.materialHttps;
             url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("TYPE", type);
         }
         try {
@@ -283,7 +222,7 @@ public class WeChatServiceImpl implements WeChatService {
 
     @Override
     public String delMaterial(String data) {
-        String url = "https://api.weixin.qq.com/cgi-bin/material/del_material?access_token=ACCESS_TOKEN";
+        String url = Https.delmaterialHttps;
         url = url.replace("ACCESS_TOKEN", getAccessToken());
         String data1 = "{\n" +
                 "  \"media_id\":\"" + data + "\"\n" +
@@ -328,28 +267,18 @@ public class WeChatServiceImpl implements WeChatService {
         String content = requestMap.get("Content");
         switch (content) {
             case "海报":
-                msg = new TextMessage(requestMap, CommonUtils.intro + "\n<a href='http://upay.10010.com/npfwap/npfMobWap/bankcharge/#/bankcharge'>排行榜</a>");
+                //新增用户信息
+                User user=verifyUser(openId);
+                //新增用户积分
+                initializeIntegral(openId);
                 //查询所有海报素材
                 List<Material> list = bamService.getMaterial();
                 int size = list.size();
                 //随机数：Math.random()*(n+1-m)+m
                 int ran2 = (int) (Math.random() * (size));
                 Material material = list.get(ran2);
-                //先从本地数据库查找用户信息
-                User user = bamService.getUser(openId);
-                if (user == null) {
-                    //调用微信接口获取用户信息，每日可调用50万次
-                    user = getUserInfo(openId);
-                    int res = wechatMapper.addUser(user);
-                    if (res > 0) {
-                        log.info("新增用户信息成功");
-                    }
-                }
-                //String ticket=this.getQrCodeTicket(openId);
-                //String QR_URL="https://mp.weixin.qq.com/cgi-bin/showqrcode?ticket=TICKET";
-                //QR_URL=QR_URL.replace("TICKET",ticket);
                 //拼接请求
-                String http = bamService.generateHttp(openId);
+                String http = bamService.generateHttp(openId, "http%3a%2f%2fcdnot4.cn%2fmiddle", "snsapi_userinfo");
                 //生成邀请二维码
                 BufferedImage qrImg = CommonUtils.createImage(http);
                 //生成海报  1、海报地址  2、用户头像地址  3、邀请二维码  4、用户昵称
@@ -366,28 +295,153 @@ public class WeChatServiceImpl implements WeChatService {
                         "    }\n" +
                         "}";
                 log.info(data);
-                int errcode = kfSendMsg(data);
-                log.info("客服发送--------》" + errcode);
+                kfSendMsg(data);
+                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://cdnot4.cn/list.html?code=" + openId + "'>积分排行榜</a>");
                 break;
             case "排行榜":
-                msg = new TextMessage(requestMap,
-                        "<a href='http://upay.10010.com/npfwap/npfMobWap/bankcharge/#/bankcharge'>排行榜</a>");
+                //新增用户信息
+                verifyUser(openId);
+                //新增用户积分
+                initializeIntegral(openId);
+                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://cdnot4.cn/list.html?code=" + openId + "'>积分排行榜</a>");
                 break;
             default:
-                msg = new TextMessage(requestMap, requestMap.get("Content"));
+                String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
+                String result=checkCellphone(content);
+                if(result.equals("success")){
+                    return null;
+                }else{
+                    msg = new TextMessage(requestMap,result);
+                }
                 break;
         }
         return msg;
     }
 
+
     /**
-     * 处理关注、取消关注事件
+     * 处理关注事件
      *
-     * @param requestMap
+     * @param openId
      * @return
      */
-    private BaseMessage disposeEvent(Map<String, String> requestMap) {
-        BaseMessage msg = null;
+    private String subscribeEvent(String openId) {
+        User user = this.verifyUser(openId);
+        String data = "{\n" +
+                "    \"touser\":\"" + user.getOpenId() + "\",\n" +
+                "    \"msgtype\":\"text\",\n" +
+                "    \"text\":\n" +
+                "    {\n" +
+                "         \"content\":\"你好 " + user.getNickName() + " 欢迎关注我们\"\n" +
+                "    }\n" +
+                "}";
+        int errcode = kfSendMsg(data);
+        //查询用户是否有关联关系
+        Relation relation = bamService.getRelation(user.getUnionId());
+        if (relation == null) {
+            if (errcode == 0) {
+                log.info("客服成功发送消息给普通关注用户" + data);
+            } else {
+                log.error("客服发送消息给普通关注用户失败！！" + data + errcode);
+            }
+            return "success";
+        } else if (relation != null && relation.getRType() == 0) {
+            //修改关注类型
+            int result = bamService.putRelation(1, relation.getUnionId(), System.currentTimeMillis() + "");
+            if (result == 1) {
+                log.info("用户关系确立成功");
+            } else {
+                log.error("用户关系确立失败！");
+                return "success";
+            }
+            //给邀请人添加积分
+            result = bamService.saveIntegral(relation.getOpenId(), 10, 1, System.currentTimeMillis() + "");
+            if (result == 1) {
+                log.info("给邀请人加分成功");
+            } else {
+                log.error("给邀请人加分失败邀请人openId:" + relation.getOpenId() + "应加10分" + "邀请好友关注成功");
+            }
+            //查询邀请人积分
+            int sum = bamService.getIntegral(relation.getOpenId());
+            data = "{\n" +
+                    "    \"touser\":\"" + relation.getOpenId() + "\",\n" +
+                    "    \"msgtype\":\"text\",\n" +
+                    "    \"text\":\n" +
+                    "    {\n" +
+                    "         \"content\":\"你的好友 " + user.getNickName() + " 刚刚为你助力\n积分+10\n当前积分:" + sum + "\"\n" +
+                    "    }\n" +
+                    "}";
+            errcode = kfSendMsg(data);
+            if (errcode == 0) {
+                log.info("客服成功发送消息给邀请人" + data);
+            } else {
+                log.error("客服发送消息给邀请人失败！邀请人openId：" + relation.getOpenId() + "发送数据：" + data + errcode);
+            }
+            data = "{\n" +
+                    "    \"touser\":\"" + user.getOpenId() + "\",\n" +
+                    "    \"msgtype\":\"text\",\n" +
+                    "    \"text\":\n" +
+                    "    {\n" +
+                    "         \"content\":\"你已帮助好友助力\"\n" +
+                    "    }\n" +
+                    "}";
+            errcode = kfSendMsg(data);
+            if (errcode == 0) {
+                log.info("----------------->客服成功发送消息给助力好友" + data);
+            } else {
+                log.error("---------------->客服发送消息给给助力好友失败！助力好友openId：" + user.getOpenId() + "发送数据：" + data + errcode);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 处理取关事件
+     *
+     * @param openId
+     * @return
+     */
+    private String unsubscribeEvent(String openId) {
+        String data = null;
+        User user = bamService.getUser(openId);
+        if (user == null) {
+            log.info("------------>非新用户，非参与活动，非二维码邀请进入的用户取消了关注");
+            return "success";
+        }
+        //查询用户是否有关联关系
+        Relation relation = bamService.getRelation(user.getUnionId());
+        if (relation == null) {
+            log.info("------------------>非邀请关注但与公众号产生过交互的用户取消了关注");
+            wechatMapper.delUser(openId);
+            return "success";
+        } else if (relation != null && relation.getRType() == 1) {
+            //邀请人openId
+            String inviterOpenId = relation.getOpenId();
+            //给邀请人减分
+            bamService.saveIntegral(inviterOpenId, -10, 2, System.currentTimeMillis() + "");
+            //查询邀请人当前积分
+            int sum = bamService.getIntegral(inviterOpenId);
+            data = "{\n" +
+                    "    \"touser\":\"" + inviterOpenId + "\",\n" +
+                    "    \"msgtype\":\"text\",\n" +
+                    "    \"text\":\n" +
+                    "    {\n" +
+                    "         \"content\":\"你的好友 " + user.getNickName() + " 取消了关注\n积分-10\n当前积分:" + sum + "\"\n" +
+                    "    }\n" +
+                    "}";
+            int errcode = kfSendMsg(data);
+            if (errcode == 0) {
+                log.info("----------------->通过邀请进入的用户首次取消关注，客服成功发送消息给邀请人" + data);
+            } else {
+                log.error("---------------->通过邀请进入的用户取消了关注，客服发送消息给邀请人失败！" + data + errcode);
+            }
+            //修改关系类型为2
+            bamService.putRelation(2, relation.getUnionId(), System.currentTimeMillis() + "");
+            wechatMapper.delUser(openId);
+        } else if (relation != null && relation.getRType() == 2) {
+            wechatMapper.delUser(openId);
+            log.info("---------->通过邀请进入的用户再次取消关注");
+        }
         return null;
     }
 
@@ -434,5 +488,46 @@ public class WeChatServiceImpl implements WeChatService {
         stream.processAnnotations(VideoMessage.class);
         stream.processAnnotations(VoiceMessage.class);
         return stream.toXML(msg);
+    }
+
+    @Override
+    public User verifyUser(String openId) {
+        User user = bamService.getUser(openId);
+        if (user == null) {
+            //调用微信接口获取用户信息，每日可调用50万次
+            user = getUserInfo(openId);
+            int res = wechatMapper.addUser(user);
+            if (res > 0) {
+                log.info("--------->新增用户信息成功");
+            }
+        }
+        return user;
+    }
+
+    @Override
+    public void initializeIntegral(String openId) {
+        //查询用户是否存在积分表
+        int count=bamService.getIntegralUser(openId);
+        if(count<=0){
+            //初始化用户积分
+            bamService.saveIntegral(openId, 0, 0, System.currentTimeMillis() + "");
+        }
+    }
+
+    /**
+     * 查询符合的手机号码
+     *
+     * @param str      
+     */
+    public String checkCellphone(String str) {
+        //将给定的正则表达式编译到模式中
+        Pattern pattern = Pattern.compile("((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(18[0,5-9]))\\d{8}");
+        //创建匹配给定输入与此模式的匹配器。
+        Matcher matcher = pattern.matcher(str);
+        if (matcher.find()) {
+            return "信息接收成功,稍后客服会与您联系！";
+        } else {
+            return "success";
+        }
     }
 }

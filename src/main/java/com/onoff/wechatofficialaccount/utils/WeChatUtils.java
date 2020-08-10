@@ -21,12 +21,14 @@ public class WeChatUtils {
 
     //验证微信请求TOKEN
     public static final String TOKEN = "zhurongzheng";
-    //公众号APPID
-    public static final String APPID = "wx66b425717de760ce";
-    //公众号APPSECRET
-    public static final String APPSECRET = "2ebd982fc738d5ed36a04e9764cd0092";
+    //订阅号APPID  wxbcce35eda766550a
+    public static final String APPID = "wxbcce35eda766550a";
+    //订阅号APPSECRET  040924f25ead5851bcf39b050b5711d3
+    public static final String APPSECRET = "040924f25ead5851bcf39b050b5711d3";
     //服务号APPID
-    public static final String FWAPPID ="wx66b425717de760ce";
+    public static final String FWAPPID ="wx10ace3211b9a7334";
+    //服务号APPSECRET
+    public static final String FWAPPSECRET = "c750a471a54ffb2672d627c7e0bbca5c";
     //用于存储access_token
     public static String access_token;
     //用于存储access_token过期时间
