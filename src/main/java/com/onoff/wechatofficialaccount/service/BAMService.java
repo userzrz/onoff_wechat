@@ -50,9 +50,9 @@ public interface BAMService {
     User getUser(String openId);
 
     /**
-     * 获取海报素材信息
+     * 获取素材信息
      */
-    List<Material> getMaterial();
+    List<Material> getMaterial(String type);
 
     /**
      * 删除素材信息

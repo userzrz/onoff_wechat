@@ -25,6 +25,11 @@
     <select id="getMaterial" resultType="com.onoff.wechatofficialaccount.entity.BAM.Material"
             resultMap="getMaterialMap">
        SELECT * FROM material
+       <where>
+           <if test="type!=null">
+               type=#{type}
+           </if>
+       </where>
     </select>
     <resultMap id="getMaterialMap" type="com.onoff.wechatofficialaccount.entity.BAM.Material">
         <result property="mediaId" column="media_id"/>
@@ -32,7 +37,7 @@
     </resultMap>
 
     <insert id="saveMaterial" parameterType="com.onoff.wechatofficialaccount.entity.BAM.Material">
-        INSERT INTO material(media_id,url)VALUES(#{mediaId},#{url})
+        INSERT INTO material(media_id,url,type)VALUES(#{mediaId},#{url},#{type})
     </insert>
 
     <delete id="delMaterial" parameterType="String">

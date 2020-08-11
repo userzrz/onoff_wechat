@@ -2,7 +2,6 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
-import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.Https;
@@ -64,7 +63,7 @@ public class BAMServiceImpl implements BAMService {
         Relation relation = mapper.getRelation(unionid);
         if (relation == null) {
             //建立用户关系
-            return mapper.saveRelation(state, unionid,System.currentTimeMillis()+"");
+            return mapper.saveRelation(state, unionid, System.currentTimeMillis() + "");
         } else {
             return 1;
         }
@@ -81,8 +80,16 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public List<Material> getMaterial() {
-        return mapper.getMaterial();
+    public List<Material> getMaterial(String type) {
+        List<Material> materialList = mapper.getMaterial(type);
+        Material material;
+        String url;
+        for (int i = 0; i < materialList.size(); i++) {
+            material = materialList.get(i);
+            url = material.getUrl();
+            material.setUrl(url.replace("http", "https"));
+        }
+        return materialList;
     }
 
     @Override
@@ -143,13 +150,13 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public int putRelation(int type, String unionId,String time) {
-        return mapper.putRelation(type,unionId,time);
+    public int putRelation(int type, String unionId, String time) {
+        return mapper.putRelation(type, unionId, time);
     }
 
     @Override
-    public int saveIntegral(String openId,int record,int source,String time) {
-        return mapper.saveIntegral(openId,record,source,time);
+    public int saveIntegral(String openId, int record, int source, String time) {
+        return mapper.saveIntegral(openId, record, source, time);
     }
 
     @Override
@@ -173,14 +180,13 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public String generateHttp(String openId,String url,String scope) {
+    public String generateHttp(String openId, String url, String scope) {
         String http = Https.codeHttps;
         //这里写服务号APPID
         http = http.replace("APPID", WeChatUtils.FWAPPID)
                 .replace("REDIRECT_URI", url)
-                .replace("SCOPE", scope)//snsapi_userinfo snsapi_base
+                .replace("SCOPE", scope)
                 .replace("STATE", openId);
-        log.info("----------->http------》"+http);
         return http;
     }
 

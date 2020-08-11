@@ -2,7 +2,6 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.*;
-import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
@@ -260,7 +259,7 @@ public class WeChatServiceImpl implements WeChatService {
      * @return
      */
     private BaseMessage disposeText(Map<String, String> requestMap) {
-        BaseMessage msg = null;
+        BaseMessage msg;
         //用户openid
         String openId = requestMap.get("FromUserName");
         //消息内容
@@ -272,13 +271,13 @@ public class WeChatServiceImpl implements WeChatService {
                 //新增用户积分
                 initializeIntegral(openId);
                 //查询所有海报素材
-                List<Material> list = bamService.getMaterial();
+                List<Material> list = bamService.getMaterial(2+"");
                 int size = list.size();
                 //随机数：Math.random()*(n+1-m)+m
                 int ran2 = (int) (Math.random() * (size));
                 Material material = list.get(ran2);
                 //拼接请求
-                String http = bamService.generateHttp(openId, "http%3a%2f%2fcdnot4.cn%2fmiddle", "snsapi_userinfo");
+                String http = bamService.generateHttp(openId, Https.redirect_uri, "snsapi_userinfo");
                 //生成邀请二维码
                 BufferedImage qrImg = CommonUtils.createImage(http);
                 //生成海报  1、海报地址  2、用户头像地址  3、邀请二维码  4、用户昵称
@@ -296,14 +295,14 @@ public class WeChatServiceImpl implements WeChatService {
                         "}";
                 log.info(data);
                 kfSendMsg(data);
-                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://cdnot4.cn/list.html?code=" + openId + "'>积分排行榜</a>");
+                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://"+Https.domain+"/list.html?code=" + openId + "'>积分排行榜</a>");
                 break;
             case "排行榜":
                 //新增用户信息
                 verifyUser(openId);
                 //新增用户积分
                 initializeIntegral(openId);
-                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://cdnot4.cn/list.html?code=" + openId + "'>积分排行榜</a>");
+                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://"+Https.domain+"/list.html?code=" + openId + "'>积分排行榜</a>");
                 break;
             default:
                 String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";

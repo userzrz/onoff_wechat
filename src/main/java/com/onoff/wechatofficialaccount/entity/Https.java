@@ -8,6 +8,11 @@ package com.onoff.wechatofficialaccount.entity;
  **/
 public class Https {
 
+    public static String domain="onoff.free.idcfengye.com";
+
+    //绑定邀请关系回调地址(urlEncode)
+    public static String redirect_uri="http%3a%2f%2fonoff.free.idcfengye.com%2fmiddle";
+
     //更新菜单
     public static String menuHttps="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
 

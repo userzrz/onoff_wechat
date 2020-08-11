@@ -26,4 +26,9 @@ public class Material implements Serializable {
      * 素材ulr地址
      */
     private String url;
+
+    /**
+     * 素材类型
+     */
+    private String type;
 }

@@ -6,7 +6,7 @@ $(function () {
 
     $(document).on("click","#but_2",function () {
         if(confirm("确定要删除吗？")){
-            var mediaId=$('#but_2').val();
+            var mediaId=$(this).val();
             $.ajax({
                 url:'/delmaterial?mediaId='+mediaId,
                 dataType:'JSON',

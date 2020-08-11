@@ -40,9 +40,9 @@ public interface BAMMapper {
     int saveMaterial(Material material);
 
     /**
-     * 获取海报信息
+     * 获取素材信息
      */
-    List<Material> getMaterial();
+    List<Material> getMaterial(String type);
 
     /**
      * 删除素材信息

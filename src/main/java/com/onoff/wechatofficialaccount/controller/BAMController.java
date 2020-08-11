@@ -61,6 +61,8 @@ public class BAMController {
 
     @GetMapping("/list.html")
     public String Leaderboard(@RequestParam(value = "code") String openId, Model model) {
+        //查询奖品图
+        model.addAttribute("Material",service.getMaterial(1+""));
         model.addAttribute("Relation", service.getRanking(openId));
         model.addAttribute("Leaderboard", service.getLeaderboard());
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -72,7 +74,7 @@ public class BAMController {
     @GetMapping({"/", "/login.html"})
     public String login(HttpSession session) {
         if (session.getAttribute(CommonUtils.ADMIN_SESSION) != null) {
-            return "redirect:/index";
+            return "redirect:/index.html";
         }
         return "login";
     }
@@ -85,7 +87,7 @@ public class BAMController {
 
     @GetMapping("/index.html")
     public String index(Model model) {
-        model.addAttribute("Material", service.getMaterial());
+        model.addAttribute("Material", service.getMaterial(null));
         return "index";
     }
 
@@ -104,10 +106,9 @@ public class BAMController {
      * @return
      */
     @PostMapping("/upload")
-    public String upload(@RequestParam(value = "inputGroupFile02", required = true) MultipartFile file, Model model) {
+    public String upload(@RequestParam(value = "inputGroupFile02", required = true) MultipartFile file,@RequestParam("imageType") String imageType,Model model) {
         //设置0为临时素材，设置1为永久素材
         int typeCode = 1;
-        int result2 = 0;
         try {
             String result = weChatService.uploadMaterial(typeCode, CommonUtils.multipartFileToFile(file), "image");
             JSONObject jsonObject = JSONObject.parseObject(result);
@@ -121,7 +122,8 @@ public class BAMController {
                 model.addAttribute("msg", "本地数据库新增失败");
                 return "index";
             }
-            result2 = service.saveMaterial(material);
+            material.setType(imageType);
+            int result2 = service.saveMaterial(material);
             if (result2 == 1) {
                 return "redirect:/index.html";
             }
