@@ -3,8 +3,10 @@ package com.onoff.wechatofficialaccount.mapper;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
+import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.UserScene;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -18,6 +20,44 @@ import java.util.List;
 @Mapper
 @Repository()
 public interface BAMMapper {
+
+    /**
+     * 查询用户是否打卡
+     * @param unionId
+     * @param time 二维码保存时间
+     * @return
+     */
+    List<SignIn> querySignIn(@Param("param1") String unionId,@Param("param2")String time);
+
+    /**
+     * 返回指定二维码打卡的总数
+     * @param time
+     * @return
+     */
+    int countSignIn(@Param("time")String time);
+
+
+    /**
+     * 清除用户打卡记录
+     * @param unionId
+     * @return
+     */
+    int putSignIn(String unionId);
+
+
+    /**
+     * 保存打卡信息
+     * @param signIn
+     * @return
+     */
+    int saveSignIn(SignIn signIn);
+
+    /**
+     * 查询最新期
+     * @return
+     */
+    int queryPeriod();
+
     /**
      * 验证管理员信息
      *
@@ -83,32 +123,60 @@ public interface BAMMapper {
      * @param openId
      * @return
      */
-    int getIntegralUser(String openId);
+    int getIntegralUser(String openId,int period);
 
     /**
      * 新增用户积分
      *
      * @return
      */
-    int saveIntegral(@Param("a") String openId,@Param("b") int record,@Param("c") int source,@Param("d")String time);
+    int saveIntegral(Integral integral);
 
     /**
      * 查询用户积分总和
      *
      * @return
      */
-    int getIntegral(String openId);
+    int getIntegral(@Param("openId") String openId,@Param("period") int period);
 
     /**
-     * 获取积分排行榜前100
+     * 获取积分排行榜前20
      * @return
      */
-    List<Leaderboard> getLeaderboard();
+    List<Leaderboard> getLeaderboard(int period);
+
+
+    /**
+     * 获取指定用户的积分记录
+     * @param openId
+     * @return
+     */
+    List<Integral> getIntegralrecord(String openId);
 
     /**
      * 查询指定用户的名次
      * @param openId
      * @return
      */
-    Leaderboard getRanking(String openId);
+    Leaderboard getRanking(@Param("a") String openId,@Param("b") int period);
+
+    /**
+     * 查询用户助力时的期数
+     * @param relationId
+     * @return
+     */
+    int queryRelationidPeriod(String relationId);
+
+    /**
+     * 清空积分表
+     * @return
+     */
+    int delIntegral();
+
+    /**
+     * 统计用户来源
+     * @return
+     */
+    List<UserScene> queryScene();
+
 }

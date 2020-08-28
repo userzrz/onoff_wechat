@@ -16,8 +16,8 @@
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" type="text/css" href="../static/css/index.css" th:href="@{../static/css/index.css}">
-    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"
-            th:src="@{https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js}"></script>
+    <script src="../static/jquery/jquery-2.1.4.js"
+            th:src="@{../static/jquery/jquery-2.1.4.js}"></script>
     <script th:src="@{../static/js/index.js}" src="../static/js/index.js"></script>
 </head>
 <body>
@@ -44,16 +44,22 @@
         </div>
     </nav>
 </div>
-<!--主页-->
-<!--<div class="div_1" style="border-bottom: 1px solid black;padding: 30px;margin: 30px">-->
-<!--<p class="span" id="span_1">总扫码次数<br/>3654</p>-->
-<!--<p class="span" id="span_2">总扫码关注人数<br/>3565</p>-->
-<!--<p class="span" id="span_3">总取关人数<br/>6532</p>-->
-<!--<p class="span" id="span_4">今日扫码次数<br/>2635</p>-->
-<!--<p class="span" id="span_5">今日取关人数<br/>2635</p>-->
-<!--</div>-->
 <div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
-
+    <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">来源方式</th>
+            <th scope="col">人数</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="u,iterStat:${userScenes}">
+            <td th:text="${u.getScene()}"></td>
+            <td th:text="${u.getCount()}"></td>
+        </tr>
+    </table>
+</div>
+<div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
     <h2 class="mb-3">
         <p class="font-weight-bolder ml-3">素材管理</p>
     </h2>
@@ -82,15 +88,44 @@
     </form>
 
     <div class="d-flex align-content-center flex-wrap">
-        <div class="ml-3" th:each="m,iterStat:${Material}">
+        <div class="ml-3" th:each="m,iterStat:${Material}" style="margin-top: 2rem">
             <div class="card" style="width: 18rem;">
                 <img src="" th:src="${m.getUrl()}" class="card-img-top" alt="Responsive image">
                 <div class="card-body">
-                    <button th:value="${m.getMediaId()}" class="btn btn-outline-danger" id="but_2" th:text="删除+${m.getType()=='1'?'奖品图' : '海报模板'}">删除</button>
+                    <button th:value="${m.getMediaId()}" class="btn btn-outline-danger" id="but_2">删除</button>
+                    <p class="p_type" th:text="${m.getType()==1?'奖品图' : '海报模板'}"></p>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
+    <h2 class="mb-3">
+        <p class="font-weight-bolder ml-3">生成签到二维码</p>
+    </h2>
+
+    <form style="margin-left: 16px;margin-top: 10px" th:action="@{/maker}">
+        <div class="form-row align-items-center">
+                <span>设置有效时间:</span>
+            <br/>
+            <div class="col-auto my-1">
+                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="date">
+                    <option value="3">三天</option>
+                    <option value="4">四天</option>
+                    <option value="5">五天</option>
+                    <option value="6">六天</option>
+                </select>
+            </div>
+                <span>设置打卡上限人数:</span>
+            <br/>
+            <div>
+                <input value="200"  name="limit" >
+            </div>
+            <div class="col-auto my-1">
+                <button type="submit" id="submit_but" class="btn btn-primary">生成</button>
+            </div>
+        </div>
+    </form>
 </div>
 </body>
 </html>

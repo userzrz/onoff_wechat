@@ -18,7 +18,7 @@ import java.io.Serializable;
 public class Integral implements Serializable {
 
     //积分表id
-    private int id;
+    private String id;
 
     //用户openid
     private String openId;
@@ -32,10 +32,26 @@ public class Integral implements Serializable {
     //添加时间
     private String time;
 
-    public Integral(String openId, int record, int source, String time) {
+    //期数
+    private int period;
+
+    //关联用户openid
+    private String relationId;
+
+    public Integral(String openId, int record, int source, String time,int period) {
         this.openId = openId;
         this.record = record;
         this.source = source;
         this.time = time;
+        this.period=period;
+    }
+
+    public Integral(String openId, int record, int source, String time,int period,String relationId) {
+        this.openId = openId;
+        this.record = record;
+        this.source = source;
+        this.time = time;
+        this.period=period;
+        this.relationId=relationId;
     }
 }

@@ -4,9 +4,9 @@
 <mapper namespace="com.onoff.wechatofficialaccount.mapper.WechatMapper">
     <insert id="addUser" parameterType="com.onoff.wechatofficialaccount.entity.User">
         INSERT INTO user(openid,nickname,sex,headimgurl,subscribe_time,subscribe_scene,unionid,
-        country,province,language,remark,groupid,tagid_list,city)VALUES(#{openId},#{nickName},#{sex},#{headImgUrl},
+        country,province,language,remark,groupid,tagid_list,city,subscribe)VALUES(#{openId},#{nickName},#{sex},#{headImgUrl},
         #{subScribeTime},#{subscribeScene},#{unionId},#{country},
-        #{province},#{language},#{remark},#{groupId},#{tagid_list},#{city})
+        #{province},#{language},#{remark},#{groupId},#{tagid_list},#{city},#{subscribe})
     </insert>
     <delete id="delUser" parameterType="String">
         DELETE FROM user WHERE openid=#{openId}

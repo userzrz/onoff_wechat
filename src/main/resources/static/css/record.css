@@ -1,0 +1,62 @@
+body{
+    background-color: #efefef;
+}
+.div_1 {
+    height: 3.5rem;
+    border-bottom: 0.1px #efefef solid;
+    margin: auto;
+}
+
+.div_11 {
+    float: left;
+    width: 8rem;
+    margin: 0.9rem 0.3rem;
+}
+
+.span_1 {
+    font-size: 1rem;
+    font-weight: 500;
+    color: black;
+}
+
+#span_time1 {
+    float: right;
+    font-size: 0.7rem;
+    color: #666666;
+    margin: 0.3rem 0.3rem 0rem;
+}
+#span_time2 {
+    float: right;
+    font-size: 0.7rem;
+    color: #666666;
+    margin: 0.3rem 0.3rem 0rem;
+}
+
+.span_2 {
+    float: right;
+    font-size: 1.2rem;
+    color: black;
+    font-weight: 500;
+    font-family: sans-serif;
+    margin: -0.2rem 0.3rem 0rem;
+}
+#h3_1{
+    color: #666666;
+    text-align:center;
+    margin: 6rem;
+}
+#div_head{
+    height: 10rem;
+}
+.but_head{
+    width: 50%;
+    height: 10rem;
+    float: left;
+    background-color: #efefef;
+    text-align:center;
+    line-height: 5rem;
+    border: none;
+}
+#but_head2{
+    border-left: 1px black solid;
+}

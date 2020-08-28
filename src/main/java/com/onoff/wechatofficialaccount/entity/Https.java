@@ -8,10 +8,19 @@ package com.onoff.wechatofficialaccount.entity;
  **/
 public class Https {
 
-    public static String domain="onoff.free.idcfengye.com";
+    //onoffmedia.top
+    //3281p3c855.zicp.vip
+    public static String domain="3281p3c855.zicp.vip";
 
+    //http%3a%2f%2fonoffmedia.top%2fmiddle
+    //http%3a%2f%2f3281p3c855.zicp.vip%2fmiddle
     //绑定邀请关系回调地址(urlEncode)
-    public static String redirect_uri="http%3a%2f%2fonoff.free.idcfengye.com%2fmiddle";
+    public static String redirect_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fmiddle";
+
+    //http%3a%2f%2fonoffmedia.top%2fsign_in
+    //http%3a%2f%2f3281p3c855.zicp.vip%2fsign_in
+    //签到地址(urlEncode)
+    public static String signIn_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fsign_in";
 
     //更新菜单
     public static String menuHttps="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
@@ -42,4 +51,6 @@ public class Https {
 
     //添加客服账号
     public static String addkfHttps="https://api.weixin.qq.com/customservice/kfaccount/add?access_token=ACCESS_TOKEN";
+
+    public static String userListHttps="https://api.weixin.qq.com/cgi-bin/user/get?access_token=ACCESS_TOKEN&next_openid=NEXT_OPENID";
 }

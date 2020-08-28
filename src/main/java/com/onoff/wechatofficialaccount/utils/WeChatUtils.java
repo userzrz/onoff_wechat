@@ -44,12 +44,12 @@ public class WeChatUtils {
         String url=GET_ACCESS_TOKEN_URL.replace("APPID",APPID).replace("APPSECRET",APPSECRET);
         String tokenStr= get(url);
         JSONObject jsonObject = JSONObject.parseObject(tokenStr);
+        log.info(jsonObject+"");
         access_token= jsonObject.getString("access_token");
         //返回有效时间单位秒
         String expireIn = jsonObject.getString("expires_in");
         //计算access_token过期时间
         expireTime=System.currentTimeMillis()+(Integer.parseInt(expireIn)-60)*1000;
-        log.info("------------------->生成一次TOKEN");
     }
 
     /**

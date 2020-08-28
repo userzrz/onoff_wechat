@@ -20,15 +20,20 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.0/dist/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
             crossorigin="anonymous"></script>
+    <script src="../static/jquery/jquery-2.1.4.js"
+            th:src="@{../static/jquery/jquery-2.1.4.js}"></script>
+    <script th:src="@{../static/js/list.js}" src="../static/js/list.js"></script>
 </head>
 <body>
+<img id="img_1" src="../static/images/logo.png" th:src="@{../static/images/logo.png}">
 <div class="sup-container">
     <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
         <div class="carousel-inner">
-            <div class="active" th:class="carousel-item+${iterStat.count==1?' active' : ''}" th:each="m,iterStat:${Material}">
-            <img src="" th:src="${m.getUrl()}"
-                 class="d-block w-100" alt="...">
-        </div>
+            <div class="active" th:class="carousel-item+${iterStat.count==1?' active' : ''}"
+                 th:each="m,iterStat:${Material}">
+                <img src="" th:src="${m.getUrl()}"
+                     class="d-block w-100" alt="...">
+            </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleCaptions" role="button" data-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -39,38 +44,73 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
-    <div class="sup-sup">
-        <ul id="tag">
-            <li class="">积分排行榜</li>
-        </ul>
-        <div id="box">
-            <div id="supporters" style="display: none;"></div>
-            <div id="paihang" style="display: block;" class="div_box">
-                <div style="border-bottom-style:solid;border-width:1px;border-color: #888888">
-                    <span th:text="${Relation.getRanking()}"></span>
-                    <img
-                            src="" th:src="${Relation.getHeadImgUrl()}">
-                    <div>
-                        <div><span class="span_name1" >我</span><span class="span_name2"  th:text="${Relation.getRecord()}"></span>
-                        </div>
-                    </div>
+    <div id="div_2">
+        <div class="btn-group div_21" >
+            <button id="but_history2" class="btn dropdown-toggle" data-toggle="dropdown">
+                切换月榜
+            </button>
+            <div class="dropdown-menu2">
+                <div>
+                    <button class="dropdown-item"
+                            th:text="本月"></button>
+                    <button class="dropdown-item" th:if="${month!=null}"
+                            th:text="上月"></button>
                 </div>
-                <br/>
-                <div th:each="l,iterStat:${Leaderboard}">
-                    <!--<span th:text="${iterStat.count}"></span>-->
-                    <span th:text="${l.getRanking()}"></span>
-                    <img
-                            src="" th:src="${l.getHeadImgUrl()}">
-                    <div>
-                        <div>
-                            <span class="span_name1" th:text="${l.getNickName()}"></span>
-                            <span class="span_name2" th:text="${l.getRecord()}"></span>
-                        </div>
+            </div>
+        </div>
+        <div class="btn-group div_21">
+            <button id="but_history" class="btn dropdown-toggle" data-toggle="dropdown">
+                切换周榜
+            </button>
+            <div class="dropdown-menu1" th:if="${Period!=null}">
+                <div>
+                    <button class="dropdown-item" th:value="${Period}"
+                       th:text="本周"></button>
+                    <div th:if="${week!=null}" th:each="w,iterStat:${week}">
+                        <button class="dropdown-item" th:id="${w.getId()}" th:text="${w.getDate()}"></button>
                     </div>
                 </div>
             </div>
-            <div class="top-warning"
-                 style="text-align: center; color: #FF6138; font-size: .7rem; margin: 0 !important;" th:text="${Date}">
+        </div>
+        <a class="btn"
+           id="a_1" th:title="${Code}" th:if="${Code!=null}" th:href="@{/record/{code}(code=${Code})}"
+           role="button">积分记录</a>
+    </div>
+    <div class="sup-sup">
+        <div id="sup-sup" th:fragment="sup-sup">
+            <ul id="tag">
+                <li class="" th:if="${historyPeriod==null}">本周排行榜</li>
+                <li class="" th:if="${historyPeriod!=null}" th:text="${historyPeriod+'排行榜'}"></li>
+            </ul>
+            <div id="box">
+                <div id="supporters" style="display: none;"></div>
+                <div id="paihang" style="display: block;" class="div_box">
+                    <div th:if="${Relation!=null}" style="border-bottom-style:solid;border-width:1px;border-color: #888888">
+                        <span th:text="${Relation!=null?Relation.getRanking():''}"></span>
+                        <img id="img_headImg"
+                             src="" th:src="${Relation!=null?Relation.getHeadImgUrl():''}">
+                        <div>
+                            <div><span class="span_name1" th:text="${Relation!=null?'我':''}"></span><span
+                                    class="span_name2" th:text="${Relation!=null?Relation.getRecord():''}"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div th:each="l,iterStat:${Leaderboard}">
+                        <!--<span th:text="${iterStat.count}"></span>-->
+                        <span th:text="${l.getRanking()}">12345678</span>
+                        <img
+                                src="" th:src="${l.getHeadImgUrl()}">
+                        <div>
+                            <div>
+                                <span class="span_name1" th:text="${l.getNickName()}"></span>
+                                <span class="span_name2" th:text="${l.getRecord()}">123456789</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="top-warning"
+                     style="text-align: center; color: #FF6138; font-size: .7rem; margin: 0 !important;" th:text="${Date}">
+                </div>
             </div>
         </div>
     </div>

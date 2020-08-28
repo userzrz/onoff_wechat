@@ -44,5 +44,7 @@ public class User implements Serializable {
     private String tagid_list;
     //运营者对粉丝的备注
     private String remark;
+    //是否关注我们
+    private String subscribe;
 
 }

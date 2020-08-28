@@ -17,10 +17,16 @@ import java.io.Serializable;
 @Data
 public class Leaderboard implements Serializable {
 
+
     /**
      * 名次
      */
-    private int ranking;
+    private long ranking;
+
+    /**
+     * id
+     */
+    private String openId;
 
     /**
      * 昵称
@@ -35,6 +41,6 @@ public class Leaderboard implements Serializable {
     /**
      * 积分
      */
-    private String record;
+    private int record;
 
 }

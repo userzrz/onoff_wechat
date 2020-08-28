@@ -8,19 +8,27 @@ html, body {
     height: auto;
     position: relative;
     font-size: 1rem;
+    background-color: #efefef;
 }
+
 
 html {
     height: 100%;
+    background-color: #efefef;
 }
 
 body {
-    background: url("../images/2343.jpg") no-repeat center center fixed;
-    -moz-background-size: cover;
-    -webkit-background-size: cover;
-    -o-background-size: cover;
-    background-size: cover;
-    min-height: 100%;
+    /*background-image: url("../images/aaa1.png");*/
+    /*background-repeat: repeat;*/
+    /*background-size: 20%;*/
+    background-color: #efefef;
+}
+
+
+#div_1 {
+    height: 2rem;
+    width: 80%;
+    margin: auto;
 }
 
 .div_box {
@@ -29,13 +37,14 @@ body {
 }
 
 .top-warning {
-    background-color: #f3f6f8;
+    background-color: #efefef;
     font-size: 13px;
     padding: 8px 8px;
     line-height: 1.5;
     border-radius: 6px;
     color: #ff862d;
     margin: 0 1.05rem .8rem !important;
+    border: 1px black solid;
 }
 
 .sup-container {
@@ -46,11 +55,12 @@ body {
 
 .sup-sup {
     min-height: 21.42rem;
-    background-color: #fff;
-    margin: 1rem .65rem;
+    background-color: #efefef;
+    margin: 1rem 1.5rem 1rem;
     border-radius: 1.2rem;
     padding-top: 1.05rem;
     padding-bottom: .6rem;
+    border: 1px black solid;
 }
 
 .sup-sup > h3 {
@@ -126,7 +136,7 @@ body {
     margin-top: .45rem;
     width: 5rem;
     float: right;
-    margin-left: 5.142rem;
+    margin-right: -2rem;
 }
 
 
@@ -139,13 +149,79 @@ ul {
     border-radius: 1rem;
 }
 
+#a_1 {
+    width: 6rem;
+    height: 2.4rem;
+    border-radius: 15px;
+    background-color: #efefef;
+    float: right;
+    border: 1px black solid;
+    margin-left: 0.2rem;
+}
+
 #tag li {
     float: left;
     width: 100%;
     color: black;
-    padding: .3rem 0px;
+    padding: 0.3rem 0px;
     text-align: center;
     line-height: 1.8;
     font-size: 1rem;
+}
+
+#div_2 {
+    width: 100%;
+    height: 2.4rem;
+    margin: 1rem -1.5rem;
+}
+
+.div_21 {
+    float: right;
+    width:6.5rem;
+    height: 2.4rem;
+    background-color: #efefef;
+    border-radius: 15px;
+    border: 1px black solid;
+    margin-left: 0.2rem;
+}
+
+#img_1 {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    z-index: 1;
+    width: 10%;
+}
+
+.dropdown-menu1{
+    position: absolute;
+    top: 100%;
+    display: none;
+    float: left;
+    min-width: 6.5rem;
+    overflow-y: auto;
+    max-height: 6rem;
+    margin: 0px 0 0;
+    list-style: none;
+    background-color: #efefef;
+    border: 1px solid #888888;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.dropdown-menu2{
+    position: absolute;
+    top: 100%;
+    display: none;
+    float: left;
+    min-width: 6.5rem;
+    overflow-y: auto;
+    max-height: 6rem;
+    margin: 0px 0 0;
+    list-style: none;
+    background-color: #efefef;
+    border: 1px solid #888888;
+    border-radius: 6px;
+    text-align: center;
 }
 

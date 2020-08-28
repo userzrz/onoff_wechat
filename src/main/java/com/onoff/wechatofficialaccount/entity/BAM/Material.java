@@ -30,5 +30,5 @@ public class Material implements Serializable {
     /**
      * 素材类型
      */
-    private String type;
+    private int type;
 }

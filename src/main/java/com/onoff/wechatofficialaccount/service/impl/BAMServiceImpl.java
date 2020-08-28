@@ -2,18 +2,22 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.Menus.ImageMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.Menus;
 import com.onoff.wechatofficialaccount.entity.Menus.OneMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.TwoMenus;
 import com.onoff.wechatofficialaccount.entity.User;
+import com.onoff.wechatofficialaccount.entity.UserScene;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import com.onoff.wechatofficialaccount.mapper.BAMMapper;
 import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
+import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +42,31 @@ public class BAMServiceImpl implements BAMService {
     WeChatService service;
 
     @Override
+    public List<SignIn> querySignIn(String unionId, String time) {
+        return mapper.querySignIn(unionId,time);
+    }
+
+    @Override
+    public int countSignIn(String time) {
+        return mapper.countSignIn(time);
+    }
+
+    @Override
+    public int putSignIn(String unionId) {
+        return mapper.putSignIn(unionId);
+    }
+
+    @Override
+    public int saveSignIn(SignIn signIn) {
+        return mapper.saveSignIn(signIn);
+    }
+
+    @Override
+    public int queryPeriod() {
+        return mapper.queryPeriod();
+    }
+
+    @Override
     public Admin getAdmin(String account, String passWord) {
         return mapper.getAdmin(account, passWord);
     }
@@ -60,7 +89,15 @@ public class BAMServiceImpl implements BAMService {
         jsonObject = JSONObject.parseObject(data);
         //取出unionid
         String unionid = jsonObject.getString("unionid");
+        //获取邀请人信息
+        User user=mapper.getUser(state);
+        //查询邀请人关系
         Relation relation = mapper.getRelation(unionid);
+        if(user!=null){
+            if(user.getUnionId().equals(unionid)){
+                return 4;
+            }
+        }
         if (relation == null) {
             //建立用户关系
             return mapper.saveRelation(state, unionid, System.currentTimeMillis() + "");
@@ -155,38 +192,91 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public int saveIntegral(String openId, int record, int source, String time) {
-        return mapper.saveIntegral(openId, record, source, time);
+    public int saveIntegral(Integral integral) {
+        return mapper.saveIntegral(integral);
     }
 
     @Override
     public int getIntegralUser(String openId) {
-        return mapper.getIntegralUser(openId);
+        return mapper.getIntegralUser(openId, CommonUtils.period);
     }
 
     @Override
-    public int getIntegral(String openId) {
-        return mapper.getIntegral(openId);
+    public int getIntegral(String openId,int period) {
+        return mapper.getIntegral(openId,period);
     }
 
     @Override
-    public List<Leaderboard> getLeaderboard() {
-        return mapper.getLeaderboard();
+    public List<Leaderboard> getLeaderboard(int period) {
+        return mapper.getLeaderboard(period);
     }
 
     @Override
-    public Leaderboard getRanking(String openId) {
-        return mapper.getRanking(openId);
+    public List<Integral> getIntegralrecord(String openId) {
+        return mapper.getIntegralrecord(openId);
     }
 
     @Override
-    public String generateHttp(String openId, String url, String scope) {
+    public Leaderboard getRanking(String openId,int period) {
+        return mapper.getRanking(openId,period);
+    }
+
+    @Override
+    public int queryRelationidPeriod(String relationId) {
+        return mapper.queryRelationidPeriod(relationId);
+    }
+
+    @Override
+    public List<UserScene> queryScene() {
+        List<UserScene> userScenes=mapper.queryScene();
+        for (UserScene u:userScenes){
+            if (u.getScene()==null){
+                u.setScene("无数据用户");
+                continue;
+            }
+            switch (u.getScene()){
+                case "ADD_SCENE_SEARCH":
+                    u.setScene("公众号搜索");
+                    break;
+                case "ADD_SCENE_ACCOUNT_MIGRATION":
+                    u.setScene("公众号迁移");
+                    break;
+                case "ADD_SCENE_PROFILE_CARD":
+                    u.setScene("名片分享");
+                    break;
+                case "ADD_SCENE_QR_CODE":
+                    u.setScene("扫描二维码");
+                    break;
+                case "ADD_SCENE_PROFILE_LINK":
+                    u.setScene("图文页内名称点击");
+                    break;
+                case "ADD_SCENE_PROFILE_ITEM":
+                    u.setScene("图文页右上角菜单");
+                    break;
+                case "ADD_SCENE_PAID":
+                    u.setScene("支付后关注");
+                    break;
+                case "ADD_SCENE_WECHAT_ADVERTISEMENT":
+                    u.setScene("微信广告");
+                    break;
+                case "ADD_SCENE_OTHERS":
+                    u.setScene("其他");
+                    break;
+                default:
+                    break;
+            }
+        }
+        return userScenes;
+    }
+
+    @Override
+    public String generateHttp(String state, String url, String scope) {
         String http = Https.codeHttps;
         //这里写服务号APPID
         http = http.replace("APPID", WeChatUtils.FWAPPID)
                 .replace("REDIRECT_URI", url)
                 .replace("SCOPE", scope)
-                .replace("STATE", openId);
+                .replace("STATE", state);
         return http;
     }
 

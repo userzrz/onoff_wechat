@@ -2,6 +2,7 @@ package com.onoff.wechatofficialaccount.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.*;
+import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
@@ -69,8 +70,10 @@ public class WeChatServiceImpl implements WeChatService {
         String groupId = jsonObject.getString("groupid");
         String tagid_list = jsonObject.getString("tagid_list");
         String remark = jsonObject.getString("remark");
+        String subscribe = jsonObject.getString("subscribe");
+       log.info(result);
         return new User(openId, nickName, sex, headImgUrl, city, province, country, language, subScribeTime,
-                subscribeScene, unionId, groupId, tagid_list, remark);
+                subscribeScene, unionId, groupId, tagid_list, remark,subscribe);
     }
 
     @Override
@@ -116,13 +119,13 @@ public class WeChatServiceImpl implements WeChatService {
                 switch (eventType) {
                     //关注事件
                     case "subscribe":
-                        msg = new TextMessage(requestMap, "ON靠态度，OFF从来不，\n《ONOFF变装》一个会上瘾的时尚媒体 。");
+                        msg = new TextMessage(requestMap, "新潮灵感，开关即现\nYOUR FASHION RADAR");
                         subscribeEvent(openId);
                         break;
                     //取关事件
                     case "unsubscribe":
                         String r = unsubscribeEvent(openId);
-                        if(r!=null&&r.equals("success")){
+                        if (r != null && r.equals("success")) {
                             return "success";
                         }
                         break;
@@ -267,11 +270,12 @@ public class WeChatServiceImpl implements WeChatService {
         switch (content) {
             case "海报":
                 //新增用户信息
-                User user=verifyUser(openId);
-                //新增用户积分
-                initializeIntegral(openId);
+                User user = verifyUser(openId);
+                if(user==null){
+                    return null;
+                }
                 //查询所有海报素材
-                List<Material> list = bamService.getMaterial(2+"");
+                List<Material> list = bamService.getMaterial("2");
                 int size = list.size();
                 //随机数：Math.random()*(n+1-m)+m
                 int ran2 = (int) (Math.random() * (size));
@@ -295,22 +299,20 @@ public class WeChatServiceImpl implements WeChatService {
                         "}";
                 log.info(data);
                 kfSendMsg(data);
-                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://"+Https.domain+"/list.html?code=" + openId + "'>积分排行榜</a>");
+                msg = new TextMessage(requestMap, "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>");
                 break;
             case "排行榜":
-                //新增用户信息
-                verifyUser(openId);
                 //新增用户积分
                 initializeIntegral(openId);
-                msg = new TextMessage(requestMap, CommonUtils.intro + "<a href='http://"+Https.domain+"/list.html?code=" + openId + "'>积分排行榜</a>");
+                msg = new TextMessage(requestMap, "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>");
                 break;
             default:
                 String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-                String result=checkCellphone(content);
-                if(result.equals("success")){
+                String result = checkCellphone(content);
+                if (result.equals("success")) {
                     return null;
-                }else{
-                    msg = new TextMessage(requestMap,result);
+                } else {
+                    msg = new TextMessage(requestMap, result);
                 }
                 break;
         }
@@ -326,6 +328,9 @@ public class WeChatServiceImpl implements WeChatService {
      */
     private String subscribeEvent(String openId) {
         User user = this.verifyUser(openId);
+        if(user==null){
+            return null;
+        }
         String data = "{\n" +
                 "    \"touser\":\"" + user.getOpenId() + "\",\n" +
                 "    \"msgtype\":\"text\",\n" +
@@ -354,41 +359,13 @@ public class WeChatServiceImpl implements WeChatService {
                 return "success";
             }
             //给邀请人添加积分
-            result = bamService.saveIntegral(relation.getOpenId(), 10, 1, System.currentTimeMillis() + "");
+            initializeIntegral(relation.getOpenId());
+            Integral integral = new Integral(relation.getOpenId(), 10, 1, System.currentTimeMillis() + "", CommonUtils.period, user.getOpenId());
+            result = bamService.saveIntegral(integral);
             if (result == 1) {
                 log.info("给邀请人加分成功");
             } else {
                 log.error("给邀请人加分失败邀请人openId:" + relation.getOpenId() + "应加10分" + "邀请好友关注成功");
-            }
-            //查询邀请人积分
-            int sum = bamService.getIntegral(relation.getOpenId());
-            data = "{\n" +
-                    "    \"touser\":\"" + relation.getOpenId() + "\",\n" +
-                    "    \"msgtype\":\"text\",\n" +
-                    "    \"text\":\n" +
-                    "    {\n" +
-                    "         \"content\":\"你的好友 " + user.getNickName() + " 刚刚为你助力\n积分+10\n当前积分:" + sum + "\"\n" +
-                    "    }\n" +
-                    "}";
-            errcode = kfSendMsg(data);
-            if (errcode == 0) {
-                log.info("客服成功发送消息给邀请人" + data);
-            } else {
-                log.error("客服发送消息给邀请人失败！邀请人openId：" + relation.getOpenId() + "发送数据：" + data + errcode);
-            }
-            data = "{\n" +
-                    "    \"touser\":\"" + user.getOpenId() + "\",\n" +
-                    "    \"msgtype\":\"text\",\n" +
-                    "    \"text\":\n" +
-                    "    {\n" +
-                    "         \"content\":\"你已帮助好友助力\"\n" +
-                    "    }\n" +
-                    "}";
-            errcode = kfSendMsg(data);
-            if (errcode == 0) {
-                log.info("----------------->客服成功发送消息给助力好友" + data);
-            } else {
-                log.error("---------------->客服发送消息给给助力好友失败！助力好友openId：" + user.getOpenId() + "发送数据：" + data + errcode);
             }
         }
         return null;
@@ -416,23 +393,20 @@ public class WeChatServiceImpl implements WeChatService {
         } else if (relation != null && relation.getRType() == 1) {
             //邀请人openId
             String inviterOpenId = relation.getOpenId();
-            //给邀请人减分
-            bamService.saveIntegral(inviterOpenId, -10, 2, System.currentTimeMillis() + "");
-            //查询邀请人当前积分
-            int sum = bamService.getIntegral(inviterOpenId);
-            data = "{\n" +
-                    "    \"touser\":\"" + inviterOpenId + "\",\n" +
-                    "    \"msgtype\":\"text\",\n" +
-                    "    \"text\":\n" +
-                    "    {\n" +
-                    "         \"content\":\"你的好友 " + user.getNickName() + " 取消了关注\n积分-10\n当前积分:" + sum + "\"\n" +
-                    "    }\n" +
-                    "}";
-            int errcode = kfSendMsg(data);
-            if (errcode == 0) {
-                log.info("----------------->通过邀请进入的用户首次取消关注，客服成功发送消息给邀请人" + data);
-            } else {
-                log.error("---------------->通过邀请进入的用户取消了关注，客服发送消息给邀请人失败！" + data + errcode);
+            //查询用户助力时的期数
+            int period = bamService.queryRelationidPeriod(user.getOpenId());
+            Integral integral;
+            if (period == CommonUtils.period) {
+                //给邀请人减分
+                integral = new Integral(inviterOpenId, -10, 2, System.currentTimeMillis() + "", CommonUtils.period, user.getOpenId());
+                bamService.saveIntegral(integral);
+            } else if(period>0&&period != CommonUtils.period){
+                //给邀请人减分
+                integral = new Integral(inviterOpenId, -10, 2, System.currentTimeMillis() + "", period, user.getOpenId());
+                bamService.saveIntegral(integral);
+            }else {
+                log.info("------------->用户隔月减分");
+                return null;
             }
             //修改关系类型为2
             bamService.putRelation(2, relation.getUnionId(), System.currentTimeMillis() + "");
@@ -490,14 +464,26 @@ public class WeChatServiceImpl implements WeChatService {
     }
 
     @Override
-    public User verifyUser(String openId) {
+    public User verifyUser(String openId) throws NullPointerException{
         User user = bamService.getUser(openId);
+        if(user!=null&&user.getSubscribe()!=null&&user.getSubscribe().equals("0")){
+            wechatMapper.delUser(user.getOpenId());
+            log.info("-------->发现一条空的用户数据并删除掉了");
+        }
+        if(user!=null&&user.getSubscribe()!=null&&!user.getSubscribe().equals("0")){
+            log.info("-------->该用户数据存在了不需要保存！");
+        }
         if (user == null) {
             //调用微信接口获取用户信息，每日可调用50万次
             user = getUserInfo(openId);
-            int res = wechatMapper.addUser(user);
-            if (res > 0) {
-                log.info("--------->新增用户信息成功");
+            if (user!=null){
+                int res = wechatMapper.addUser(user);
+                if (res > 0) {
+                    log.info("--------->新增用户信息成功");
+                }
+            }else {
+                log.error("------------>出现异常：调用微信接口获取用户数据为空");
+                return null;
             }
         }
         return user;
@@ -506,10 +492,11 @@ public class WeChatServiceImpl implements WeChatService {
     @Override
     public void initializeIntegral(String openId) {
         //查询用户是否存在积分表
-        int count=bamService.getIntegralUser(openId);
-        if(count<=0){
+        int count = bamService.getIntegralUser(openId);
+        if (count <= 0) {
             //初始化用户积分
-            bamService.saveIntegral(openId, 0, 0, System.currentTimeMillis() + "");
+            Integral integral = new Integral(openId, 0, 0, System.currentTimeMillis() + "", CommonUtils.period);
+            bamService.saveIntegral(integral);
         }
     }
 

@@ -4,7 +4,9 @@ import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.User;
+import com.onoff.wechatofficialaccount.entity.UserScene;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 
 import java.util.List;
@@ -16,6 +18,40 @@ import java.util.List;
  * @VERSION 1.0
  **/
 public interface BAMService {
+
+    /**
+     * 查询用户是否打卡
+     * @param unionId
+     * @param time
+     * @return
+     */
+    List<SignIn> querySignIn( String unionId,String time);
+
+    /**
+     * 返回指定二维码打卡的总数
+     * @param time
+     * @return
+     */
+    int countSignIn(String time);
+
+    /**
+     * 清除用户打卡记录
+     * @param unionId
+     * @return
+     */
+    int putSignIn(String unionId);
+
+    /**
+     * 保存打卡信息
+     * @param signIn
+     * @return
+     */
+    int saveSignIn(SignIn signIn);
+    /**
+     * 查询最新期
+     * @return
+     */
+    int queryPeriod();
 
     /**
      * 查询管理员
@@ -64,10 +100,10 @@ public interface BAMService {
     /**
      * 拼接用户请求
      *
-     * @param openId
+     * @param state
      * @return
      */
-    String generateHttp(String openId,String url,String scope);
+    String generateHttp(String state,String url,String scope);
 
     /**
      * 设置菜单
@@ -99,11 +135,9 @@ public interface BAMService {
 
     /**
      * 新增用户积分
-     * @param openId
-     * @param record
      * @return
      */
-    int saveIntegral(String openId,int record,int source,String time);
+    int saveIntegral(Integral Integral);
 
     /**
      * 查询用户是否存在积分表中
@@ -117,19 +151,39 @@ public interface BAMService {
      *
      * @return
      */
-    int getIntegral(String openId);
+    int getIntegral(String openId,int period);
 
     /**
      * 获取积分排行榜
      * @return
      */
-    List<Leaderboard> getLeaderboard();
+    List<Leaderboard> getLeaderboard(int period);
+
+    /**
+     * 获取指定用户的积分记录
+     * @param openId
+     * @return
+     */
+    List<Integral> getIntegralrecord(String openId);
 
     /**
      * 查询指定用户的名次
      * @param openId
      * @return
      */
-    Leaderboard getRanking(String openId);
+    Leaderboard getRanking(String openId,int period);
+
+    /**
+     * 查询用户助力时的期数
+     * @param relationId
+     * @return
+     */
+    int queryRelationidPeriod(String relationId);
+
+    /**
+     * 统计用户来源
+     * @return
+     */
+    List<UserScene> queryScene();
 
 }

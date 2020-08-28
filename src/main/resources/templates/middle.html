@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta charset="utf-8">
@@ -26,8 +26,8 @@
     </style>
 </head>
 <body>
-<img src="../static/images/qrcode_for_gh_fe06a64d9303_258.jpg" alt="Paris" style="width:90%">
+<img th:src="@{../static/images/qrcode_for_gh_fe06a64d9303_258.jpg}" src="../static/images/qrcode_for_gh_fe06a64d9303_258.jpg" alt="Paris" style="width:90%">
 <h6 class="hh">长按识别二维码，关注公众号即可帮助好友助力！！</h6>
-<p class="hh">本页页面由 ONOFF变装 官方提供</p>
+<p class="hh">本页面由 ONOFF变装 官方提供</p>
 </body>
 </html>

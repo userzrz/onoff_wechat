@@ -6,6 +6,7 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -14,6 +15,10 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * @Description TODO
  * @Author ZHENG
@@ -23,9 +28,14 @@ import java.util.Hashtable;
 public class CommonUtils {
     //后台管理员信息
     public final static String ADMIN_SESSION = "adminSession";
-    //海报活动介绍内容
-    public static String intro = "";
+    public final static String mongodb_week = "weekleaderboard";
+    public final static String mongodb_month = "monthleaderboard";
+    //活动期数
+    public static int period;
 
+    public static void setPeriod(int period) {
+        CommonUtils.period = period;
+    }
 
 
     /**
@@ -36,7 +46,7 @@ public class CommonUtils {
      * @throws Exception
      */
     public static BufferedImage createImage(String content) {
-        Hashtable<EncodeHintType,Object> hints = new Hashtable<EncodeHintType,Object>();
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
         hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         hints.put(EncodeHintType.MARGIN, 0);
@@ -71,6 +81,95 @@ public class CommonUtils {
         return image;
     }
 
+    /**
+     * 设置名次并返回本人名次
+     *
+     * @param array
+     * @param openId
+     * @return
+     */
+    public static Leaderboard setRanking(List<Leaderboard> array, String openId) {
+        Leaderboard Myleaderboard = null;
+        for (int i = 0; i <=array.size() - 1; i++) {
+            Leaderboard leader1 = array.get(i);
+            leader1.setRanking(i+1);
+            if(leader1.getOpenId().equals(openId)){
+                Myleaderboard = leader1;
+            }
+            leader1.setOpenId("");
+            array.set(i, leader1);
+        }
+        return Myleaderboard;
+    }
+
+    /**
+     * 设置名次
+     *
+     * @param array
+     * @return
+     */
+    public static void setRanking(List<Leaderboard> array) {
+        Leaderboard Myleaderboard = null;
+        for (int i = 0; i <=array.size() - 1; i++) {
+            Leaderboard leader1 = array.get(i);
+            leader1.setRanking(i+1);
+            array.set(i, leader1);
+        }
+    }
+
+    /**
+     * 排序(两个第一名没有第二名直接显示第三名)
+     *
+     * @param array
+     * @param openId
+     * @return
+     */
+    public static Leaderboard sort(List<Leaderboard> array, String openId) {
+        Leaderboard Myleaderboard = null;
+        if (array.size() == 1) {
+            Leaderboard l = array.get(0);
+            l.setRanking(1);
+            array.set(0, l);
+        }
+        for (int i = 0; i < array.size() - 1; i++) {
+            Leaderboard leader1 = array.get(i);
+            Leaderboard leader2 = array.get(i + 1);
+            if (i == 0) {
+                leader1.setRanking(1);
+            }
+            if (leader1.getRecord() == leader2.getRecord()) {
+                leader2.setRanking(leader1.getRanking());
+            } else {
+                leader2.setRanking((i + 1) + 1);
+            }
+            array.set(i, leader1);
+            array.set(i + 1, leader2);
+            if (leader1.getOpenId().equals(openId)) {
+                Myleaderboard = leader1;
+            }
+            if (leader2.getOpenId().equals(openId)) {
+                Myleaderboard = leader2;
+            }
+        }
+        return Myleaderboard;
+    }
+
+    public static void sortArray(List<Leaderboard> array) {
+        for (int i = 0; i < array.size() - 1; i++) {
+            Leaderboard leader1 = array.get(i);
+            Leaderboard leader2 = array.get(i + 1);
+            if (i == 0) {
+                leader1.setRanking(1);
+            }
+            if (leader1.getRecord() == leader2.getRecord()) {
+                leader2.setRanking(leader1.getRanking());
+            } else {
+                leader2.setRanking((i + 1) + 1);
+            }
+            array.set(i, leader1);
+            array.set(i + 1, leader2);
+        }
+    }
 
     /**
      * 拼图
@@ -101,7 +200,7 @@ public class CommonUtils {
             int pHeight = height / 5;
             g.drawImage(headImg, pWidth / 2, height - (pWidth + pWidth / 2), pWidth, pWidth, null);
             g.drawImage(qr, width - (pWidthQR + pWidth / 2), height - (pWidthQR + pWidth / 2), pWidthQR, pWidthQR, null);
-            Font font = new Font("宋体", Font.PLAIN, 30);
+            Font font = new Font("微软雅黑", Font.PLAIN, 30);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
             g.drawString(nickname, pWidth / 2, height - (pWidth + pWidth / 2 + pWidth / 4));
@@ -113,6 +212,22 @@ public class CommonUtils {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * 判断字符串是否为int
+     *
+     * @param str
+     * @return
+     */
+    public static boolean isNumeric(String str) {
+        Pattern pattern = Pattern.compile("[0-9]*");
+        Matcher isNum = pattern.matcher(str);
+        if (!isNum.matches()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -152,5 +267,69 @@ public class CommonUtils {
             e.printStackTrace();
         }
     }
+
+    //            //查询邀请人总积分
+//            int sum = bamService.getIntegral(relation.getOpenId(),0);
+//            //查询邀请人本周积分
+//            int periodSum = bamService.getIntegral(relation.getOpenId(),CommonUtils.period);
+//            data = "{\n" +
+//                    "    \"touser\":\"" + relation.getOpenId() + "\",\n" +
+//                    "    \"msgtype\":\"text\",\n" +
+//                    "    \"text\":\n" +
+//                    "    {\n" +
+//                    "         \"content\":\"你的好友 " + user.getNickName() + " 刚刚为你助力\n积分+10\n本周积分:" + periodSum + "季度积分:"+sum+"\"\n" +
+//                    "    }\n" +
+//                    "}";
+//            errcode = kfSendMsg(data);
+//            if (errcode == 0) {
+//                log.info("客服成功发送消息给邀请人" + data);
+//            } else {
+//                log.error("客服发送消息给邀请人失败！邀请人openId：" + relation.getOpenId() + "发送数据：" + data + errcode);
+//            }
+//            data = "{\n" +
+//                    "    \"touser\":\"" + user.getOpenId() + "\",\n" +
+//                    "    \"msgtype\":\"text\",\n" +
+//                    "    \"text\":\n" +
+//                    "    {\n" +
+//                    "         \"content\":\"你已帮助好友助力\"\n" +
+//                    "    }\n" +
+//                    "}";
+//            errcode = kfSendMsg(data);
+//            if (errcode == 0) {
+//                log.info("----------------->客服成功发送消息给助力好友" + data);
+//            } else {
+//                log.error("---------------->客服发送消息给给助力好友失败！助力好友openId：" + user.getOpenId() + "发送数据：" + data + errcode);
+//            }
+
+    //            //查询邀请人总积分
+//            int sum = bamService.getIntegral(relation.getOpenId(),0);
+//            //查询邀请人本周积分
+//            int periodSum = bamService.getIntegral(relation.getOpenId(),CommonUtils.period);
+//            if (period == CommonUtils.period) {
+//                data = "{\n" +
+//                        "    \"touser\":\"" + inviterOpenId + "\",\n" +
+//                        "    \"msgtype\":\"text\",\n" +
+//                        "    \"text\":\n" +
+//                        "    {\n" +
+//                        "         \"content\":\"你的好友 " + user.getNickName() + " 取消了关注\n积分-10\n本周积分:" + periodSum + "季度积分:"+sum+ "\"\n" +
+//                        "    }\n" +
+//                        "}";
+//            }else {
+//                data = "{\n" +
+//                        "    \"touser\":\"" + inviterOpenId + "\",\n" +
+//                        "    \"msgtype\":\"text\",\n" +
+//                        "    \"text\":\n" +
+//                        "    {\n" +
+//                        "         \"content\":\"你的好友 " + user.getNickName() + " 取消了关注\n季度积分-10，本周积分不变\n本周积分:" + periodSum + "季度积分:"+sum+ "\"\n" +
+//                        "    }\n" +
+//                        "}";
+//            }
+//
+//            int errcode = kfSendMsg(data);
+//            if (errcode == 0) {
+//                log.info("----------------->通过邀请进入的用户首次取消关注，客服成功发送消息给邀请人" + data);
+//            } else {
+//                log.error("---------------->通过邀请进入的用户取消了关注，客服发送消息给邀请人失败！" + data + errcode);
+//            }
 
 }
