@@ -26,7 +26,7 @@ public class Integral implements Serializable {
     //积分记录值
     private int record;
 
-    //积分来源方式  0、初始化  1、关注    2、取关    3、打卡
+    //积分来源方式  0、初始化  1、关注    2、取关    3、打卡    4、QL
     private int source;
 
     //添加时间

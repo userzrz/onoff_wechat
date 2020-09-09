@@ -4,6 +4,7 @@ import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
+import com.onoff.wechatofficialaccount.entity.DO.SignInQR;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.UserScene;
@@ -27,7 +28,13 @@ public interface BAMMapper {
      * @param time 二维码保存时间
      * @return
      */
-    List<SignIn> querySignIn(@Param("param1") String unionId,@Param("param2")String time);
+    List<SignIn> querySignIn(@Param("param1") String unionId, @Param("param2")String time);
+
+    /**
+     * 查询所有未激活的数据
+     * @return
+     */
+    List<SignIn> querySignInNonactivated();
 
     /**
      * 返回指定二维码打卡的总数
@@ -38,11 +45,11 @@ public interface BAMMapper {
 
 
     /**
-     * 清除用户打卡记录
+     * 修改用户未激活记录
      * @param unionId
      * @return
      */
-    int putSignIn(String unionId);
+    int putSignIn(@Param("unionId")String unionId,@Param("time")Long time);
 
 
     /**
@@ -66,11 +73,18 @@ public interface BAMMapper {
     Admin getAdmin(@Param("a") String account, @Param("b") String passWord);
 
     /**
-     * 获取用户信息
+     * 获取用户信息 使用openId
      * @param openId
      * @return
      */
     User getUser(String openId);
+
+    /**
+     * 获取用户信息使用unionId
+     * @param unionId
+     * @return
+     */
+    User getUser_Unionid(String unionId);
 
     /**
      * 保存海报素材信息
@@ -179,4 +193,10 @@ public interface BAMMapper {
      */
     List<UserScene> queryScene();
 
+    /**
+     * 获取指定期的参与人数
+     * @param period 0表示统计所有期
+     * @return
+     */
+    int getParticipants(int period);
 }

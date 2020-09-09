@@ -344,7 +344,7 @@ public class WeChatServiceImpl implements WeChatService {
         Relation relation = bamService.getRelation(user.getUnionId());
         if (relation == null) {
             if (errcode == 0) {
-                log.info("客服成功发送消息给普通关注用户" + data);
+                log.info("客服成功发送欢迎消息给普通关注用户" + data);
             } else {
                 log.error("客服发送消息给普通关注用户失败！！" + data + errcode);
             }
@@ -491,7 +491,7 @@ public class WeChatServiceImpl implements WeChatService {
 
     @Override
     public void initializeIntegral(String openId) {
-        //查询用户是否存在积分表
+        //查询本周用户是否存在积分表
         int count = bamService.getIntegralUser(openId);
         if (count <= 0) {
             //初始化用户积分

@@ -6,6 +6,7 @@ import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
+import com.onoff.wechatofficialaccount.entity.DO.SignInQR;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.Menus.ImageMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.Menus;
@@ -52,8 +53,8 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public int putSignIn(String unionId) {
-        return mapper.putSignIn(unionId);
+    public int putSignIn(String unionId,Long time) {
+        return mapper.putSignIn(unionId,time);
     }
 
     @Override
@@ -89,15 +90,20 @@ public class BAMServiceImpl implements BAMService {
         jsonObject = JSONObject.parseObject(data);
         //取出unionid
         String unionid = jsonObject.getString("unionid");
+        if(unionid==null||unionid.length()<2){
+            return 4;
+        }
         //获取邀请人信息
         User user=mapper.getUser(state);
-        //查询邀请人关系
-        Relation relation = mapper.getRelation(unionid);
         if(user!=null){
             if(user.getUnionId().equals(unionid)){
                 return 4;
             }
+        }else {
+            return 4;
         }
+        //查询邀请人关系
+        Relation relation = mapper.getRelation(unionid);
         if (relation == null) {
             //建立用户关系
             return mapper.saveRelation(state, unionid, System.currentTimeMillis() + "");
@@ -267,6 +273,11 @@ public class BAMServiceImpl implements BAMService {
             }
         }
         return userScenes;
+    }
+
+    @Override
+    public int getParticipants(int period) {
+        return mapper.getParticipants(period);
     }
 
     @Override

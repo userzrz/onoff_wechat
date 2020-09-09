@@ -5,10 +5,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.xdevapi.JsonArray;
+import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.User;
+import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
 import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
+import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.WeChatUtils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,6 +35,8 @@ class WechatOfficialAccountApplicationTests {
 //    @Autowired
 //    BAMService bamService;
 
+    @Autowired
+    BAMDao dao;
 //    //&next_openid=
 //    @Test
 //    public void test() {
@@ -54,10 +59,13 @@ class WechatOfficialAccountApplicationTests {
 //        log.info("total"+total+";count"+count+";next_openid"+next_openid);
 //    }
 //
-//    @Test
-//    public void test2(){
-//        service.verifyUser("oQpgp0wvDsEPvKtGwmZsoWiI6hgI");
-//    }
+    @Test
+    public void test2(){
+        //获取数据
+        List<WeekLeaderboard> weeks = dao.queryLeaderboardAll("c");
+        CommonUtils.resetArray(weeks);
+
+    }
 //
 //    public static void recursion(File[] fs, List<String> list) // 递归得所有子目录的.mp3文件.
 //    {

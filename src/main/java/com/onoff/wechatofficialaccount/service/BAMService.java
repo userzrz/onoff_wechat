@@ -25,7 +25,7 @@ public interface BAMService {
      * @param time
      * @return
      */
-    List<SignIn> querySignIn( String unionId,String time);
+    List<SignIn> querySignIn(String unionId, String time);
 
     /**
      * 返回指定二维码打卡的总数
@@ -39,7 +39,7 @@ public interface BAMService {
      * @param unionId
      * @return
      */
-    int putSignIn(String unionId);
+    int putSignIn(String unionId,Long time);
 
     /**
      * 保存打卡信息
@@ -185,5 +185,12 @@ public interface BAMService {
      * @return
      */
     List<UserScene> queryScene();
+
+    /**
+     * 获取指定期的参与人数
+     * @param period 0表示统计所有期
+     * @return
+     */
+    int getParticipants(int period);
 
 }

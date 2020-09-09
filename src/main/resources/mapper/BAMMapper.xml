@@ -16,6 +16,10 @@
         </where>
     </select>
 
+    <select id="querySignInNonactivated" resultType="com.onoff.wechatofficialaccount.entity.DO.SignIn">
+        select * from sign_in where stype=0
+    </select>
+
     <select id="countSignIn" resultType="java.lang.Integer">
        SELECT COUNT(1) FROM `sign_in` WHERE  qr_time=#{time}
     </select>
@@ -26,11 +30,14 @@
             <if test="unionId!=null">
                 unionid=#{unionId}
             </if>
+            <if test="time!=null">
+               and qr_time=#{time}
+            </if>
             and stype=0
         </where>
     </update>
     <insert id="saveSignIn" parameterType="com.onoff.wechatofficialaccount.entity.DO.SignIn">
-        insert into sign_in(unionid,time,qr_time,period) values (#{unionid},#{time},#{qr_time},#{period})
+        insert into sign_in(unionid,time,qr_time,period,qr_type) values (#{unionid},#{time},#{qr_time},#{period},#{qr_type})
     </insert>
     <select id="queryPeriod" resultType="java.lang.Integer">
         SELECT IFNULL(MAX(period),1) FROM `integral`
@@ -47,6 +54,10 @@
     <select id="getUser" resultType="com.onoff.wechatofficialaccount.entity.User"
             resultMap="getUserMap">
        SELECT * FROM user  WHERE openid=#{openId}
+    </select>
+    <select id="getUser_Unionid" resultType="com.onoff.wechatofficialaccount.entity.User"
+            resultMap="getUserMap">
+         SELECT * FROM user  WHERE unionid=#{unionId}
     </select>
 
     <select id="getMaterial" resultType="com.onoff.wechatofficialaccount.entity.BAM.Material"
@@ -94,7 +105,7 @@
         </if>
     </insert>
     <select id="getIntegral" resultType="java.lang.Integer">
-        SELECT SUM(record) FROM integral WHERE openid=#{openId}
+        SELECT IFNULL(SUM(record),0) FROM integral WHERE openid=#{openId}
         <if test="period!=0">
             and period=#{period}
         </if>
@@ -129,7 +140,7 @@
         JOIN `user` u ON u.openid = i.openid
         ORDER BY
         record DESC,time
-        LIMIT 10;
+        LIMIT 100;
     </select>
 
     <select id="getRanking" resultType="com.onoff.wechatofficialaccount.entity.VO.Leaderboard"
@@ -177,6 +188,18 @@
       select COUNT(1) count,subscribe_scene scene FROM `user` GROUP BY subscribe_scene order by count desc
     </select>
 
+    <select id="getParticipants" resultType="java.lang.Integer">
+        SELECT
+	count( 1 )
+FROM
+	( SELECT openid FROM integral
+	<where>
+        <if test="period!=0">
+            period=#{period}
+        </if>
+    </where>
+	  GROUP BY openid )  tab
+    </select>
     <resultMap id="getUserMap" type="com.onoff.wechatofficialaccount.entity.User">
         <result property="openId" column="openid"/>
         <result property="nickName" column="nickname"/>

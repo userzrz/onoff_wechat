@@ -15,5 +15,6 @@ public class WeekData {
 
     private String id;
 
-    private String date;
+    private String period;
+
 }

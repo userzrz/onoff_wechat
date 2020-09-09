@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
-import com.onoff.wechatofficialaccount.entity.DO.SignIn;
-import com.onoff.wechatofficialaccount.entity.DO.WeekData;
-import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
+import com.onoff.wechatofficialaccount.entity.DO.*;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.UserScene;
@@ -31,10 +29,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Description TODO
@@ -126,81 +123,81 @@ public class BAMController {
     }
 
     /**
-     * 异步查询历史周榜
+     * 异步查询历史榜单
      *
-     * @param period
+     * @param id
      * @param model
+     * m：历史月 w:历史周 h:本月 k:本周
      * @return
      */
-    @GetMapping("/week/{period}")
-    public String week(@PathVariable("period") String period, Model model) {
-        String code = "";
-        if (period.length() > 10) {
-            code = period.substring(period.length() - 5);
+    @GetMapping("/past/{id}")
+    public String getWeekRanking(@PathVariable("id") String id, Model model) {
+        if (id==null||id.length()<5){
+            return "remind";
         }
-        if (code.equals("month")) {
-            String openId = period.substring(0, period.length() - 5);
-            //获取月榜
-            List<Leaderboard> array = service.getLeaderboard(0);
-            Leaderboard Myleaderboard = CommonUtils.setRanking(array, openId);
-            //添加数据
-            model.addAttribute("Leaderboard", array);
-            if (Myleaderboard == null) {
-                model.addAttribute("Relation", service.getRanking(openId, 0));
-            } else {
-                model.addAttribute("Relation", Myleaderboard);
-            }
-            model.addAttribute("historyPeriod", "本月");
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
-            return "list::sup-sup";
-        }
-        if(code.equals("weeks")) {
-            String id = period.substring(0, period.length() - 5);
-            //获取排行榜
-            WeekLeaderboard weekLeaderboard = bamDao.queryLeaderboard(id);
-            if (weekLeaderboard == null) {
+        String type = id.substring(id.length() - 1);
+        id=id.substring(0,id.length()-1);
+        WeekLeaderboard weekLeaderboard=new WeekLeaderboard();
+        if(type.equals("k")){
+            if (service.getUser(id) == null) {
                 return "remind";
             }
-            //添加数据
-            model.addAttribute("Leaderboard", weekLeaderboard.getLeaderboards());
-            model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
-            model.addAttribute("historyPeriod", "历史");
-            return "list::sup-sup";
-        }
-        if (period.equals("month")) {
-            //获取排行榜
-            WeekLeaderboard weekLeaderboard = bamDao.queryLeaderboardAll(CommonUtils.mongodb_month).get(0);
-            if (weekLeaderboard == null) {
-                return "remind";
-            }
-            //添加数据
-            model.addAttribute("Leaderboard", weekLeaderboard.getLeaderboards());
-            model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
-            model.addAttribute("historyPeriod", "上月");
-            return "list::sup-sup";
-        }
-
-        if (period.length() > 10) {
-            String openId = period;
-            if (service.getUser(openId) == null) {
-                return "remind";
-            }
-            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
             //获取排行榜
             List<Leaderboard> array = service.getLeaderboard(CommonUtils.period);
-            Leaderboard Myleaderboard = CommonUtils.setRanking(array, openId);
+            Leaderboard Myleaderboard = CommonUtils.setRanking(array, id);
             //添加数据
             model.addAttribute("Leaderboard", array);
             if (Myleaderboard == null) {
-                model.addAttribute("Relation", service.getRanking(openId, CommonUtils.period));
+                model.addAttribute("Relation", service.getRanking(id, CommonUtils.period));
             } else {
                 model.addAttribute("Relation", Myleaderboard);
             }
+            model.addAttribute("count", "本周总参与人数：" +service.getParticipants(CommonUtils.period));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+            return "list::sup-sup";
+        }else if (type.equals("h")){
+            if (service.getUser(id) == null) {
+                return "remind";
+            }
+            //获取月榜
+            List<Leaderboard> array = service.getLeaderboard(0);
+            Leaderboard Myleaderboard = CommonUtils.setRanking(array, id);
+            //添加数据
+            model.addAttribute("Leaderboard2", array);
+            if (Myleaderboard == null) {
+                model.addAttribute("Relation2", service.getRanking(id, 0));
+            } else {
+                model.addAttribute("Relation2", Myleaderboard);
+            }
+            model.addAttribute("count2", "本月总参与人数：" + service.getParticipants(0));
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+            return "list::sup-sup2";
+        }else if (type.equals("w")){
+             weekLeaderboard=bamDao.queryLeaderboard(id,CommonUtils.MONGODB_WEEK);
+             CommonUtils.delArrayOpenId(weekLeaderboard.getLeaderboards());
+            //添加数据
+            model.addAttribute("Leaderboard", weekLeaderboard.getLeaderboards());
+            model.addAttribute("count", "本周总参与人数：" + weekLeaderboard.getCount());
+            model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
+            return "list::sup-sup";
+        }else if (type.equals("m")){
+             weekLeaderboard=bamDao.queryLeaderboard(id,CommonUtils.MONGODB_MONTH);
+            CommonUtils.delArrayOpenId(weekLeaderboard.getLeaderboards());
+            //添加数据
+            model.addAttribute("Leaderboard2", weekLeaderboard.getLeaderboards());
+            model.addAttribute("count2", "本月总参与人数：" + weekLeaderboard.getCount());
+            model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
+            return "list::sup-sup2";
         }
-        return "list::sup-sup";
+        if (weekLeaderboard==null){
+            return "remind";
+        }
+
+        return "remind";
     }
+
 
     /**
      * list主页信息
@@ -219,73 +216,122 @@ public class BAMController {
         weChatService.initializeIntegral(openId);
         //查询用户打卡记录
         List<SignIn> signIns = service.querySignIn(user.getUnionId(), null);
-        if (signIns != null) {
+        if (signIns.size() != 0) {
+            Integral integral;
             //保存用户打卡记录
             for (SignIn signIn : signIns) {
-                //给用户添加打卡积分
-                Integral integral = new Integral(user.getOpenId(), 10, 3, signIn.getTime().toString(), signIn.getPeriod());
-                int result = service.saveIntegral(integral);
-                if (result == 1) {
-                    log.info("用户打卡加分成功");
-                } else {
-                    log.error("用户打卡加分成功失败用户openId:" + openId + "应加10分");
+                if (signIn.getQr_type() == 0) {
+                    long time = signIn.getTime() - signIn.getQr_time();
+                    if (time >= 86400000) {
+                        //给用户添加打卡积分
+                        integral = new Integral(user.getOpenId(), 9, 3, signIn.getTime().toString(), signIn.getPeriod());
+                    } else {
+                        integral = new Integral(user.getOpenId(), 18, 3, signIn.getTime().toString(), signIn.getPeriod());
+                    }
+                    int result = service.saveIntegral(integral);
+                    if (result == 1) {
+                        log.info("用户打卡加分成功" + signIn.toString());
+                    } else {
+                        log.error("用户打卡加分失败文章发表后" + time + "毫秒打卡" + signIn.toString());
+                    }
+                } else if (signIn.getQr_type() == 1) {
+                    PromotionQR promotionQR = bamDao.queryPromotionQR(signIn.getQr_time());
+                    integral = new Integral(user.getOpenId(), promotionQR.getIntegral(), 4, signIn.getTime().toString(), signIn.getPeriod());
+                    int result = service.saveIntegral(integral);
+                    if (result == 1) {
+                        log.info("用户扫描推广码加分成功" + signIn.toString());
+                    } else {
+                        log.error("用户扫描推广码加分失败" + signIn.toString());
+                    }
                 }
             }
             //修改用户打卡类型
-            service.putSignIn(user.getUnionId());
+            service.putSignIn(user.getUnionId(), null);
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
         //获取数据
-        List<WeekLeaderboard> weeks = bamDao.queryLeaderboardAll(CommonUtils.mongodb_week);
-        int month_siez = bamDao.queryLeaderboardAll(CommonUtils.mongodb_month).size();
-        if (weeks.size() > 0) {
-            List<WeekData> list = new ArrayList<>();
-            for (WeekLeaderboard w : weeks) {
-                WeekData weekData=new WeekData(w.getId(),w.getDate().substring(5,9));
-                list.add(weekData);
-            }
-            model.addAttribute("week", list);
+        List<WeekLeaderboard> weeks = bamDao.queryLeaderboardAll(CommonUtils.MONGODB_WEEK);
+        List<WeekLeaderboard> months = bamDao.queryLeaderboardAll(CommonUtils.MONGODB_MONTH);
+        if (weeks.size()==0){
+            model.addAttribute("week", null);
+        }else {
+            model.addAttribute("week", CommonUtils.resetArray(weeks));
         }
-        if (month_siez > 0) {
-            model.addAttribute("month", 1);
+        if (months.size()==0){
+            model.addAttribute("month", null);
+        }else {
+            model.addAttribute("month", CommonUtils.resetArray(months));
         }
         model.addAttribute("Period", CommonUtils.period);
         model.addAttribute("Code", openId);
         //查询奖品图
         model.addAttribute("Material", service.getMaterial("1"));
-        //获取排行榜
+        //获取本周排行榜
         List<Leaderboard> array = service.getLeaderboard(CommonUtils.period);
         Leaderboard Myleaderboard = CommonUtils.setRanking(array, openId);
         //添加数据
         model.addAttribute("Leaderboard", array);
+        //添加个人信息
         if (Myleaderboard == null) {
             model.addAttribute("Relation", service.getRanking(openId, CommonUtils.period));
         } else {
             model.addAttribute("Relation", Myleaderboard);
         }
+        //本月排行榜
+        List<Leaderboard> array2 = service.getLeaderboard(0);
+        Leaderboard Myleaderboard2 = CommonUtils.setRanking(array2, openId);
+        //添加数据
+        model.addAttribute("Leaderboard2", array2);
+        if (Myleaderboard2 == null) {
+            model.addAttribute("Relation2", service.getRanking(openId, 0));
+        } else {
+            model.addAttribute("Relation2", Myleaderboard2);
+        }
+        //获取本周参与人数
+        int count = service.getParticipants(CommonUtils.period);
+        //获取本月参与人数
+        int count2 = service.getParticipants(0);
+        model.addAttribute("count", "本周总参与人数：" + count);
+        model.addAttribute("count2", "本月总参与人数：" + count2);
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
         return "list";
     }
 
 
     /**
-     * 打卡
+     * 扫码获取积分
      *
      * @return
      */
     @GetMapping("/sign_in")
     public String signIn(@RequestParam(value = "state") String state, @RequestParam(value = "code") String code, Model model) {
-        String limit = state.substring(14);
-        String qr_time = state.substring(0, 13);
-
-        if (Long.parseLong(qr_time) < System.currentTimeMillis()) {
-            model.addAttribute("msg", "二维码已失效（超过设定时间）");
+        PromotionQR promotionQR = null;
+        SignInQR signInQR = bamDao.querySignInQR(state);
+        if (signInQR == null) {
+            promotionQR = bamDao.queryPromotionQR(state);
+        }
+        if (signInQR == null && promotionQR == null) {
+            model.addAttribute("msg", "无效二维码");
             return "sign_in";
         }
-        int count = service.countSignIn(qr_time);
-        if (count >= Integer.parseInt(limit)) {
-            model.addAttribute("msg", "二维码已失效（超出打卡上限人数)");
-            return "sign_in";
+        if (signInQR != null) {
+            if (signInQR.getOverTime() < System.currentTimeMillis()) {
+                model.addAttribute("msg", "二维码已失效（超过设定时间）");
+                return "sign_in";
+            }
+        }
+        if (promotionQR != null) {
+            //计算二维码过期时间
+            Long validTime = promotionQR.getDays2() * 86400000 + promotionQR.getTime();
+            if (validTime < System.currentTimeMillis()) {
+                model.addAttribute("msg", "二维码已失效（超过设定时间）");
+                return "sign_in";
+            }
+            int count = service.countSignIn(promotionQR.getTime() + "");
+            if (count >= promotionQR.getMaxUser()) {
+                model.addAttribute("msg", "扫码人数已达上限");
+                return "sign_in";
+            }
         }
         //第一步：使用code换取access_token及用户openId
         String url = Https.tokenHttps;
@@ -303,38 +349,78 @@ public class BAMController {
         jsonObject = JSONObject.parseObject(data);
         //取出unionid
         String unionid = jsonObject.getString("unionid");
-        //验证是否已打卡
-        List<SignIn> signIns = service.querySignIn(unionid, qr_time);
-        if (signIns.size() == 0) {
-            //存储打卡信息
-            SignIn signIn = new SignIn(unionid, System.currentTimeMillis(), Long.parseLong(qr_time), CommonUtils.period);
-            int result = service.saveSignIn(signIn);
-            if (result > 0) {
-                log.info("----->用户打卡成功");
-                model.addAttribute("msg", "打卡成功积分+10！");
+        if (signInQR != null) {
+            //验证是否已打卡
+            List<SignIn> signIns = service.querySignIn(unionid, signInQR.getReleaseTime() + "");
+            if (signIns.size() == 0) {
+                //存储打卡信息
+                SignIn signIn = new SignIn(unionid, System.currentTimeMillis(), signInQR.getReleaseTime(), CommonUtils.period, 0);
+                int result = service.saveSignIn(signIn);
+                if (result > 0) {
+                    long time = signIn.getTime() - signIn.getQr_time();
+                    if (time >= 86400000) {
+                        log.info("用户打卡成功积分+9；用户unionid=" + unionid);
+                        model.addAttribute("msg", "打卡成功积分+9\n提示：文章发表后24小时内打卡可得双倍积分哦！");
+                    } else {
+                        log.info("用户打卡成功积分+18；用户unionid=" + unionid);
+                        model.addAttribute("msg", "打卡成功积分+18");
+                    }
+                } else {
+                    log.error("用户打卡失败;用户unionid=" + unionid);
+                }
             } else {
-                log.error("---->用户打卡失败;用户unionid=" + unionid);
+                log.info("用户重复扫描打卡码");
+                model.addAttribute("msg", "重复打卡无效哦！");
+                return "sign_in";
             }
         } else {
-            log.info("----------用户重复打卡");
-            model.addAttribute("msg", "重复打卡无效哦！");
-            return "sign_in";
+            //验证是否已打卡
+            List<SignIn> signIns = service.querySignIn(unionid, promotionQR.getTime() + "");
+            if (signIns.size() == 0) {
+                //存储打卡信息
+                SignIn signIn = new SignIn(unionid, System.currentTimeMillis(), promotionQR.getTime(), CommonUtils.period, 1);
+                int result = service.saveSignIn(signIn);
+                if (result > 0) {
+                    log.info("用户扫描推广码成功积分+" + promotionQR.getIntegral() + "；用户unionid=" + unionid);
+                    model.addAttribute("msg", "恭喜您获得 " + promotionQR.getIntegral() + " 积分");
+                } else {
+                    log.error("用户推广sign_in表积分建立失败;用户unionid=" + unionid + "积分应加" + promotionQR.getIntegral());
+                }
+            } else {
+                log.info("用户重复扫描推广码");
+                model.addAttribute("msg", "重复扫码无效哦！");
+                return "sign_in";
+            }
         }
         return "sign_in";
     }
 
     /**
-     * 生成打卡二维码
+     * 生成文章打卡二维码
      *
-     * @param date
-     * @return
+     * @param releaseTime 发表文章时间
+     * @param days        发表文章后有效天数
+     * @param request
+     * @param response
+     * @throws IOException
      */
-    @GetMapping("/maker")
-    @ResponseBody
-    public void makerQR(@RequestParam("date") int date, @RequestParam("limit") int limit, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Long time = System.currentTimeMillis();
-        time = time + (date * 86400000);
-        String http = service.generateHttp(time + "_" + limit, Https.signIn_uri, "snsapi_userinfo");
+    @PostMapping("/maker")
+    public void makerQR(@RequestParam("releaseTime") String releaseTime, @RequestParam("days") Long days, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        releaseTime = releaseTime + " 21:30:00";
+        Date date = null;
+        try {
+            date = simpleDateFormat.parse(releaseTime);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        //发表文章时间
+        releaseTime = date.getTime() + "";
+        //二维码过期时间
+        Long overTime = Long.parseLong(releaseTime) + days * 86400000;
+        String id = MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8");
+        bamDao.saveSignInQR(new SignInQR(id, Long.parseLong(releaseTime), overTime));
+        String http = service.generateHttp(id, Https.signIn_uri, "snsapi_userinfo");
         //生成打卡二维码
         BufferedImage qrImg = CommonUtils.createImage(http);
         //BufferedImage 转 InputStream
@@ -361,7 +447,48 @@ public class BAMController {
         outputStream.flush();
     }
 
-    @GetMapping({"/", "/login.html"})
+    /**
+     * 生成推广二维码
+     *
+     * @param maxUser  上限人数
+     * @param integral 设置的积分
+     * @param days2    有效天数
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    @PostMapping("/promotion")
+    public void promotionQR(@RequestParam("maxUser") int maxUser, @RequestParam("integral") int integral, @RequestParam("days2") Long days2, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        String id = MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8");
+        bamDao.savePromotionQR(new PromotionQR(id, maxUser, integral, days2, System.currentTimeMillis()));
+        String http = service.generateHttp(id, Https.signIn_uri, "snsapi_userinfo");
+        //生成二维码
+        BufferedImage qrImg = CommonUtils.createImage(http);
+        //BufferedImage 转 InputStream
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageOutputStream imageOutput = ImageIO.createImageOutputStream(byteArrayOutputStream);
+        ImageIO.write(qrImg, "png", imageOutput);
+        InputStream inputStream = new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
+        long length = imageOutput.length();
+
+        //设置response
+        response.setContentType("application/x-msdownload");
+        response.setContentLength((int) length);
+        response.setHeader("Content-Disposition", "attachment;filename=" + new String("clock.png".getBytes("gbk"), "iso-8859-1"));
+
+        //输出流
+        byte[] bytes = new byte[1024];
+        OutputStream outputStream = response.getOutputStream();
+        long count = 0;
+        while (count < length) {
+            int len = inputStream.read(bytes, 0, 1024);
+            count += len;
+            outputStream.write(bytes, 0, len);
+        }
+        outputStream.flush();
+    }
+
+    @GetMapping({"/onoff_login.html"})
     public String login(HttpSession session) {
         if (session.getAttribute(CommonUtils.ADMIN_SESSION) != null) {
             return "redirect:/index.html";
@@ -407,7 +534,7 @@ public class BAMController {
             JSONObject jsonObject = JSONObject.parseObject(result);
             String err = result.substring(2, 9);
             if (err.equals("errcode")) {
-                model.addAttribute("msg", jsonObject.getString("errmsg"));
+                model.addAttribute("msg", result);
                 return "index";
             }
             Material material = JSONObject.parseObject(result, Material.class);

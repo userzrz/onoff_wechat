@@ -25,41 +25,64 @@
             th:src="@{../static/jquery/jquery-2.1.4.js}"></script>
     <script th:src="@{../static/js/record.js}" src="../static/js/record.js"></script>
 </head>
-<body>
-<div id="div_head">
-    <div class="but_head" id="but_head" >
-        <h5>本月</h5>
-        <div><span th:text="总积分 +${sum}"></span></div>
-    </div>
-    <a class="but_head" id="but_head2">
-        <h5>本周</h5>
-        <div><span th:text="总积分 +${weeksum}"></span></div>
-    </a>
+<body style="background-color: #ebdccf;background-size: 100%;">
+<div id="img_postion">
+    <img id="img_2" src="../static/images/record_trophy.png" th:src="@{../static/images/record_trophy.png}">
 </div>
-<div class="div_1 div_Record"  th:if="${Record!=null}" th:each="r,iterStat:${Record}">
-    <div class="div_11">
-        <span class="span_1" th:if="${r.getSource()==1}">邀请新用户</span>
-        <span class="span_1" th:if="${r.getSource()==2}">好友取消关注</span>
-        <span class="span_1" th:if="${r.getSource()==3}">签到打卡</span>
+<div id="sup-top">
+    <div id="week_list">
+        <span>本周积分</span>
+    </div>
+    <div id="month_list">
+        <span>本月积分</span>
+    </div>
+</div>
+<div class="sup-sup">
+    <div>
+        <div class="div_week" th:if="${weekRecord!=null}" th:each="r,iterStat:${weekRecord}">
+            <div class="div_11">
+                <span th:if="${r.getSource()==1}">邀请新用户</span>
+                <span th:if="${r.getSource()==2}">好友取消关注</span>
+                <span th:if="${r.getSource()==3}">签到打卡</span>
+                <span th:if="${r.getSource()==4}">QL邀请</span>
+            </div>
+            <div>
+                <span class="span_time" th:text="${r.getTime()}"></span>
+                <br/>
+                <span class="span_record" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
+            </div>
+        </div>
+        <div class="div_month" th:if="${Record!=null}" th:each="r,iterStat:${Record}">
+            <div class="div_11">
+                <span th:if="${r.getSource()==1}">邀请新用户</span>
+                <span th:if="${r.getSource()==2}">好友取消关注</span>
+                <span th:if="${r.getSource()==3}">签到打卡</span>
+                <span th:if="${r.getSource()==4}">QL邀请</span>
+            </div>
+            <div>
+                <span class="span_time" th:text="${r.getTime()}"></span>
+                <br/>
+                <span class="span_record" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
+            </div>
+        </div>
     </div>
     <div>
-        <span id="span_time1" th:text="${r.getTime()}"></span>
-        <br/>
-        <span class="span_2" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
+        <span id="span_weeksum" th:text="总积分 +${weeksum}"></span>
+        <span id="span_sum" th:text="总积分 +${sum}"></span>
     </div>
 </div>
-<div class="div_1 div_weekRecord" th:if="${weekRecord!=null}" th:each="r,iterStat:${weekRecord}">
-    <div class="div_11">
-        <span class="span_1" th:if="${r.getSource()==1}">邀请新用户</span>
-        <span class="span_1" th:if="${r.getSource()==2}">好友取消关注</span>
-        <span class="span_1" th:if="${r.getSource()==3}">签到打卡</span>
+<div id="div_bottom">
+    <div>
+        <img src="../static/images/logo.png"
+             th:src="@{../static/images/logo.png}">
     </div>
     <div>
-        <span id="span_time2" th:text="${r.getTime()}"></span>
-        <br/>
-        <span class="span_2" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
+        <img src="../static/images/qr.jpg"
+             th:src="@{../static/images/qr.jpg}">
     </div>
 </div>
-<h5 id="h3_1"></h5>
+<div id="div_bot">
+    <span>*活动最终解释权归ONOFF变装所有</span>
+</div>
 </body>
 </html>

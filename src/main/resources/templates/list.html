@@ -24,10 +24,12 @@
             th:src="@{../static/jquery/jquery-2.1.4.js}"></script>
     <script th:src="@{../static/js/list.js}" src="../static/js/list.js"></script>
 </head>
-<body>
-<img id="img_1" src="../static/images/logo.png" th:src="@{../static/images/logo.png}">
+<body style="background-color: #ebdccf;background-size: 100%;">
+<div id="div_first">
+    <img id="img_1" src="../static/images/GIFT.png" th:src="@{../static/images/GIFT.png}">
+</div>
 <div class="sup-container">
-    <div id="carouselExampleCaptions" class="carousel slide" data-ride="carousel">
+    <div id="carouselExampleCaptions" class="carousel slide slideshow" data-ride="carousel">
         <div class="carousel-inner">
             <div class="active" th:class="carousel-item+${iterStat.count==1?' active' : ''}"
                  th:each="m,iterStat:${Material}">
@@ -44,75 +46,175 @@
             <span class="sr-only">Next</span>
         </a>
     </div>
+    <div id="img_postion">
+        <img id="img_2" src="../static/images/trophy.png" th:src="@{../static/images/trophy.png}">
+    </div>
+    <div id="span_issue"><span>周榜第01期：9月1日-9月8日</span></div>
     <div id="div_2">
-        <div class="btn-group div_21" >
-            <button id="but_history2" class="btn dropdown-toggle" data-toggle="dropdown">
-                切换月榜
-            </button>
-            <div class="dropdown-menu2">
-                <div>
-                    <button class="dropdown-item"
-                            th:text="本月"></button>
-                    <button class="dropdown-item" th:if="${month!=null}"
-                            th:text="上月"></button>
+        <button id="div_2_but_1" class="but_history btn dropdown-toggle" data-toggle="dropdown">
+            查询往期周榜<span class="span_icon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+        </button>
+        <button id="div_2_but_2" class="but_history btn dropdown-toggle" data-toggle="dropdown">
+            查询往期月榜<span class="span_icon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
+        </button>
+    </div>
+    <div id="div_2_brother">
+        <div id="div_2_brother_1">
+            <ul>
+                <li class="dropdown-item" th:id="${Code}" value="thisWeek" th:if="${week!=null}">本周</li>
+                <li th:if="${week==null}">暂无历史周榜</li>
+                <div th:if="${week!=null}" th:each="w,iterStat:${week}">
+                    <li class="dropdown-item" value="week" th:id="${w.getId()}" th:text="第+${w.getPeriod()}+期"></li>
                 </div>
-            </div>
+            </ul>
         </div>
-        <div class="btn-group div_21">
-            <button id="but_history" class="btn dropdown-toggle" data-toggle="dropdown">
-                切换周榜
-            </button>
-            <div class="dropdown-menu1" th:if="${Period!=null}">
-                <div>
-                    <button class="dropdown-item" th:value="${Period}"
-                       th:text="本周"></button>
-                    <div th:if="${week!=null}" th:each="w,iterStat:${week}">
-                        <button class="dropdown-item" th:id="${w.getId()}" th:text="${w.getDate()}"></button>
-                    </div>
+        <div id="div_2_brother_2">
+            <ul>
+                <li class="dropdown-item" th:id="${Code}" value="thisMonth" th:if="${month!=null}">本月</li>
+                <li th:if="${month==null}">暂无历史月榜</li>
+                <div th:if="${month!=null}" th:each="m,iterStat:${month}">
+                    <li class="dropdown-item" value="month" th:id="${m.getId()}" th:text="第+${m.getPeriod()}+期"></li>
                 </div>
-            </div>
+            </ul>
         </div>
-        <a class="btn"
-           id="a_1" th:title="${Code}" th:if="${Code!=null}" th:href="@{/record/{code}(code=${Code})}"
-           role="button">积分记录</a>
+    </div>
+    <div id="sup-top">
+        <div id="week_list">
+            <span>积分周榜</span>
+        </div>
+        <div id="month_list">
+            <span>积分月榜</span>
+        </div>
     </div>
     <div class="sup-sup">
-        <div id="sup-sup" th:fragment="sup-sup">
-            <ul id="tag">
-                <li class="" th:if="${historyPeriod==null}">本周排行榜</li>
-                <li class="" th:if="${historyPeriod!=null}" th:text="${historyPeriod+'排行榜'}"></li>
-            </ul>
-            <div id="box">
-                <div id="supporters" style="display: none;"></div>
-                <div id="paihang" style="display: block;" class="div_box">
-                    <div th:if="${Relation!=null}" style="border-bottom-style:solid;border-width:1px;border-color: #888888">
-                        <span th:text="${Relation!=null?Relation.getRanking():''}"></span>
-                        <img id="img_headImg"
-                             src="" th:src="${Relation!=null?Relation.getHeadImgUrl():''}">
-                        <div>
-                            <div><span class="span_name1" th:text="${Relation!=null?'我':''}"></span><span
-                                    class="span_name2" th:text="${Relation!=null?Relation.getRecord():''}"></span>
-                            </div>
-                        </div>
+        <div id="sup_sup_1" th:fragment="sup-sup">
+            <div class="paihang_daughter" th:if="${Relation!=null}"
+                 style="border-bottom-style:solid;border-width:1px;border-color: #888888">
+                <div>
+                    <span class="span_RANK">RANK</span>
+                    <div class="RANK_adjacent"><span th:text="${Relation!=null?Relation.getRanking():''}"></span>
                     </div>
-                    <div th:each="l,iterStat:${Leaderboard}">
+                </div>
+                <div>
+                    <img
+                            src="../static/images/001.png" th:src="${Relation!=null?Relation.getHeadImgUrl():''}">
+                    <div class="span_name"><span>我</span></div>
+                </div>
+                <div>
+                    <span class="span_RANK">SCORE</span>
+                    <div class="RANK_adjacent"><span th:text="${Relation!=null?Relation.getRecord():''}"></span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="display: block;" class="div_box">
+                    <div th:title="${l.getOpenId()!=''?'me':''}" class="div_list"
+                         th:each="l,iterStat:${Leaderboard}">
+                        <div th:if="${l.getRanking()==1}" th:title="${l.getRanking()}" class="div_crown">
+                            <img src="../static/images/crown.png" th:src="@{../static/images/crown.png}">
+                        </div>
                         <!--<span th:text="${iterStat.count}"></span>-->
-                        <span th:text="${l.getRanking()}">12345678</span>
-                        <img
-                                src="" th:src="${l.getHeadImgUrl()}">
+                        <span th:text="${l.getRanking()}">1</span>
+                        <img src="../static/images/001.png"
+                             th:src="${l.getHeadImgUrl()}">
                         <div>
                             <div>
                                 <span class="span_name1" th:text="${l.getNickName()}"></span>
-                                <span class="span_name2" th:text="${l.getRecord()}">123456789</span>
+                                <span class="span_name2" th:text="${l.getRecord()}"></span>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="top-warning"
-                     style="text-align: center; color: #FF6138; font-size: .7rem; margin: 0 !important;" th:text="${Date}">
+                <div class="top-warning">
+                    <span th:text="${count}"></span>
+                    <span th:text="${Date}"></span>
                 </div>
             </div>
         </div>
+        <div id="sup_sup_2" th:fragment="sup-sup2">
+            <div class="paihang_daughter" th:if="${Relation2!=null}"
+                 style="border-bottom-style:solid;border-width:1px;border-color: #888888">
+                <div>
+                    <span class="span_RANK">RANK</span>
+                    <div class="RANK_adjacent"><span th:text="${Relation2!=null?Relation2.getRanking():''}"></span>
+                    </div>
+                </div>
+                <div>
+                    <img
+                            src="../static/images/001.png" th:src="${Relation2!=null?Relation2.getHeadImgUrl():''}">
+                    <div class="span_name"><span>我</span></div>
+                </div>
+                <div>
+                    <span class="span_RANK">SCORE</span>
+                    <div class="RANK_adjacent"><span th:text="${Relation2!=null?Relation2.getRecord():''}"></span>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <div style="display: block;" class="div_box">
+                    <div th:title="${l2.getOpenId()!=''?'me':'#'}" class="div_list"
+                         th:each="l2,iterStat:${Leaderboard2}">
+                        <div th:if="${l2.getRanking()==1}" th:title="${l2.getRanking()}" class="div_crown">
+                            <img src="../static/images/crown.png" th:src="@{../static/images/crown.png}">
+                        </div>
+                        <span th:text="${l2.getRanking()}">1</span>
+                        <img class="div_list_img" src="../static/images/001.png"
+                             th:src="${l2.getHeadImgUrl()}">
+                        <div>
+                            <div>
+                                <span class="span_name1" th:text="${l2.getNickName()}"></span>
+                                <span class="span_name2" th:text="${l2.getRecord()}"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="top-warning">
+                    <span th:text="${count2}"></span>
+                    <span th:text="${Date}"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="div_but">
+        <div>
+            <button>
+                如何获取更多积分
+            </button>
+        </div>
+        <div>
+            <button >
+                积分规则
+            </button>
+            <a th:href="@{/record/{code}(code=${Code})}">
+                <button>
+                    我的积分
+                </button>
+            </a>
+            <button>
+                联系我们
+            </button>
+        </div>
+    </div>
+    <div id="div_bottom">
+        <div>
+            <img src="../static/images/logo.png"
+                 th:src="@{../static/images/logo.png}">
+        </div>
+        <div>
+            <img src="../static/images/qr.jpg"
+                 th:src="@{../static/images/qr.jpg}">
+        </div>
+    </div>
+    <div id="div_last">
+        <div></div>
+        <div><span>特别鸣谢</span></div>
+        <div></div>
+    </div>
+    <div id="div_img_last">
+        <img src="../static/images/bottom.png" th:src="@{../static/images/bottom.png}">
+    </div>
+    <div id="div_bot">
+        <span>*活动最终解释权归ONOFF变装所有</span>
     </div>
 </div>
 </body>

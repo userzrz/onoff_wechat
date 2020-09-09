@@ -44,26 +44,25 @@
         </div>
     </nav>
 </div>
-<div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
-    <table class="table">
-        <thead>
-        <tr>
-            <th scope="col">来源方式</th>
-            <th scope="col">人数</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="u,iterStat:${userScenes}">
-            <td th:text="${u.getScene()}"></td>
-            <td th:text="${u.getCount()}"></td>
-        </tr>
-    </table>
-</div>
+<!--<div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">-->
+    <!--<table class="table">-->
+        <!--<thead>-->
+        <!--<tr>-->
+            <!--<th scope="col">来源方式</th>-->
+            <!--<th scope="col">人数</th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+        <!--<tr th:each="u,iterStat:${userScenes}">-->
+            <!--<td th:text="${u.getScene()}"></td>-->
+            <!--<td th:text="${u.getCount()}"></td>-->
+        <!--</tr>-->
+    <!--</table>-->
+<!--</div>-->
 <div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
     <h2 class="mb-3">
         <p class="font-weight-bolder ml-3">素材管理</p>
     </h2>
-
     <form method="post" enctype="multipart/form-data" action="#" th:action="@{/upload}" class="input-group mb-3"
           style="width: 50%;margin-left: 16px;padding-bottom: 20px">
         <div class="input-group is-invalid" style="margin-bottom: 2rem">
@@ -99,33 +98,47 @@
         </div>
     </div>
 </div>
-<div style="border-bottom: 1px solid black;padding: 30px;margin: 30px">
-    <h2 class="mb-3">
-        <p class="font-weight-bolder ml-3">生成签到二维码</p>
-    </h2>
-
-    <form style="margin-left: 16px;margin-top: 10px" th:action="@{/maker}">
-        <div class="form-row align-items-center">
-                <span>设置有效时间:</span>
-            <br/>
-            <div class="col-auto my-1">
-                <select class="custom-select mr-sm-2" id="inlineFormCustomSelect" name="date">
-                    <option value="3">三天</option>
-                    <option value="4">四天</option>
-                    <option value="5">五天</option>
-                    <option value="6">六天</option>
-                </select>
+<div>
+    <div style="padding: 30px;margin: 30px;float: left;width: 40%">
+        <h2 class="mb-3">
+            <p class="font-weight-bolder ml-3">文章打卡二维码:</p>
+        </h2>
+        <form  method="post" style="margin-left: 16px;margin-top: 10px" action="#" th:action="@{/maker}">
+            <div class="form-group" style="width: 30%;">
+                <label>文章发表日期：格式（yyyy-MM-dd"）</label>
+                <input name="releaseTime" class="form-control" required="required">
             </div>
-                <span>设置打卡上限人数:</span>
-            <br/>
-            <div>
-                <input value="200"  name="limit" >
+            <div class="form-group" style="width: 30%;">
+                <label>文章发表后二维码有效天数：</label>
+                <input name="days" class="form-control" required="required">
             </div>
             <div class="col-auto my-1">
-                <button type="submit" id="submit_but" class="btn btn-primary">生成</button>
+                <button type="submit" onclick="return create()" class="btn btn-primary">生成</button>
             </div>
-        </div>
-    </form>
+        </form>
+    </div>
+    <div style="padding: 30px;margin: 30px;float: left;width: 40%">
+        <h2 class="mb-3">
+            <p class="font-weight-bolder ml-3">推广二维码:</p>
+        </h2>
+        <form  method="post" style="margin-left: 16px;margin-top: 10px" action="#" th:action="@{/promotion}">
+            <div class="form-group" style="width: 30%;">
+                <label>上限人数：</label>
+                <input name="maxUser" class="form-control" required="required">
+            </div>
+            <div class="form-group" style="width: 30%;">
+                <label>设置积分：</label>
+                <input name="integral" class="form-control" required="required">
+            </div>
+            <div class="form-group" style="width: 30%;">
+                <label>有效天数：</label>
+                <input name="days2" class="form-control" required="required">
+            </div>
+            <div class="col-auto my-1">
+                <button type="submit" onclick="return create2()" class="btn btn-primary">生成</button>
+            </div>
+        </form>
+    </div>
 </div>
 </body>
 </html>

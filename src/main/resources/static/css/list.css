@@ -1,3 +1,4 @@
+
 * {
     margin: 0px;
     padding: 0px;
@@ -7,10 +8,7 @@ html, body {
     width: 100%;
     height: auto;
     position: relative;
-    font-size: 1rem;
-    background-color: #efefef;
 }
-
 
 html {
     height: 100%;
@@ -18,210 +16,397 @@ html {
 }
 
 body {
-    /*background-image: url("../images/aaa1.png");*/
-    /*background-repeat: repeat;*/
-    /*background-size: 20%;*/
-    background-color: #efefef;
 }
 
+#div_first {
+    margin-bottom: 2rem;
+}
 
-#div_1 {
-    height: 2rem;
-    width: 80%;
-    margin: auto;
+.slideshow {
+    margin: 0rem 0.8rem;
+}
+
+#img_postion {
+    margin-top: 2rem;
+    text-align: center;
+}
+
+#img_1 {
+    width: 100%;
+}
+
+#img_2 {
+    width: 65%;
 }
 
 .div_box {
     overflow-y: auto;
-    height: 20rem;
+    height: 29rem;
+    width: 100%;
 }
 
 .top-warning {
-    background-color: #efefef;
-    font-size: 13px;
-    padding: 8px 8px;
-    line-height: 1.5;
-    border-radius: 6px;
-    color: #ff862d;
-    margin: 0 1.05rem .8rem !important;
-    border: 1px black solid;
+    font-size: 12px;
+    height: 2.6rem;
+    line-height: 1.1rem;
+    text-align: center;
+    color: #777777;
+    margin-top: 0.3rem;
+}
+.top-warning>span:first-child{
+    display: block;
+}
+
+.div_crown {
+    height: 0rem;
+}
+
+.div_crown > img {
+    margin-left: 1.6rem;
+    margin-top: -1rem;
+    width: 1.3rem;
+    height: 1.3rem;
 }
 
 .sup-container {
     position: relative;
-    padding-bottom: 100px;
+    margin: 0 auto;
 }
 
+#sup-top {
+    margin: 5.6rem 1.5rem 0rem 1.5rem;
+    height: 0.5rem;
+    text-align: center;
+    z-index: 9;
+}
 
+#sup-top > div:first-child {
+    height: 2.5rem;
+    width: 50%;
+    float: left;
+    font-weight: 700;
+    border-radius: 15px 15px 0px 0px;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+#sup-top > div:last-child {
+    height: 2.5rem;
+    width: 50%;
+    float: left;
+    font-weight: 700;
+    border-radius: 15px 15px 0px 0px;
+    background-color: rgba(000, 000, 000, 0.5);
+    color: #efefef;
+}
+
+#sup-top > div > span {
+    font-size: 15px;
+    line-height: 2.5rem;
+}
+
+/**/
 .sup-sup {
     min-height: 21.42rem;
-    background-color: #efefef;
-    margin: 1rem 1.5rem 1rem;
-    border-radius: 1.2rem;
-    padding-top: 1.05rem;
-    padding-bottom: .6rem;
-    border: 1px black solid;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 2rem 1.5rem 1rem;
+    border-radius: 0px 0px 20px 20px;
 }
 
-.sup-sup > h3 {
-    font-size: 1.05rem;
-    font-weight: bold;
-    color: #333;
+.paihang_daughter {
+    width: 100%;
+    height: 7.5rem;
+}
+
+.paihang_daughter > div {
+    width: 33%;
+    float: left;
+    height: 5rem;
+    line-height: 5.5rem;
+    text-align: center;
+}
+
+.paihang_daughter > div:nth-child(2) > img {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    margin-top: 1.3rem;
+}
+
+.span_RANK {
+    font-weight: 300;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+}
+
+.RANK_adjacent {
+    font-weight: 300;
+    font-size: 17px;
+    margin-top: -4.2rem;
+}
+
+.span_name {
+    font-weight: 500;
+    font-size: 17px;
+    margin-top: -1.8rem;
+    width: 100%;
 }
 
 .sup-sup > div {
     overflow: hidden;
-    margin: 1.05rem 1.05rem;
+    margin: 1.05rem 2.05rem;
 }
 
-#box > div:nth-child(2) > div {
+.div_list {
     overflow: hidden;
-    padding: 0.57rem 0px;
+    padding: 0rem 0px;
+    height: 2.9rem;
+    color: black;
+    line-height: 2.9rem;
+    font-size: 15px;
 }
 
-#box > div:nth-child(2) > div > img {
-    width: 2rem;
-    height: 2rem;
-    margin-right: 1.05rem;
+.div_list > img {
+    width: 2.4rem;
+    height: 2.4rem;
     float: left;
     border-radius: 50%;
     border: solid 1px #efefef;
+    margin-top: 0.25rem;
 }
 
-#box > div:nth-child(2) > div > span {
-    width: 1.357rem;
+.div_list > span {
+    width: 1rem;
     float: left;
     color: #333;
     display: inline-block;
-    line-height: 33px;
     text-align: center;
-    font-size: 1rem;
-    font-weight: 700;
-    margin-right: 1.285rem;
+    font-size: 17px;
+    margin-right: 1rem;
+    margin-left: 0.2rem;
 }
 
-#box > div:nth-child(2) > div > div {
+.div_list > div {
     float: right;
-    overflow: hidden;
     width: 100%;
-    margin-left: -6rem;
+    margin-left: -9rem;
 }
 
-#box > div:nth-child(2) > div > div > div {
+.div_list > div > div {
     margin-left: 6rem;
 }
 
 .span_name1 {
-    line-height: 1.5;
-    font-size: .9rem;
-    color: #666;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    margin-top: .45rem;
-    width: 6rem;
     float: left;
-    margin-right: -7.142rem;
+    width: 50%;
 }
 
 .span_name2 {
-    line-height: 1.5;
-    font-size: .9rem;
-    color: #666;
-    overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     display: inline-block;
-    margin-top: .45rem;
-    width: 5rem;
     float: right;
-    margin-right: -2rem;
-}
-
-
-ul {
-    list-style: none;
-    overflow: hidden;
-    border: solid 1px #333333;
-    margin-left: 1rem;
     margin-right: 1rem;
-    border-radius: 1rem;
 }
 
-#a_1 {
-    width: 6rem;
-    height: 2.4rem;
-    border-radius: 15px;
-    background-color: #efefef;
-    float: right;
-    border: 1px black solid;
-    margin-left: 0.2rem;
-}
-
-#tag li {
-    float: left;
-    width: 100%;
-    color: black;
-    padding: 0.3rem 0px;
+#span_issue {
+    margin-top: 0.3rem;
+    font-size: 12px;
     text-align: center;
-    line-height: 1.8;
-    font-size: 1rem;
+    margin-bottom: 2rem;
+    color: black;
 }
 
 #div_2 {
+    position: absolute;
     width: 100%;
-    height: 2.4rem;
-    margin: 1rem -1.5rem;
+    height: 2rem;
+    text-align: center;
+    z-index: 2;
+}
+
+#div_2 > button {
+    border: black 1px solid;
+    border-radius: 30px;
+    height: 2rem;
+    line-height: 1rem;
+    width: 8rem;
+    font-weight: 900;
+    font-size: 15px;
+    background-color: #ededed;
+    box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
+    margin: 0 0.5rem;
+
+}
+
+#div_2_brother {
+    width: 100%;
+    position: absolute;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 17px;
+}
+
+#div_2_brother ul li{
+    width: 80%;
+    height: 2.5rem;
+    line-height:2.5rem;
+    text-align: center;
+    list-style: none;
+    border-bottom: 1px black solid;
+    margin: 0 auto;
+    letter-spacing: 0px;
+    font-size: 15px;
+}
+#div_2_brother > div {
+    border: black 1px solid;
+    width: 8rem;
+    max-height: 7.5rem;
+    min-height: 2.5rem;
+    background-color: #ededed;
+    border-radius: 0px 0px 15px 15px;
+    display: none;
+    overflow-y: auto;
+    position: absolute;
+    top: 0;
+}
+#div_2_brother > div:first-child {
+    margin-left: -8.6rem;
+}
+#div_2_brother > div:last-child {
+    margin-left: 0.7rem;
+}
+#div_2_brother > div:first-child>ul{
+    margin-top: 1rem;
+
+}
+#div_2_brother > div:last-child>ul{
+    margin-top: 1rem;
 }
 
 .div_21 {
     float: right;
-    width:6.5rem;
+    width: 6.5rem;
     height: 2.4rem;
     background-color: #efefef;
     border-radius: 15px;
     border: 1px black solid;
-    margin-left: 0.2rem;
+    padding-top: 0.2rem;
 }
 
-#img_1 {
-    position: absolute;
-    left: 1rem;
-    top: 1rem;
-    z-index: 1;
-    width: 10%;
-}
+#div_but > div:first-child {
 
-.dropdown-menu1{
-    position: absolute;
-    top: 100%;
-    display: none;
-    float: left;
-    min-width: 6.5rem;
-    overflow-y: auto;
-    max-height: 6rem;
-    margin: 0px 0 0;
-    list-style: none;
-    background-color: #efefef;
-    border: 1px solid #888888;
-    border-radius: 6px;
     text-align: center;
 }
 
-.dropdown-menu2{
-    position: absolute;
-    top: 100%;
-    display: none;
-    float: left;
-    min-width: 6.5rem;
-    overflow-y: auto;
-    max-height: 6rem;
-    margin: 0px 0 0;
-    list-style: none;
-    background-color: #efefef;
-    border: 1px solid #888888;
-    border-radius: 6px;
+#div_but > div:first-child > button {
+    border: black 1px solid;
+    border-radius: 30px;
+    height: 2rem;
+    line-height: 1rem;
+    width: 100%;
+    font-weight: 800;
+    font-size: 15px;
+    background-color: #ededed;
+    box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
+    margin: 0.5rem 1rem 0rem 1rem;
+}
+
+#div_but > div:first-child  button {
+    border: black 1px solid;
+    border-radius: 30px;
+    height: 2rem;
+    line-height: 1rem;
+    width: 18.5rem;
+    font-weight: 900;
+    font-size: 15px;
+    background-color: #ededed;
+    box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
+}
+
+#div_but > div:last-child {
+    text-align: center;
+    margin-top: 1rem;
+}
+
+#div_but > div:last-child  button {
+    border: black 1px solid;
+    border-radius: 30px;
+    height: 2rem;
+    line-height: 1rem;
+    width: 5.5rem;
+    font-weight: 900;
+    font-size: 15px;
+    background-color: #ededed;
+    box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
+    margin: 0rem 0.3rem;
+}
+
+#div_bottom {
+    margin-top: 2.9rem;
     text-align: center;
 }
 
+#div_bottom > div {
+    text-align: center;
+    display: inline;
+    letter-spacing: 1.5rem;
+}
+
+#div_bottom > div > img {
+    width: 15%;
+}
+
+#div_bottom > div:last-child > img {
+    width: 18%;
+}
+
+#div_last {
+    margin-top: 2.5rem;
+    height: 2rem;
+}
+
+#div_last > div:nth-child(2) {
+    float: left;
+    width: 23.33333333333%;
+    text-align: center;
+}
+
+#div_last > div:first-child {
+    float: left;
+    border-bottom: #666666 1px solid;
+    width: 30.33333333333%;
+    height: 1rem;
+    line-height: .5rem;
+    margin-left: 8%;
+}
+
+#div_last > div:last-child {
+    float: right;
+    border-bottom: #666666 1px solid;
+    width: 30.33333333333%;
+    height: 1rem;
+    letter-spacing: 5px;
+    margin-right: 8%;
+}
+
+#div_img_last {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+#div_img_last > img {
+    width: 100%;
+}
+
+#div_bot {
+    height: 3rem;
+    text-align: center;
+    font-size: 12px;
+    color: #666666;
+    margin-top: 3rem;
+    letter-spacing: 1px;
+}

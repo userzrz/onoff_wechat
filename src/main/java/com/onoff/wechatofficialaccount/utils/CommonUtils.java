@@ -6,6 +6,8 @@ import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.onoff.wechatofficialaccount.entity.DO.WeekData;
+import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,6 +16,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,8 +32,10 @@ import java.util.regex.Pattern;
 public class CommonUtils {
     //后台管理员信息
     public final static String ADMIN_SESSION = "adminSession";
-    public final static String mongodb_week = "weekleaderboard";
-    public final static String mongodb_month = "monthleaderboard";
+    public final static String MONGODB_WEEK = "weekleaderboard";
+    public final static String MONGODB_MONTH = "monthleaderboard";
+    public final static String MONGODB_SIGINQR = "siginqr";
+    public final static String MONGODB_PROMOTIONQR = "promotionqr";
     //活动期数
     public static int period;
 
@@ -81,8 +87,28 @@ public class CommonUtils {
         return image;
     }
 
+    public static List<WeekData> resetArray(List<WeekLeaderboard> array) {
+        if (array==null){
+            return null;
+        }
+        List<WeekData> list = new ArrayList<>();
+        if (array.size() > 0) {
+            for (WeekLeaderboard w : array) {
+                WeekData weekData;
+                if (w.getPeriod() <= 9) {
+                    weekData = new WeekData(w.getId(), "0" + w.getPeriod());
+                } else {
+                    weekData = new WeekData(w.getId(), w.getPeriod() + "");
+                }
+                list.add(weekData);
+            }
+              Collections.reverse(list);
+        }
+        return list;
+    }
+
     /**
-     * 设置名次并返回本人名次
+     * 设置名次并返回本人名次同时清空除本人之外用户的openid
      *
      * @param array
      * @param openId
@@ -90,11 +116,13 @@ public class CommonUtils {
      */
     public static Leaderboard setRanking(List<Leaderboard> array, String openId) {
         Leaderboard Myleaderboard = null;
-        for (int i = 0; i <=array.size() - 1; i++) {
+        for (int i = 0; i <= array.size() - 1; i++) {
             Leaderboard leader1 = array.get(i);
-            leader1.setRanking(i+1);
-            if(leader1.getOpenId().equals(openId)){
+            leader1.setRanking(i + 1);
+            if (leader1.getOpenId().equals(openId)) {
                 Myleaderboard = leader1;
+                array.set(i, leader1);
+                continue;
             }
             leader1.setOpenId("");
             array.set(i, leader1);
@@ -110,9 +138,17 @@ public class CommonUtils {
      */
     public static void setRanking(List<Leaderboard> array) {
         Leaderboard Myleaderboard = null;
-        for (int i = 0; i <=array.size() - 1; i++) {
+        for (int i = 0; i <= array.size() - 1; i++) {
             Leaderboard leader1 = array.get(i);
-            leader1.setRanking(i+1);
+            leader1.setRanking(i + 1);
+            array.set(i, leader1);
+        }
+    }
+
+    public static void delArrayOpenId(List<Leaderboard> array){
+        for (int i = 0; i <= array.size() - 1; i++) {
+            Leaderboard leader1 = array.get(i);
+            leader1.setOpenId("");
             array.set(i, leader1);
         }
     }
@@ -194,16 +230,17 @@ public class CommonUtils {
             Graphics2D g = bufferedImage2.createGraphics();
             g.drawImage(bigImage, 0, 0, null);
             //等比宽度
-            int pWidth = width / 5;
-            int pWidthQR = width / 3;
-            //等比高度
-            int pHeight = height / 5;
-            g.drawImage(headImg, pWidth / 2, height - (pWidth + pWidth / 2), pWidth, pWidth, null);
-            g.drawImage(qr, width - (pWidthQR + pWidth / 2), height - (pWidthQR + pWidth / 2), pWidthQR, pWidthQR, null);
-            Font font = new Font("微软雅黑", Font.PLAIN, 30);
+            int pWidth = width / 6;
+            g.drawImage(headImg, width - (pWidth + pWidth / 5), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
+            g.drawImage(qr, width - (pWidth * 2 + (pWidth / 5) * 2), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
+            Font font = new Font("微软雅黑", Font.BOLD, 35);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
-            g.drawString(nickname, pWidth / 2, height - (pWidth + pWidth / 2 + pWidth / 4));
+            if (nickname != null && nickname.length() > 10) {
+                nickname = nickname.substring(0, 8);
+                nickname = nickname + "..";
+            }
+            g.drawString(nickname, width - (pWidth * 2 + (pWidth / 5) * 2), height - (pWidth * 3 + pWidth / 5));
             g.dispose();
             File outputfile = File.createTempFile("img", ".jpg");
             ImageIO.write(bufferedImage2, "jpg", outputfile);

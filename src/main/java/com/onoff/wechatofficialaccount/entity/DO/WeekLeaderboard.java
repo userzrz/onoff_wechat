@@ -22,7 +22,7 @@ public class WeekLeaderboard implements Serializable {
     private int period;
 
     /**
-     * 保存前二十名数据
+     * 保存列表数据
      */
     private List<Leaderboard> leaderboards;
 
@@ -31,5 +31,9 @@ public class WeekLeaderboard implements Serializable {
      */
     private String Date;
 
+    /**
+     * 总参与人数
+     */
+    private int count;
 
 }
