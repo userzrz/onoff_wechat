@@ -9,6 +9,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import com.onoff.wechatofficialaccount.entity.DO.WeekData;
 import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -16,9 +17,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Hashtable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,6 +30,7 @@ import java.util.regex.Pattern;
  * @Data 2020/6/10 19:15
  * @VERSION 1.0
  **/
+@Slf4j
 public class CommonUtils {
     //后台管理员信息
     public final static String ADMIN_SESSION = "adminSession";
@@ -36,6 +38,7 @@ public class CommonUtils {
     public final static String MONGODB_MONTH = "monthleaderboard";
     public final static String MONGODB_SIGINQR = "siginqr";
     public final static String MONGODB_PROMOTIONQR = "promotionqr";
+    public final static String MONGODB_CYCLE = "cycle";
     //活动期数
     public static int period;
 
@@ -43,6 +46,72 @@ public class CommonUtils {
         CommonUtils.period = period;
     }
 
+
+    /**
+     * 计算截止日期并返回周期字符串
+     *
+     * @param startDate 当前活动（周/月）起始日期
+     * @param type      0：周/1：月
+     * @return
+     */
+    public static String setCycle(String startDate, int type) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = formatter.parse(startDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        if (type == 0) {
+            time += 86400000 * (long) 6;
+        }
+        if (type == 1) {
+            time += 86400000 * (long) 27;
+        }
+        String endingDate = formatter.format(time);
+        String[] array = new String[]{startDate, endingDate};
+        String month;
+        String day;
+        String cycle = "";
+        for (int i = 0; i < array.length; i++) {
+            //截取月份
+            if (array[i].substring(5, 6).equals("0")) {
+                month = array[i].substring(6, 7);
+            } else {
+                month = array[i].substring(5, 7);
+            }
+            //截取日期
+            if (array[i].substring(8, 9).equals("0")) {
+                day = array[i].substring(9, 10);
+            } else {
+                day = array[i].substring(8, 10);
+            }
+            if (i == 0) {
+                cycle = month + "月" + day + "日-";
+            } else {
+                cycle += month + "月" + day + "日";
+            }
+        }
+        return cycle;
+    }
+
+    /**
+     * @param startDate 当前活动起始日期
+     * @return 下期起始时间
+     */
+    public static String setStartDate(String startDate) {
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = formatter.parse(startDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long time = date.getTime();
+        time += 86400000 * (long) 7;
+        return formatter.format(time);
+    }
 
     /**
      * 生成二维码
@@ -88,21 +157,17 @@ public class CommonUtils {
     }
 
     public static List<WeekData> resetArray(List<WeekLeaderboard> array) {
-        if (array==null){
+        if (array == null) {
             return null;
         }
         List<WeekData> list = new ArrayList<>();
         if (array.size() > 0) {
             for (WeekLeaderboard w : array) {
                 WeekData weekData;
-                if (w.getPeriod() <= 9) {
-                    weekData = new WeekData(w.getId(), "0" + w.getPeriod());
-                } else {
-                    weekData = new WeekData(w.getId(), w.getPeriod() + "");
-                }
+                weekData = new WeekData(w.getId(), w.getPeriod() + "");
                 list.add(weekData);
             }
-              Collections.reverse(list);
+            Collections.reverse(list);
         }
         return list;
     }
@@ -137,7 +202,6 @@ public class CommonUtils {
      * @return
      */
     public static void setRanking(List<Leaderboard> array) {
-        Leaderboard Myleaderboard = null;
         for (int i = 0; i <= array.size() - 1; i++) {
             Leaderboard leader1 = array.get(i);
             leader1.setRanking(i + 1);
@@ -145,7 +209,7 @@ public class CommonUtils {
         }
     }
 
-    public static void delArrayOpenId(List<Leaderboard> array){
+    public static void delArrayOpenId(List<Leaderboard> array) {
         for (int i = 0; i <= array.size() - 1; i++) {
             Leaderboard leader1 = array.get(i);
             leader1.setOpenId("");

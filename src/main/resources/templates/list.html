@@ -49,7 +49,10 @@
     <div id="img_postion">
         <img id="img_2" src="../static/images/trophy.png" th:src="@{../static/images/trophy.png}">
     </div>
-    <div id="span_issue"><span>周榜第01期：9月1日-9月8日</span></div>
+    <div id="span_issue">
+        <span th:if="${weekCycle!=null}" th:text="${weekCycle}"></span>
+        <span th:if="${monthCycle!=null}" th:text="${monthCycle}"></span>
+    </div>
     <div id="div_2">
         <button id="div_2_but_1" class="but_history btn dropdown-toggle" data-toggle="dropdown">
             查询往期周榜<span class="span_icon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
@@ -130,6 +133,7 @@
                     <span th:text="${Date}"></span>
                 </div>
             </div>
+            <span id="Cycle" style="display:none;"  th:text="${Cycle}"></span>
         </div>
         <div id="sup_sup_2" th:fragment="sup-sup2">
             <div class="paihang_daughter" th:if="${Relation2!=null}"
@@ -173,26 +177,33 @@
                     <span th:text="${Date}"></span>
                 </div>
             </div>
+            <span id="Cycle2" style="display:none;"  th:text="${Cycle}"></span>
         </div>
     </div>
     <div id="div_but">
         <div>
+            <a th:href="@{/explain.html}">
             <button>
                 如何获取更多积分
             </button>
+            </a>
         </div>
         <div>
+            <a th:href="@{/rule.html}">
             <button >
                 积分规则
             </button>
+            </a>
             <a th:href="@{/record/{code}(code=${Code})}">
                 <button>
                     我的积分
                 </button>
             </a>
+            <a th:href="@{/contact_us.html}">
             <button>
                 联系我们
             </button>
+            </a>
         </div>
     </div>
     <div id="div_bottom">

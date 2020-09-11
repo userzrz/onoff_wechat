@@ -19,7 +19,7 @@ public class WeekLeaderboard implements Serializable {
     /**
      * 期数
      */
-    private int period;
+    private String period;
 
     /**
      * 保存列表数据
@@ -35,5 +35,10 @@ public class WeekLeaderboard implements Serializable {
      * 总参与人数
      */
     private int count;
+
+    /**
+     * 活动周期说明
+     */
+    private String cycle;
 
 }

@@ -1,15 +1,25 @@
 $(document).ready(function () {
     $(".div_month").hide();
     $("#span_sum").hide();
+    //判断是否有积分
+    $(".sup-sup>div:first-child>span").css("display","none");
+    var value=$(".div_week>div:first-child>span").text();
+    if(value==null||value==''){
+        $(".sup-sup>div:first-child>span").css("display","inline-block");
+        $(".sup-sup>div:first-child>span").text("您在本周还没有积分噢！返回查看如何获取更多积分");
+    }
     $("#week_list").click(function () {
         $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
         $("#month_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
         $(".div_week").show();
+        $("#span_weeksum").show();
         $(".div_month").hide();
         $("#span_sum").hide();
-        $("#span_weeksum").show();
-        if(time2==null||time2==''){
-            $("#h3_1").html("您在本周还没有积分哦！快去邀请好友获取积分吧");
+        $(".sup-sup>div:first-child>span").css("display","none");
+        var value=$(".div_week>div:first-child>span").text();
+        if(value==null||value==''){
+            $(".sup-sup>div:first-child>span").css("display","inline-block");
+            $(".sup-sup>div:first-child>span").text("您在本周还没有积分噢！返回查看如何获取更多积分");
         }
     });
 
@@ -20,8 +30,11 @@ $(document).ready(function () {
         $(".div_week").hide();
         $("#span_sum").show();
         $("#span_weeksum").hide();
-        if(time1==null||time1==''){
-            $("#h3_1").html("您还没有积分 快去邀请好友获取积分吧");
+        $(".sup-sup>div:first-child>span").css("display","none");
+        var value=$(".div_month>div:first-child>span").text();
+        if(value==null||value==''){
+            $(".sup-sup>div:first-child>span").css("display","inline-block");
+            $(".sup-sup>div:first-child>span").text("您在本月还没有积分噢！返回查看如何获取更多积分");
         }
     });
 });

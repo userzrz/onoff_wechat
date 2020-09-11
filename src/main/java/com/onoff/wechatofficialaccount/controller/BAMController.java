@@ -90,7 +90,7 @@ public class BAMController {
         if (service.getUser(code) == null) {
             return "remind";
         }
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd  HH:mm");
         List<Integral> integrals = service.getIntegralrecord(code);
         List<Integral> weekIntegrals = new ArrayList<>();
         int sum = 0;
@@ -155,6 +155,9 @@ public class BAMController {
             model.addAttribute("count", "本周总参与人数：" +service.getParticipants(CommonUtils.period));
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+            //查询活动起始日期
+            Cycle cycle=bamDao.queryCycle();
+            model.addAttribute("Cycle","周榜第"+cycle.getWeekPeriod()+"期："+CommonUtils.setCycle(cycle.getWeekStartDate(),0));
             return "list::sup-sup";
         }else if (type.equals("h")){
             if (service.getUser(id) == null) {
@@ -173,6 +176,9 @@ public class BAMController {
             model.addAttribute("count2", "本月总参与人数：" + service.getParticipants(0));
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+            //查询活动起始日期
+            Cycle cycle=bamDao.queryCycle();
+            model.addAttribute("Cycle","月榜第"+cycle.getMonthPeriod()+"期："+CommonUtils.setCycle(cycle.getMonthStartDate(),1));
             return "list::sup-sup2";
         }else if (type.equals("w")){
              weekLeaderboard=bamDao.queryLeaderboard(id,CommonUtils.MONGODB_WEEK);
@@ -181,6 +187,7 @@ public class BAMController {
             model.addAttribute("Leaderboard", weekLeaderboard.getLeaderboards());
             model.addAttribute("count", "本周总参与人数：" + weekLeaderboard.getCount());
             model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
+            model.addAttribute("Cycle",weekLeaderboard.getCycle());
             return "list::sup-sup";
         }else if (type.equals("m")){
              weekLeaderboard=bamDao.queryLeaderboard(id,CommonUtils.MONGODB_MONTH);
@@ -189,12 +196,12 @@ public class BAMController {
             model.addAttribute("Leaderboard2", weekLeaderboard.getLeaderboards());
             model.addAttribute("count2", "本月总参与人数：" + weekLeaderboard.getCount());
             model.addAttribute("Date", "当前数据统计于：" + weekLeaderboard.getDate());
+            model.addAttribute("Cycle",weekLeaderboard.getCycle());
             return "list::sup-sup2";
         }
         if (weekLeaderboard==null){
             return "remind";
         }
-
         return "remind";
     }
 
@@ -208,6 +215,8 @@ public class BAMController {
      */
     @GetMapping("/list.html/{code}")
     public String Leaderboard(@PathVariable("code") String openId, Model model) {
+        List<WeekData> weekPeriods;
+        List<WeekData> monthPeriods;
         User user = service.getUser(openId);
         if (user == null) {
             return "remind";
@@ -254,12 +263,14 @@ public class BAMController {
         if (weeks.size()==0){
             model.addAttribute("week", null);
         }else {
-            model.addAttribute("week", CommonUtils.resetArray(weeks));
+            weekPeriods=CommonUtils.resetArray(weeks);
+            model.addAttribute("week", weekPeriods);
         }
         if (months.size()==0){
             model.addAttribute("month", null);
         }else {
-            model.addAttribute("month", CommonUtils.resetArray(months));
+            monthPeriods=CommonUtils.resetArray(months);
+            model.addAttribute("month", monthPeriods);
         }
         model.addAttribute("Period", CommonUtils.period);
         model.addAttribute("Code", openId);
@@ -294,6 +305,10 @@ public class BAMController {
         model.addAttribute("count2", "本月总参与人数：" + count2);
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         model.addAttribute("Date", "当前数据统计于：" + formatter.format(new Date()));
+        //查询活动起始日期
+        Cycle cycle=bamDao.queryCycle();
+        model.addAttribute("weekCycle","周榜第"+cycle.getWeekPeriod()+"期："+CommonUtils.setCycle(cycle.getWeekStartDate(),0));
+        model.addAttribute("monthCycle","月榜第"+cycle.getMonthPeriod()+"期："+CommonUtils.setCycle(cycle.getMonthStartDate(),1));
         return "list";
     }
 
@@ -360,7 +375,7 @@ public class BAMController {
                     long time = signIn.getTime() - signIn.getQr_time();
                     if (time >= 86400000) {
                         log.info("用户打卡成功积分+9；用户unionid=" + unionid);
-                        model.addAttribute("msg", "打卡成功积分+9\n提示：文章发表后24小时内打卡可得双倍积分哦！");
+                        model.addAttribute("msg", "打卡成功积分+9");
                     } else {
                         log.info("用户打卡成功积分+18；用户unionid=" + unionid);
                         model.addAttribute("msg", "打卡成功积分+18");
@@ -382,7 +397,7 @@ public class BAMController {
                 int result = service.saveSignIn(signIn);
                 if (result > 0) {
                     log.info("用户扫描推广码成功积分+" + promotionQR.getIntegral() + "；用户unionid=" + unionid);
-                    model.addAttribute("msg", "恭喜您获得 " + promotionQR.getIntegral() + " 积分");
+                    model.addAttribute("msg", "扫描推广码积分+"+ promotionQR.getIntegral());
                 } else {
                     log.error("用户推广sign_in表积分建立失败;用户unionid=" + unionid + "积分应加" + promotionQR.getIntegral());
                 }
@@ -594,5 +609,22 @@ public class BAMController {
             model.addAttribute("msg", "账号或密码错误");
             return "login";
         }
+    }
+
+
+    @GetMapping(value = "/rule.html")
+    public String  points(){
+        return "rule";
+    }
+
+    @GetMapping(value = "/explain.html")
+    public String  explain(){
+        log.info("--->");
+        return "explain";
+    }
+
+    @GetMapping(value = "/contact_us.html")
+    public String  contact_us(){
+        return "contact_us";
     }
 }

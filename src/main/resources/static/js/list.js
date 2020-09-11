@@ -1,4 +1,7 @@
 $(document).ready(function () {
+    //初始化隐藏其他活动周期
+    $("#span_issue>span").hide();
+    $("#span_issue>span:eq(0)").show();
     //设置第一名有个小皇冠
     var value = $(".div_crown").attr("title");
     if (value == 1) {
@@ -7,18 +10,25 @@ $(document).ready(function () {
     $("[title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
     //初始化隐藏月榜信息
     $("#sup_sup_2").hide();
+    //点击积分周榜
     $("#week_list").click(function () {
         $("#sup_sup_2").hide();
         $("#sup_sup_1").show();
         $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
         $("#month_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
+        //初始化隐藏其他活动周期
+        $("#span_issue>span").hide();
+        $("#span_issue>span:eq(0)").show();
     });
-
+    //点击积分月榜
     $("#month_list").click(function () {
         $("#sup_sup_1").hide();
         $("#sup_sup_2").show();
         $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
         $("#month_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
+        //初始化隐藏其他活动周期
+        $("#span_issue>span").hide();
+        $("#span_issue>span:eq(1)").show();
     });
 
     //取消下拉列表最后一个li的下边框
@@ -73,6 +83,8 @@ $(document).ready(function () {
                     if (value == 1) {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
+                    var Cycle=$("#Cycle").text();
+                    $("#span_issue>span:eq(0)").text(Cycle);
                 }
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
@@ -90,6 +102,8 @@ $(document).ready(function () {
                     if (value == 1) {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
+                    var Cycle=$("#Cycle").text();
+                    $("#span_issue>span:eq(1)").text(Cycle);
                 }
             });
             $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
@@ -108,6 +122,8 @@ $(document).ready(function () {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
                     $("#sup_sup_1 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
+                    var Cycle=$("#Cycle").text();
+                    $("#span_issue>span:eq(0)").text(Cycle);
                 }
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
@@ -126,6 +142,8 @@ $(document).ready(function () {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
                     $("#sup_sup_2 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
+                    var Cycle=$("#Cycle").text();
+                    $("#span_issue>span:eq(1)").text(Cycle);
                 }
             });
             $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});

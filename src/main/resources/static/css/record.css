@@ -1,7 +1,7 @@
 * {
-    margin: 0px;
-    padding: 0px;
-}
+     margin: 0px;
+     padding: 0px;
+ }
 
 html, body {
     width: 100%;
@@ -17,38 +17,53 @@ html {
     margin-top: 2rem;
     text-align: center;
 }
+
 #img_2 {
     width: 65%;
 }
+
 .sup-sup {
-    height: 40rem;
+    height: 35rem;
     background-color: rgba(255, 255, 255, 0.5);
     margin: 2rem 1.5rem 1rem;
     border-radius: 0px 0px 20px 20px;
 }
-.sup-sup>div:first-child {
-    height: 30rem;
+
+.sup-sup > div:first-child {
+    height: 27rem;
     overflow-y: auto;
 }
-.sup-sup>div:first-child>div {
-    height: 3.5rem;
-    border-bottom: 1px black solid;
+
+.sup-sup > div:first-child > div {
+    height: 3.7rem;
+    border-bottom: 1px #888888 solid;
     margin: 0 1.5rem;
 }
-.sup-sup>div:last-child {
-    height: 10rem;
-    width: 100%;
+
+.sup-sup > div:last-child {
+    height: 8rem;
     text-align: center;
-    line-height: 10rem;
-    font-size: 30px;
+    line-height: 8rem;
+    font-size: 28px;
     font-weight: 700;
 }
+
+.sup-sup > div:first-child > span {
+    margin: 12rem 1rem;
+    text-align: center;
+    color: #8f8f8f;
+    letter-spacing:2px;
+    font-size: 20px;
+    font-weight: 500;
+}
+
 #sup-top {
     margin: 2rem 1.5rem 0rem 1.5rem;
     height: 0.5rem;
     text-align: center;
     z-index: 9;
 }
+
 #sup-top > div:first-child {
     height: 2.5rem;
     width: 50%;
@@ -75,27 +90,28 @@ html {
 
 .div_11 {
     float: left;
-    margin: 1rem 0.9rem;
+    margin: .5rem 0.9rem;
 }
-.div_11>span {
+
+.div_11 > span:first-child {
     font-size: 1rem;
     font-weight: 500;
     color: black;
 }
+
 .span_time {
     float: right;
     font-size: 0.7rem;
     color: #666666;
-    margin: 0.3rem 0.9rem 0rem;
 }
 
 .span_record {
     float: right;
-    font-size: 1rem;
+    font-size: 1.1rem;
     color: black;
     font-weight: 500;
     font-family: sans-serif;
-    margin: -0.2rem 0.9rem 0rem;
+    margin: .4rem .9rem 0rem;
 }
 
 #div_bottom {
@@ -116,6 +132,7 @@ html {
 #div_bottom > div:last-child > img {
     width: 18%;
 }
+
 #div_bot {
     height: 3rem;
     text-align: center;

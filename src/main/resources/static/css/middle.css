@@ -1,0 +1,63 @@
+* {
+    margin: 0px;
+    padding: 0px;
+}
+
+html, body {
+    width: 100%;
+    height: auto;
+    position: relative;
+}
+
+html {
+    height: 100%;
+}
+
+body > div {
+    border: #333333 1px solid;
+    text-align: center;
+    border-radius: 15px;
+    width: 80%;
+    height: auto;
+    margin: 2rem auto;
+}
+
+body > div > div {
+    height: 20rem;
+    background-color: rgba(255, 255, 255, 0.5);
+    margin: 1.5rem auto;
+}
+
+body > div > div > img {
+    display: block;
+    margin: 0 auto;
+    width: 12rem;
+    border-radius: 15px;
+    z-index: 1;
+}
+
+body > div > div > div {
+    height: 2.7rem;
+}
+
+h5{
+    margin-top: 1rem;
+    line-height: 1.2rem;
+    letter-spacing: 1px;
+}
+
+#img_1 {
+    width: 7rem;
+}
+#img_2 {
+    width: 1.8rem;
+}
+p {
+    font-size: 10px;
+    color: #666666;
+    margin-bottom: .5rem;
+}
+
+body>div:first-child>span{
+    font-size: 10px;
+}

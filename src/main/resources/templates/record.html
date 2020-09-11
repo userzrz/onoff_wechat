@@ -45,10 +45,10 @@
                 <span th:if="${r.getSource()==2}">好友取消关注</span>
                 <span th:if="${r.getSource()==3}">签到打卡</span>
                 <span th:if="${r.getSource()==4}">QL邀请</span>
+                <br/>
+                <span class="span_time" th:text="${r.getTime()}"></span>
             </div>
             <div>
-                <span class="span_time" th:text="${r.getTime()}"></span>
-                <br/>
                 <span class="span_record" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
             </div>
         </div>
@@ -58,13 +58,14 @@
                 <span th:if="${r.getSource()==2}">好友取消关注</span>
                 <span th:if="${r.getSource()==3}">签到打卡</span>
                 <span th:if="${r.getSource()==4}">QL邀请</span>
+                <br/>
+                <span class="span_time" th:text="${r.getTime()}"></span>
             </div>
             <div>
-                <span class="span_time" th:text="${r.getTime()}"></span>
-                <br/>
                 <span class="span_record" th:text="${r.getRecord()>0?'+'+r.getRecord():r.getRecord()}"></span>
             </div>
         </div>
+        <span></span>
     </div>
     <div>
         <span id="span_weeksum" th:text="总积分 +${weeksum}"></span>

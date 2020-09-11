@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mysql.cj.xdevapi.JsonArray;
+import com.onoff.wechatofficialaccount.entity.DO.Cycle;
 import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.User;
@@ -21,7 +22,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 
@@ -37,7 +41,8 @@ class WechatOfficialAccountApplicationTests {
 
     @Autowired
     BAMDao dao;
-//    //&next_openid=
+
+    //    //&next_openid=
 //    @Test
 //    public void test() {
 //        String http = Https.userListHttps;
@@ -60,11 +65,7 @@ class WechatOfficialAccountApplicationTests {
 //    }
 //
     @Test
-    public void test2(){
-        //获取数据
-        List<WeekLeaderboard> weeks = dao.queryLeaderboardAll("c");
-        CommonUtils.resetArray(weeks);
-
+    public void test2() {
     }
 //
 //    public static void recursion(File[] fs, List<String> list) // 递归得所有子目录的.mp3文件.
