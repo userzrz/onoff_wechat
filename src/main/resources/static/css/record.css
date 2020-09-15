@@ -32,6 +32,7 @@ html {
 .sup-sup > div:first-child {
     height: 27rem;
     overflow-y: auto;
+    text-align: center;
 }
 
 .sup-sup > div:first-child > div {
@@ -39,22 +40,17 @@ html {
     border-bottom: 1px #888888 solid;
     margin: 0 1.5rem;
 }
-
+.sup-sup>div:first-child>img{
+    margin: 12rem 1rem;
+    text-align: center;
+    width: 80%;
+}
 .sup-sup > div:last-child {
     height: 8rem;
     text-align: center;
     line-height: 8rem;
-    font-size: 28px;
+    font-size: 24px;
     font-weight: 700;
-}
-
-.sup-sup > div:first-child > span {
-    margin: 12rem 1rem;
-    text-align: center;
-    color: #8f8f8f;
-    letter-spacing:2px;
-    font-size: 20px;
-    font-weight: 500;
 }
 
 #sup-top {
@@ -91,6 +87,7 @@ html {
 .div_11 {
     float: left;
     margin: .5rem 0.9rem;
+    text-align: left;
 }
 
 .div_11 > span:first-child {
@@ -126,11 +123,7 @@ html {
 }
 
 #div_bottom > div > img {
-    width: 15%;
-}
-
-#div_bottom > div:last-child > img {
-    width: 18%;
+    width: 40%;
 }
 
 #div_bot {

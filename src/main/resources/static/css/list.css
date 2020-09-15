@@ -47,14 +47,16 @@ body {
 
 .top-warning {
     font-size: 12px;
-    height: 2.6rem;
+    height: 3.5rem;
     line-height: 1.1rem;
     text-align: center;
     color: #777777;
     margin-top: 0.3rem;
 }
-.top-warning>span:first-child{
+
+.top-warning > span:first-child {
     display: block;
+    padding-top: .6rem;
 }
 
 .div_crown {
@@ -250,10 +252,10 @@ body {
     font-size: 17px;
 }
 
-#div_2_brother ul li{
+#div_2_brother ul li {
     width: 80%;
     height: 2.5rem;
-    line-height:2.5rem;
+    line-height: 2.5rem;
     text-align: center;
     list-style: none;
     border-bottom: 1px black solid;
@@ -261,29 +263,34 @@ body {
     letter-spacing: 0px;
     font-size: 15px;
 }
+
 #div_2_brother > div {
+    overflow-y: auto;
     border: black 1px solid;
     width: 8rem;
     max-height: 7.5rem;
     min-height: 2.5rem;
     background-color: #ededed;
     border-radius: 0px 0px 15px 15px;
-    display: none;
-    overflow-y: auto;
+    display: inline-block;
     position: absolute;
     top: 0;
 }
+
 #div_2_brother > div:first-child {
     margin-left: -8.6rem;
 }
+
 #div_2_brother > div:last-child {
     margin-left: 0.7rem;
 }
-#div_2_brother > div:first-child>ul{
+
+#div_2_brother > div:first-child > ul {
     margin-top: 1rem;
 
 }
-#div_2_brother > div:last-child>ul{
+
+#div_2_brother > div:last-child > ul {
     margin-top: 1rem;
 }
 
@@ -298,7 +305,6 @@ body {
 }
 
 #div_but > div:first-child {
-
     text-align: center;
 }
 
@@ -312,10 +318,10 @@ body {
     font-size: 15px;
     background-color: #ededed;
     box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
-    margin: 0.5rem 1rem 0rem 1rem;
+    margin: 1.5rem 1rem 0rem 1rem;
 }
 
-#div_but > div:first-child  button {
+#div_but > div:first-child button {
     border: black 1px solid;
     border-radius: 30px;
     height: 2rem;
@@ -332,7 +338,7 @@ body {
     margin-top: 1rem;
 }
 
-#div_but > div:last-child  button {
+#div_but > div:last-child button {
     border: black 1px solid;
     border-radius: 30px;
     height: 2rem;
@@ -344,7 +350,33 @@ body {
     box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
     margin: 0rem 0.3rem;
 }
-
+#div_but a{
+    text-decoration:none;
+}
+/*包含以下五种的链接*/
+#div_but a {
+    text-decoration: none;
+}
+/*正常的未被访问过的链接*/
+#div_but a:link {
+    text-decoration: none;
+}
+/*已经访问过的链接*/
+#div_but a:visited {
+    text-decoration: none;
+}
+/*鼠标划过(停留)的链接*/
+#div_but a:hover {
+    text-decoration: none;
+}
+/* 正在点击的链接，鼠标在元素上按下还没有松开*/
+#div_but a:active {
+    text-decoration: none;
+}
+/* 获得焦点的时候 鼠标松开时显示的颜色*/
+#div_but a:focus {
+    text-decoration: none;
+}
 #div_bottom {
     margin-top: 2.9rem;
     text-align: center;
@@ -357,11 +389,7 @@ body {
 }
 
 #div_bottom > div > img {
-    width: 15%;
-}
-
-#div_bottom > div:last-child > img {
-    width: 18%;
+    width: 40%;
 }
 
 #div_last {
@@ -407,6 +435,6 @@ body {
     text-align: center;
     font-size: 12px;
     color: #666666;
-    margin-top: 3rem;
+    margin-top: 2.5rem;
     letter-spacing: 1px;
 }

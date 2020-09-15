@@ -1,13 +1,95 @@
-html,body{
-    width:100%;
-    height:100%;
+* {
+    margin: 0px;
+    padding: 0px;
 }
 
-/*body{*/
-    /*background:url("../images/contact_us.png") no-repeat;*/
-    /*background-size: 100%;*/
-/*}*/
-img{
+html, body {
     width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+html {
+    height: 100%;
+}
+
+#div_1 {
+    width: 80%;
     height: auto;
+    margin: 4rem auto 0;
+    border: #333333 1px solid;
+    border-radius: 15px;
+}
+
+#div_1 > div:first-child {
+    width: 10rem;
+    height: 3rem;
+    background-color: #ebdccf;
+    text-align: center;
+    line-height: 3rem;
+    margin: -1.5rem auto;
+}
+
+#div_1 > div:first-child > span {
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: 5px;
+    text-align: center;
+}
+
+.main {
+    margin: 4rem 0 -2rem 2rem;
+}
+
+.main > span {
+    font-weight: 800;
+}
+
+#img1 {
+    display: block;
+    width: 65%;
+    margin: 1rem 0 0 .5rem;
+}
+
+#img2 {
+    display: block;
+    width: 90%;
+    margin: 1rem 0 4rem .5rem;
+}
+
+#div_1 > div:nth-child(4) {
+    text-align: center;
+    margin: 0 1rem 3rem 1rem;
+}
+
+#div_1 > div:nth-child(4) > div {
+    width: 30%;
+    text-align: center;
+    display: inline-block;
+    font-size: 12px;
+}
+
+#div_1 > div:nth-child(4) > div > img {
+    width: 65%;
+    display: block;
+    margin: 0 auto .5rem;
+}
+
+#div_1 > div:last-child {
+    margin: 1rem 1rem;
+    text-align: center;
+}
+
+#div_1 > div:last-child > div > img {
+    width: 60%;
+    margin: 3rem 1rem;
+}
+#div_1 > div:last-child > div:last-child > img {
+    width: 50%;
+    margin-bottom: 1.9rem;
+}
+
+#div_1 > div:last-child > div:first-child {
+    border-top: #333333 1px solid;
+    border-bottom: #333333 1px solid;
 }

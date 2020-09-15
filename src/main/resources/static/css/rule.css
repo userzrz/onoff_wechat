@@ -36,12 +36,12 @@ html {
 }
 #div_1>div:nth-child(2){
     width: 100%;
-    margin: 2rem auto;
+    margin: 3rem auto 2rem;
 }
 #div_1>div:nth-child(2)>span{
     margin-left: 1rem;
     text-align: left;
-    font-weight: 700;
+    font-weight: 800;
     font-size: 17px;
     line-height: 4rem;
 }
@@ -59,7 +59,7 @@ html {
     line-height: 1.1rem;
 }
 #div_bot {
-    height: 1rem;
+    height: 0rem;
     text-align: center;
     font-size: 12px;
     color: #666666;
@@ -79,9 +79,5 @@ html {
 }
 
 #div_bottom > div > img {
-    width: 15%;
-}
-
-#div_bottom > div:last-child > img {
-    width: 18%;
+    width: 40%;
 }

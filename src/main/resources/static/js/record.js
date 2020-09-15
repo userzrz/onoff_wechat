@@ -1,12 +1,12 @@
 $(document).ready(function () {
     $(".div_month").hide();
     $("#span_sum").hide();
+    $(".sup-sup>div:first-child>img").hide();
     //判断是否有积分
-    $(".sup-sup>div:first-child>span").css("display","none");
     var value=$(".div_week>div:first-child>span").text();
     if(value==null||value==''){
-        $(".sup-sup>div:first-child>span").css("display","inline-block");
-        $(".sup-sup>div:first-child>span").text("您在本周还没有积分噢！返回查看如何获取更多积分");
+        $(".sup-sup>div:first-child>img").attr("src","../static/images/remind.png");
+        $(".sup-sup>div:first-child>img").show();
     }
     $("#week_list").click(function () {
         $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
@@ -15,11 +15,11 @@ $(document).ready(function () {
         $("#span_weeksum").show();
         $(".div_month").hide();
         $("#span_sum").hide();
-        $(".sup-sup>div:first-child>span").css("display","none");
+        $(".sup-sup>div:first-child>img").hide();
         var value=$(".div_week>div:first-child>span").text();
         if(value==null||value==''){
-            $(".sup-sup>div:first-child>span").css("display","inline-block");
-            $(".sup-sup>div:first-child>span").text("您在本周还没有积分噢！返回查看如何获取更多积分");
+            $(".sup-sup>div:first-child>img").attr("src","../static/images/remind.png");
+            $(".sup-sup>div:first-child>img").show();
         }
     });
 
@@ -30,11 +30,11 @@ $(document).ready(function () {
         $(".div_week").hide();
         $("#span_sum").show();
         $("#span_weeksum").hide();
-        $(".sup-sup>div:first-child>span").css("display","none");
+        $(".sup-sup>div:first-child>img").hide();
         var value=$(".div_month>div:first-child>span").text();
         if(value==null||value==''){
-            $(".sup-sup>div:first-child>span").css("display","inline-block");
-            $(".sup-sup>div:first-child>span").text("您在本月还没有积分噢！返回查看如何获取更多积分");
+            $(".sup-sup>div:first-child>img").attr("src","../static/images/remind2.png");
+            $(".sup-sup>div:first-child>img").show();
         }
     });
 });

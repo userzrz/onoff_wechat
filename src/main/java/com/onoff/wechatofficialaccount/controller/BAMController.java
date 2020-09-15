@@ -617,12 +617,19 @@ public class BAMController {
         return "rule";
     }
 
+    /**
+     *如何获取更多积分
+     * @return
+     */
     @GetMapping(value = "/explain.html")
     public String  explain(){
-        log.info("--->");
         return "explain";
     }
 
+    /**
+     * 联系我们
+     * @return
+     */
     @GetMapping(value = "/contact_us.html")
     public String  contact_us(){
         return "contact_us";

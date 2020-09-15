@@ -4,21 +4,17 @@
     <meta charset="UTF-8">
     <title>ONOFF打卡</title>
     <meta name="referrer" content="never">
-    <meta http-equiv="x-dns-prefetch-control" content="on">
-    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
     <link rel="stylesheet" type="text/css" href="../static/css/sign.css" th:href="@{../static/css/sign.css}">
-    <script src="../static/jquery/jquery-2.1.4.js"
-            th:src="@{../static/jquery/jquery-2.1.4.js}"></script>
+    <script src="../static/jquery/jquery-3.2.1.min.js"
+            th:src="@{../static/jquery/jquery-3.2.1.min.js}"></script>
     <script th:src="@{../static/js/sign.js}" src="../static/js/sign.js"></script>
 </head>
 <body style="background-color: #ebdccf;background-size: 100%;">
 <div>
     <img id="img_1" th:src="@{../static/images/radar.png}" src="../static/images/radar.png" alt="Paris">
     <div>
-        <span class="hh" th:text="${msg}">打卡成功积分+18</span>
+        <span class="hh" th:text="${msg}"></span>
     </div>
     <img id="img_2" th:src="@{../static/images/logo.png}" src="../static/images/logo.png">
     <p>本页面由 ONOFF变装 官方提供</p>

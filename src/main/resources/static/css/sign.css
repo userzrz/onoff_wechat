@@ -35,6 +35,8 @@ body > div > div {
 body > div > div > span {
     font-size: 20px;
     font-weight: 600;
+    padding: .5rem;
+    text-align: justify;
 
 }
 

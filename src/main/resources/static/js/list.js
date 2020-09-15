@@ -37,16 +37,16 @@ $(document).ready(function () {
 
     var but1 = false;
     var but2 = false;
+    $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
     //点击历史周榜按钮
     $("#div_2_but_1").click(function () {
         if (but1) {
-            $("#div_2_brother_1").css({"display": "none"});
-            $("#div_2_brother_2").css({"display": "none"});
+            $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
             but1 = false;
             but2 = false;
         } else {
-            $("#div_2_brother_1").css({"display": "inline-block", "visibility": "visible"});
-            $("#div_2_brother_2").css({"display": "inline-block", "visibility": "hidden"});
+            $("#div_2_brother_2").css({"visibility": "hidden"});
+            $("#div_2_brother_1").css({"display":"inline-block","visibility": "visible"});
             but1 = true;
             but2 = false;
         }
@@ -54,18 +54,17 @@ $(document).ready(function () {
     //点击历史月榜按钮
     $("#div_2_but_2").click(function () {
         if (but2) {
-            $("#div_2_brother_1").css({"display": "none"});
-            $("#div_2_brother_2").css({"display": "none"});
+            $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
             but2 = false;
             but1 = false;
         } else {
-            $("#div_2_brother_2").css({"display": "inline-block", "visibility": "visible"});
-            $("#div_2_brother_1").css({"display": "inline-block", "visibility": "hidden"});
+            $("#div_2_brother_1").css({"visibility": "hidden"});
+            $("#div_2_brother_2").css({"display":"inline-block","visibility": "visible"});
             but2 = true;
             but1 = false;
         }
     });
-    //提交请求
+    //提交请求 w 历史周 m 历史月 k本周 h本月
     $(".dropdown-item").click(function () {
         var url;
         var id = $(this).attr("id");
@@ -85,6 +84,9 @@ $(document).ready(function () {
                     }
                     var Cycle=$("#Cycle").text();
                     $("#span_issue>span:eq(0)").text(Cycle);
+                    console.log(Cycle);
+                    $("#span_issue>span").hide();
+                    $("#span_issue>span:eq(0)").show();
                 }
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
@@ -102,8 +104,11 @@ $(document).ready(function () {
                     if (value == 1) {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
-                    var Cycle=$("#Cycle").text();
+                    var Cycle=$("#Cycle2").text();
                     $("#span_issue>span:eq(1)").text(Cycle);
+                    console.log(Cycle);
+                    $("#span_issue>span").hide();
+                    $("#span_issue>span:eq(1)").show();
                 }
             });
             $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
@@ -124,6 +129,9 @@ $(document).ready(function () {
                     $("#sup_sup_1 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
                     var Cycle=$("#Cycle").text();
                     $("#span_issue>span:eq(0)").text(Cycle);
+                    console.log(Cycle);
+                    $("#span_issue>span").hide();
+                    $("#span_issue>span:eq(0)").show();
                 }
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
@@ -142,15 +150,17 @@ $(document).ready(function () {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
                     $("#sup_sup_2 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
-                    var Cycle=$("#Cycle").text();
+                    var Cycle=$("#Cycle2").text();
+                    console.log(Cycle);
                     $("#span_issue>span:eq(1)").text(Cycle);
+                    $("#span_issue>span").hide();
+                    $("#span_issue>span:eq(1)").show();
                 }
             });
             $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
             $("#month_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
         }
-        $("#div_2_brother_1").css({"display": "none"});
-        $("#div_2_brother_2").css({"display": "none"});
+        $("#div_2_brother>div").css({"visibility": "hidden"});
         but1 = false;
         but2 = false;
     });

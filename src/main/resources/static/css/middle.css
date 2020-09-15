@@ -29,11 +29,9 @@ body > div > div {
 }
 
 body > div > div > img {
-    display: block;
-    margin: 0 auto;
+    margin: 2rem auto 0;
     width: 12rem;
     border-radius: 15px;
-    z-index: 1;
 }
 
 body > div > div > div {
