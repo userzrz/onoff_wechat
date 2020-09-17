@@ -4,19 +4,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.io.Serializable;
-
 /**
  * @Description TODO
  * @Author ZHENG
- * @Data 2020/9/1 16:37
+ * @Data 2020/9/16 17:44
  * @VERSION 1.0
  **/
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PromotionQR implements Serializable {
+public class Command {
 
+    //口令
     private String id;
 
     //上限人数
@@ -31,4 +30,6 @@ public class PromotionQR implements Serializable {
     //生成时间
     private Long time;
 
+    //备注信息
+    private String remark;
 }

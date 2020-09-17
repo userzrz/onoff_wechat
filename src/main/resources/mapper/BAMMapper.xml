@@ -3,6 +3,13 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onoff.wechatofficialaccount.mapper.BAMMapper">
 
+    <select id="countQL" resultType="java.lang.Integer">
+        SELECT count(1) from integral where relationid=#{remark}
+    </select>
+
+    <select id="verifyKL" resultType="java.lang.Integer">
+          SELECT count(1) from integral where openid=#{a} and relationid=#{b}
+    </select>
     <select id="querySignIn" resultType="com.onoff.wechatofficialaccount.entity.DO.SignIn">
         select * from sign_in
         <where>

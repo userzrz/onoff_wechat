@@ -59,7 +59,7 @@ html {
 
 #div_1 > div:nth-child(4) {
     text-align: center;
-    margin: 0 1rem 3rem 1rem;
+    margin: 5rem 1rem 1rem 1rem;
 }
 
 #div_1 > div:nth-child(4) > div {
@@ -67,6 +67,7 @@ html {
     text-align: center;
     display: inline-block;
     font-size: 12px;
+    vertical-align: top;
 }
 
 #div_1 > div:nth-child(4) > div > img {

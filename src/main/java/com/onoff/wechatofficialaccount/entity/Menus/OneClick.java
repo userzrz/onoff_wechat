@@ -11,8 +11,8 @@ import lombok.Data;
  **/
 @AllArgsConstructor
 @Data
-public class ImageMenus {
+public class OneClick {
     private String type;
     private String name;
-    private String media_id;
+    private String key;
 }

@@ -38,6 +38,8 @@ public class CommonUtils {
     public final static String MONGODB_MONTH = "monthleaderboard";
     public final static String MONGODB_SIGINQR = "siginqr";
     public final static String MONGODB_PROMOTIONQR = "promotionqr";
+    public final static String MONGODB_COMMAND = "command";
+    public final static String MONGODB_POSTER = "poster";
     public final static String MONGODB_CYCLE = "cycle";
     //活动期数
     public static int period;
@@ -46,6 +48,28 @@ public class CommonUtils {
         CommonUtils.period = period;
     }
 
+
+    /**
+     * 生成口令代码
+     * @return
+     */
+    public static String createCommand(){
+        String val = "";
+        Random random = new Random();
+        for (int i = 0; i < 15; i++) {
+            // 输出字母还是数字
+            String charOrNum = random.nextInt(2) % 2 == 0 ? "char" : "num";
+            // 字符串
+            if ("char".equalsIgnoreCase(charOrNum)) {
+                // 取得大写字母还是小写字母
+                int choice = random.nextInt(2) % 2 == 0 ? 65 : 97;
+                val += (char) (choice + random.nextInt(26));
+            } else if ("num".equalsIgnoreCase(charOrNum)) { // 数字
+                val += String.valueOf(random.nextInt(10));
+            }
+        }
+        return val;
+    }
 
     /**
      * 计算截止日期并返回周期字符串
@@ -121,29 +145,16 @@ public class CommonUtils {
      * @throws Exception
      */
     public static BufferedImage createImage(String content) {
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
+        Hashtable<EncodeHintType, Object> hints = new Hashtable<>();
+        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
         hints.put(EncodeHintType.MARGIN, 0);
         BitMatrix bitMatrix = null;
         try {
-            bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 256, 256,
+            bitMatrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, 400,400,
                     hints);
         } catch (WriterException e) {
             e.printStackTrace();
-        }
-        //去白边
-        int[] rec = bitMatrix.getEnclosingRectangle();
-        int resWidth = rec[2] + 1;
-        int resHeight = rec[3] + 1;
-        BitMatrix resMatrix = new BitMatrix(resWidth, resHeight);
-        resMatrix.clear();
-        for (int i = 0; i < resWidth; i++) {
-            for (int j = 0; j < resHeight; j++) {
-                if (bitMatrix.get(i + rec[0], j + rec[1])) {
-                    resMatrix.set(i, j);
-                }
-            }
         }
         int width = bitMatrix.getWidth();
         int height = bitMatrix.getHeight();
@@ -297,7 +308,7 @@ public class CommonUtils {
             int pWidth = width / 6;
             g.drawImage(headImg, width - (pWidth + pWidth / 5), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
             g.drawImage(qr, width - (pWidth * 2 + (pWidth / 5) * 2), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
-            Font font = new Font("微软雅黑", Font.BOLD, 35);
+            Font font = new Font("微软雅黑", Font.PLAIN, 35);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
             if (nickname != null && nickname.length() > 10) {

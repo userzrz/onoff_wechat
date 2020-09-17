@@ -52,9 +52,9 @@ function create(){
 }
 
 function create2(){
-    var maxUser = $("input[name='maxUser']").val();
-    var integral = $("input[name='integral']").val();
-    var days2 = $("input[name='days2']").val();
+    var maxUser = $("f input[name='maxUser']").val();
+    var integral = $("f input[name='integral']").val();
+    var days2 = $("f input[name='days2']").val();
     if(maxUser==''||maxUser==null||integral==''||integral==null){
         alert("提交数据不能为空");
         return false;

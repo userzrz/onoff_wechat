@@ -8,6 +8,7 @@ import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.UserScene;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,6 +19,18 @@ import java.util.List;
  * @VERSION 1.0
  **/
 public interface BAMService {
+
+    /**
+     * 查询QL邀请总数
+     * @return
+     */
+    int countQL(String remark);
+
+    /**
+     * 查询用户是否获取了口令积分
+     * @return
+     */
+    int verifyKL(@Param("a") String openId, @Param("b") String remark);
 
     /**
      * 查询用户是否打卡
@@ -117,6 +130,7 @@ public interface BAMService {
      * @return
      */
     Relation getRelation(String unionId);
+
 
     /**
      * 删除用户关联关系

@@ -5,7 +5,10 @@ import com.onoff.wechatofficialaccount.entity.*;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.DO.Command;
+import com.onoff.wechatofficialaccount.entity.DO.Poster;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
+import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
 import com.onoff.wechatofficialaccount.mapper.WechatMapper;
 import com.onoff.wechatofficialaccount.service.BAMService;
 import com.onoff.wechatofficialaccount.service.WeChatService;
@@ -50,11 +53,15 @@ public class WeChatServiceImpl implements WeChatService {
     @Autowired
     BAMService bamService;
 
+    @Autowired
+    BAMDao dao;
+
     @Override
     public User getUserInfo(String openid) {
         String url = Https.userInfoHttps;
         url = url.replace("ACCESS_TOKEN", getAccessToken()).replace("OPENID", openid);
         String result = WeChatUtils.get(url);
+        log.info(result);
         JSONObject jsonObject = JSONObject.parseObject(result);
         String openId = jsonObject.getString("openid");
         String nickName = jsonObject.getString("nickname");
@@ -71,9 +78,9 @@ public class WeChatServiceImpl implements WeChatService {
         String tagid_list = jsonObject.getString("tagid_list");
         String remark = jsonObject.getString("remark");
         String subscribe = jsonObject.getString("subscribe");
-       log.info(result);
+        log.info(result);
         return new User(openId, nickName, sex, headImgUrl, city, province, country, language, subScribeTime,
-                subscribeScene, unionId, groupId, tagid_list, remark,subscribe);
+                subscribeScene, unionId, groupId, tagid_list, remark, subscribe);
     }
 
     @Override
@@ -127,6 +134,32 @@ public class WeChatServiceImpl implements WeChatService {
                         String r = unsubscribeEvent(openId);
                         if (r != null && r.equals("success")) {
                             return "success";
+                        }
+                        break;
+                    case "CLICK":
+                        if (requestMap.get("EventKey").equals("WELFARE")) {
+                            String id=requestMap.get("FromUserName");
+                            Poster poster=dao.queryPoster(id);
+                            if (poster==null){
+                                dao.savePoster(new Poster(id,System.currentTimeMillis()));
+                            }else {
+                                if((poster.getTime()+10000)>System.currentTimeMillis()){
+                                    String data = "{\n" +
+                                            "    \"touser\":\"" + openId + "\",\n" +
+                                            "    \"msgtype\":\"text\",\n" +
+                                            "    \"text\":\n" +
+                                            "    {\n" +
+                                            "         \"content\":\"" + "消息已发出，请"+(10-(System.currentTimeMillis()-poster.getTime())/1000)+"秒后再试" + "\"\n" +
+                                            "    }\n" +
+                                            "}";
+                                    log.info(data);
+                                    kfSendMsg(data);
+                                    return "success";
+                                }else {
+                                   dao.putPoster(id);
+                                }
+                            }
+                            sendmail(id);
                         }
                         break;
                 }
@@ -267,52 +300,47 @@ public class WeChatServiceImpl implements WeChatService {
         String openId = requestMap.get("FromUserName");
         //消息内容
         String content = requestMap.get("Content");
+        //判断是否为地址
+        String result = checkCellphone(content);
+        if (!result.equals("success")) {
+            msg = new TextMessage(requestMap, result);
+            return msg;
+        }
         switch (content) {
-            case "海报":
-                //新增用户信息
-                User user = verifyUser(openId);
-                if(user==null){
-                    return null;
-                }
-                //查询所有海报素材
-                List<Material> list = bamService.getMaterial("2");
-                int size = list.size();
-                //随机数：Math.random()*(n+1-m)+m
-                int ran2 = (int) (Math.random() * (size));
-                Material material = list.get(ran2);
-                //拼接请求
-                String http = bamService.generateHttp(openId, Https.redirect_uri, "snsapi_userinfo");
-                //生成邀请二维码
-                BufferedImage qrImg = CommonUtils.createImage(http);
-                //生成海报  1、海报地址  2、用户头像地址  3、邀请二维码  4、用户昵称
-                File file = CommonUtils.overlapImage(material.getUrl(), user.getHeadImgUrl(), qrImg, user.getNickName());
-                String re = this.uploadMaterial(0, file, "image");
-                JSONObject jsonObject = JSONObject.parseObject(re);
-                String mediaId = jsonObject.getString("media_id");
-                String data = "{\n" +
-                        "    \"touser\":\"" + requestMap.get("FromUserName") + "\",\n" +
-                        "    \"msgtype\":\"image\",\n" +
-                        "    \"image\":\n" +
-                        "    {\n" +
-                        "         \"media_id\":\"" + mediaId + "\"\n" +
-                        "    }\n" +
-                        "}";
-                log.info(data);
-                kfSendMsg(data);
-                msg = new TextMessage(requestMap, "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>");
-                break;
             case "排行榜":
                 //新增用户积分
                 initializeIntegral(openId);
                 msg = new TextMessage(requestMap, "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>");
                 break;
             default:
-                String regex = "^((13[0-9])|(14[5|7])|(15([0-3]|[5-9]))|(17[013678])|(18[0,5-9]))\\d{8}$";
-                String result = checkCellphone(content);
-                if (result.equals("success")) {
+                Command command=dao.queryCommand(content);
+                if (command==null){
                     return null;
-                } else {
-                    msg = new TextMessage(requestMap, result);
+                }else {
+                    //计算二维码过期时间
+                    Long validTime = command.getDays() * 86400000 + command.getTime();
+                    if (validTime < System.currentTimeMillis()) {
+                        msg = new TextMessage(requestMap, "该口令已过期，无法获得积分");
+                        return msg;
+                    }
+                    int count = bamService.countQL(command.getTime()+"");
+                    if (count >= command.getMaxUser()) {
+                        msg = new TextMessage(requestMap, "该口令已达人数上限,无法使用");
+                        return msg;
+                    }
+                    int c=bamService.verifyKL(openId,command.getTime()+"");
+                    if (c>=1){
+                        msg = new TextMessage(requestMap, "重复使用口令无效");
+                        return msg;
+                    }
+                    Integral integral = new Integral(openId, command.getIntegral(), 4, System.currentTimeMillis()+"", CommonUtils.period,command.getTime()+"");
+                    msg = new TextMessage(requestMap, "您通过口令新增了 "+command.getIntegral()+" 积分\n前往"+"<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>"+"查询您的积分吧");
+                     int res= bamService.saveIntegral(integral);
+                    if (res == 1) {
+                        log.info("用户通过"+command.getRemark()+"加分成功" +command.getIntegral());
+                    } else {
+                        log.error("用户通过"+command.getRemark()+"加分成功失败" +command.getIntegral());
+                    }
                 }
                 break;
         }
@@ -328,7 +356,7 @@ public class WeChatServiceImpl implements WeChatService {
      */
     private String subscribeEvent(String openId) {
         User user = this.verifyUser(openId);
-        if(user==null){
+        if (user == null) {
             return null;
         }
         String data = "{\n" +
@@ -400,11 +428,11 @@ public class WeChatServiceImpl implements WeChatService {
                 //给邀请人减分
                 integral = new Integral(inviterOpenId, -10, 2, System.currentTimeMillis() + "", CommonUtils.period, user.getOpenId());
                 bamService.saveIntegral(integral);
-            } else if(period>0&&period != CommonUtils.period){
+            } else if (period > 0 && period != CommonUtils.period) {
                 //给邀请人减分
                 integral = new Integral(inviterOpenId, -10, 2, System.currentTimeMillis() + "", period, user.getOpenId());
                 bamService.saveIntegral(integral);
-            }else {
+            } else {
                 log.info("------------->用户隔月减分");
                 return null;
             }
@@ -464,24 +492,24 @@ public class WeChatServiceImpl implements WeChatService {
     }
 
     @Override
-    public User verifyUser(String openId) throws NullPointerException{
+    public User verifyUser(String openId) throws NullPointerException {
         User user = bamService.getUser(openId);
-        if(user!=null&&user.getSubscribe()!=null&&user.getSubscribe().equals("0")){
+        if (user != null && user.getSubscribe() != null && user.getSubscribe().equals("0")) {
             wechatMapper.delUser(user.getOpenId());
             log.info("-------->发现一条空的用户数据并删除掉了");
         }
-        if(user!=null&&user.getSubscribe()!=null&&!user.getSubscribe().equals("0")){
+        if (user != null && user.getSubscribe() != null && !user.getSubscribe().equals("0")) {
             log.info("-------->该用户数据存在了不需要保存！");
         }
         if (user == null) {
             //调用微信接口获取用户信息，每日可调用50万次
             user = getUserInfo(openId);
-            if (user!=null){
+            if (user != null) {
                 int res = wechatMapper.addUser(user);
                 if (res > 0) {
                     log.info("--------->新增用户信息成功");
                 }
-            }else {
+            } else {
                 log.error("------------>出现异常：调用微信接口获取用户数据为空");
                 return null;
             }
@@ -498,6 +526,51 @@ public class WeChatServiceImpl implements WeChatService {
             Integral integral = new Integral(openId, 0, 0, System.currentTimeMillis() + "", CommonUtils.period);
             bamService.saveIntegral(integral);
         }
+    }
+
+    public String sendmail(String openId) {
+        //新增用户信息
+        User user = verifyUser(openId);
+        if (user == null) {
+            return null;
+        }
+        String data = "{\n" +
+                "    \"touser\":\"" + openId + "\",\n" +
+                "    \"msgtype\":\"text\",\n" +
+                "    \"text\":\n" +
+                "    {\n" +
+                "         \"content\":\"" + "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>" + "\"\n" +
+                "    }\n" +
+                "}";
+        log.info(data);
+        kfSendMsg(data);
+        //查询所有海报素材
+        List<Material> list = bamService.getMaterial("2");
+        int size = list.size();
+        //随机数：Math.random()*(n+1-m)+m
+        int ran2 = (int) (Math.random() * (size));
+        Material material = list.get(ran2);
+        //拼接请求
+        String http = bamService.generateHttp(openId, Https.redirect_uri, "snsapi_userinfo");
+        //生成邀请二维码
+        BufferedImage qrImg = CommonUtils.createImage(http);
+        //生成海报  1、海报地址  2、用户头像地址  3、邀请二维码  4、用户昵称
+        File file = CommonUtils.overlapImage(material.getUrl(), user.getHeadImgUrl(), qrImg, user.getNickName());
+        String re = this.uploadMaterial(0, file, "image");
+        JSONObject jsonObject = JSONObject.parseObject(re);
+        String mediaId = jsonObject.getString("media_id");
+        data = "{\n" +
+                "    \"touser\":\"" + openId + "\",\n" +
+                "    \"msgtype\":\"image\",\n" +
+                "    \"image\":\n" +
+                "    {\n" +
+                "         \"media_id\":\"" + mediaId + "\"\n" +
+                "    }\n" +
+                "}";
+        log.info(data);
+        kfSendMsg(data);
+
+        return "succeed";
     }
 
     /**

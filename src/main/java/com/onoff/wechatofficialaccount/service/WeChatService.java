@@ -101,4 +101,9 @@ public interface WeChatService {
      * 初始化用户积分
      */
     void initializeIntegral(String openId);
+
+    /**
+     * 客服发送海报接口
+     */
+    String sendmail(String openId);
 }

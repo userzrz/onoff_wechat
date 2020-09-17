@@ -27,6 +27,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 
 @Slf4j
@@ -66,6 +67,8 @@ class WechatOfficialAccountApplicationTests {
 //
     @Test
     public void test2() {
+
+
     }
 //
 //    public static void recursion(File[] fs, List<String> list) // 递归得所有子目录的.mp3文件.

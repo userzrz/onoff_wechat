@@ -9,26 +9,16 @@ import java.io.Serializable;
 /**
  * @Description TODO
  * @Author ZHENG
- * @Data 2020/9/1 16:37
+ * @Data 2020/9/16 16:54
  * @VERSION 1.0
  **/
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class PromotionQR implements Serializable {
-
+public class Poster implements Serializable {
+    //用户id
     private String id;
 
-    //上限人数
-    private int maxUser;
-
-    //设置的积分
-    private int integral;
-
-    //有效天数
-    private Long days;
-
-    //生成时间
+    //请求时间
     private Long time;
-
 }

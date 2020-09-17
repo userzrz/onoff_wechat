@@ -23,6 +23,18 @@ import java.util.List;
 public interface BAMMapper {
 
     /**
+     * 查询QL邀请总数
+     * @return
+     */
+    int countQL(String remark);
+
+    /**
+     * 查询用户是否获取了口令积分
+     * @return
+     */
+    int verifyKL(@Param("a") String openId,@Param("b") String remark);
+
+    /**
      * 查询用户是否打卡
      * @param unionId
      * @param time 二维码保存时间

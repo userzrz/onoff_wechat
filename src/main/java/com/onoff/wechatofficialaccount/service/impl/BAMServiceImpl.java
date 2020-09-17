@@ -6,10 +6,9 @@ import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
-import com.onoff.wechatofficialaccount.entity.DO.SignInQR;
 import com.onoff.wechatofficialaccount.entity.Https;
-import com.onoff.wechatofficialaccount.entity.Menus.ImageMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.Menus;
+import com.onoff.wechatofficialaccount.entity.Menus.OneClick;
 import com.onoff.wechatofficialaccount.entity.Menus.OneMenus;
 import com.onoff.wechatofficialaccount.entity.Menus.TwoMenus;
 import com.onoff.wechatofficialaccount.entity.User;
@@ -43,8 +42,18 @@ public class BAMServiceImpl implements BAMService {
     WeChatService service;
 
     @Override
+    public int countQL(String remark) {
+        return mapper.countQL(remark);
+    }
+
+    @Override
+    public int verifyKL(String openId, String remark) {
+        return mapper.verifyKL(openId,remark);
+    }
+
+    @Override
     public List<SignIn> querySignIn(String unionId, String time) {
-        return mapper.querySignIn(unionId,time);
+        return mapper.querySignIn(unionId, time);
     }
 
     @Override
@@ -53,8 +62,8 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public int putSignIn(String unionId,Long time) {
-        return mapper.putSignIn(unionId,time);
+    public int putSignIn(String unionId, Long time) {
+        return mapper.putSignIn(unionId, time);
     }
 
     @Override
@@ -90,16 +99,16 @@ public class BAMServiceImpl implements BAMService {
         jsonObject = JSONObject.parseObject(data);
         //取出unionid
         String unionid = jsonObject.getString("unionid");
-        if(unionid==null||unionid.length()<2){
+        if (unionid == null || unionid.length() < 2) {
             return 4;
         }
         //获取邀请人信息
-        User user=mapper.getUser(state);
-        if(user!=null){
-            if(user.getUnionId().equals(unionid)){
+        User user = mapper.getUser(state);
+        if (user != null) {
+            if (user.getUnionId().equals(unionid)) {
                 return 4;
             }
-        }else {
+        } else {
             return 4;
         }
         //查询邀请人关系
@@ -145,32 +154,24 @@ public class BAMServiceImpl implements BAMService {
         List oneMenus = new ArrayList<>();
         //二级菜单集合(第一个一级菜单子菜单)
         List<TwoMenus> twoMenusList = new ArrayList<>();
+        TwoMenus twoMenus0 = new TwoMenus("view", "LIFE", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=4&sn=a97599b157b369b9e290d9a9dbf82680&scene=18");
         TwoMenus twoMenus1 = new TwoMenus("view", "FASHION", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=2&sn=ee519a6ddb733583d0c10c87902a31c6&scene=18");
         TwoMenus twoMenus2 = new TwoMenus("view", "BEAUTY", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=3&sn=d2770eccc2a4734b94d15f1da747d868&scene=18");
-        TwoMenus twoMenus3 = new TwoMenus("view", "LIFE", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=4&sn=a97599b157b369b9e290d9a9dbf82680&scene=18");
-        TwoMenus twoMenus4 = new TwoMenus("view", "EDITOR PICK", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=5&sn=cf84a9714959316e207fa1ae570233c3&scene=18");
-        TwoMenus twoMenus5 = new TwoMenus("view", "OOTD4M", "http://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=8&sn=8999e1ceabe960dd055c487bb6142712&scene=18#wechat_redirect");
+        TwoMenus twoMenus3 = new TwoMenus("view", "CELEBRITY", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=6&sn=3196f57e492c52931c4813cc135826be&scene=18");
+        twoMenusList.add(twoMenus0);
         twoMenusList.add(twoMenus1);
         twoMenusList.add(twoMenus2);
         twoMenusList.add(twoMenus3);
-        twoMenusList.add(twoMenus4);
-        twoMenusList.add(twoMenus5);
         //第一个一级菜单
-        OneMenus oneMenus1 = new OneMenus("click", "\uD83D\uDD19", "001", twoMenusList);
-        //二级菜单集合(第二个一级菜单子菜单)
-        List<TwoMenus> twoMenusLIst2 = new ArrayList<>();
-        TwoMenus twoMenus2_1 = new TwoMenus("view", "CELEBRITY", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=6&sn=3196f57e492c52931c4813cc135826be&scene=18");
-        TwoMenus twoMenus2_2 = new TwoMenus("view", "TO签福利", "https://mp.weixin.qq.com/mp/homepage?__biz=MzU0MjcxODUzMA==&hid=7&sn=3f409adc90882687c5d9b3aa2d18b92a&scene=18");
-        twoMenusLIst2.add(twoMenus2_1);
-        twoMenusLIst2.add(twoMenus2_2);
+        OneMenus oneMenus1 = new OneMenus("click", "精选内容", "001", twoMenusList);
         //第二个一级菜单
-        OneMenus oneMenus2 = new OneMenus("click", "\uD83D\uDD1D", "002", twoMenusLIst2);
+        OneClick oneClick = new OneClick("click", "海报福利", "WELFARE");
         //第三个一级菜单
-        ImageMenus imageMenus = new ImageMenus("media_id", "\uD83D\uDD1C", "HN9m5_ibLmdzXtGb8kuCxKajEIfzmPfAF_qTwKZQ364");
+        TwoMenus contact = new TwoMenus("view", "联系我们", "http://onoffmedia.top/contact_us.html");
         //添加一级菜单
         oneMenus.add(oneMenus1);
-        oneMenus.add(oneMenus2);
-        oneMenus.add(imageMenus);
+        oneMenus.add(oneClick);
+        oneMenus.add(contact);
         Menus menus = new Menus();
         menus.setButton(oneMenus);
         // 转为json
@@ -208,8 +209,8 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public int getIntegral(String openId,int period) {
-        return mapper.getIntegral(openId,period);
+    public int getIntegral(String openId, int period) {
+        return mapper.getIntegral(openId, period);
     }
 
     @Override
@@ -223,8 +224,8 @@ public class BAMServiceImpl implements BAMService {
     }
 
     @Override
-    public Leaderboard getRanking(String openId,int period) {
-        return mapper.getRanking(openId,period);
+    public Leaderboard getRanking(String openId, int period) {
+        return mapper.getRanking(openId, period);
     }
 
     @Override
@@ -234,13 +235,13 @@ public class BAMServiceImpl implements BAMService {
 
     @Override
     public List<UserScene> queryScene() {
-        List<UserScene> userScenes=mapper.queryScene();
-        for (UserScene u:userScenes){
-            if (u.getScene()==null){
+        List<UserScene> userScenes = mapper.queryScene();
+        for (UserScene u : userScenes) {
+            if (u.getScene() == null) {
                 u.setScene("无数据用户");
                 continue;
             }
-            switch (u.getScene()){
+            switch (u.getScene()) {
                 case "ADD_SCENE_SEARCH":
                     u.setScene("公众号搜索");
                     break;

@@ -7,7 +7,7 @@ import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.DO.*;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.User;
-import com.onoff.wechatofficialaccount.entity.UserScene;
+import com.onoff.wechatofficialaccount.entity.DO.Command;
 import com.onoff.wechatofficialaccount.entity.VO.Leaderboard;
 import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
 import com.onoff.wechatofficialaccount.service.BAMService;
@@ -337,7 +337,7 @@ public class BAMController {
         }
         if (promotionQR != null) {
             //计算二维码过期时间
-            Long validTime = promotionQR.getDays2() * 86400000 + promotionQR.getTime();
+            Long validTime = promotionQR.getDays() * 86400000 + promotionQR.getTime();
             if (validTime < System.currentTimeMillis()) {
                 model.addAttribute("msg", "二维码已失效（超过设定时间）");
                 return "sign_in";
@@ -468,12 +468,11 @@ public class BAMController {
      * @param maxUser  上限人数
      * @param integral 设置的积分
      * @param days2    有效天数
-     * @param request
      * @param response
      * @throws IOException
      */
     @PostMapping("/promotion")
-    public void promotionQR(@RequestParam("maxUser") int maxUser, @RequestParam("integral") int integral, @RequestParam("days2") Long days2, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    public void promotionQR(@RequestParam("maxUser") int maxUser, @RequestParam("integral") int integral, @RequestParam("days2") Long days2, HttpServletResponse response) throws IOException {
         String id = MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8");
         bamDao.savePromotionQR(new PromotionQR(id, maxUser, integral, days2, System.currentTimeMillis()));
         String http = service.generateHttp(id, Https.signIn_uri, "snsapi_userinfo");
@@ -503,6 +502,17 @@ public class BAMController {
         outputStream.flush();
     }
 
+    /**
+     *
+     */
+    @ResponseBody
+    @PostMapping("/command")
+    public String command(@RequestParam("maxUser") int maxUser, @RequestParam("integral") int integral, @RequestParam("days2") Long days2,@RequestParam("remark") String remark){
+        String code=CommonUtils.createCommand();
+        bamDao.saveCommand(new Command(code, maxUser, integral, days2, System.currentTimeMillis(),remark));
+        return "口令为："+code;
+    }
+
     @GetMapping({"/onoff_login.html"})
     public String login(HttpSession session) {
         if (session.getAttribute(CommonUtils.ADMIN_SESSION) != null) {
@@ -519,9 +529,9 @@ public class BAMController {
 
     @GetMapping("/index.html")
     public String index(Model model) {
-        //新用户来源渠道
-        List<UserScene> userScenes = service.queryScene();
-        model.addAttribute("userScenes", userScenes);
+//        //新用户来源渠道
+//        List<UserScene> userScenes = service.queryScene();
+//        model.addAttribute("userScenes", userScenes);
         model.addAttribute("Material", service.getMaterial(null));
         return "index";
     }
@@ -546,7 +556,6 @@ public class BAMController {
         int typeCode = 1;
         try {
             String result = weChatService.uploadMaterial(typeCode, CommonUtils.multipartFileToFile(file), "image");
-            JSONObject jsonObject = JSONObject.parseObject(result);
             String err = result.substring(2, 9);
             if (err.equals("errcode")) {
                 model.addAttribute("msg", result);

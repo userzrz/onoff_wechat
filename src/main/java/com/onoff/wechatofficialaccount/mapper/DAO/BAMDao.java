@@ -1,11 +1,9 @@
 package com.onoff.wechatofficialaccount.mapper.DAO;
 
 import com.mongodb.BasicDBObject;
-import com.onoff.wechatofficialaccount.entity.DO.Cycle;
-import com.onoff.wechatofficialaccount.entity.DO.PromotionQR;
-import com.onoff.wechatofficialaccount.entity.DO.SignInQR;
-import com.onoff.wechatofficialaccount.entity.DO.WeekLeaderboard;
+import com.onoff.wechatofficialaccount.entity.DO.*;
 import com.onoff.wechatofficialaccount.utils.CommonUtils;
+import javafx.geometry.Pos;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -26,6 +24,50 @@ import java.util.List;
 public class BAMDao {
     @Autowired
     private MongoTemplate mongoTemplate;
+
+
+    /**
+     * 保存口令信息
+     */
+    public void saveCommand(Command command) {
+        this.mongoTemplate.insert(command, CommonUtils.MONGODB_COMMAND);
+    }
+
+    /**
+     * 使用口令查询信息
+     */
+    public Command queryCommand(String code) {
+        Query query = Query.query(Criteria.where("id").is(code));
+        return this.mongoTemplate.findOne(query,Command.class, CommonUtils.MONGODB_COMMAND);
+    }
+
+    /**
+     * 保存用户请求海报时间
+     * @return
+     */
+    public void savePoster(Poster poster){
+        this.mongoTemplate.insert(poster, CommonUtils.MONGODB_POSTER);
+    }
+
+    /**
+     * 查询用户请求海报时间
+     * @return
+     */
+    public Poster queryPoster(String id){
+        Query query = Query.query(Criteria.where("id").is(id));
+        return this.mongoTemplate.findOne(query, Poster.class, CommonUtils.MONGODB_POSTER);
+    }
+
+    /**
+     * 修改用户请求海报时间
+     * @return
+     */
+    public void putPoster(String id){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(id));
+        Update update = Update.update("time", System.currentTimeMillis());
+        this.mongoTemplate.upsert(query,update,Poster.class, CommonUtils.MONGODB_POSTER);
+    }
 
 
     /**
