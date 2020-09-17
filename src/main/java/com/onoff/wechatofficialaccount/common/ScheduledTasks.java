@@ -13,7 +13,6 @@ import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -134,9 +133,11 @@ public class ScheduledTasks {
             bamDao.saveLeaderboard(weekLeaderboard, CommonUtils.MONGODB_MONTH);
             log.info("-------------------设置新的月期数据------------------------");
             //清空积分表
-            bamMapper.delIntegral();
+            int cod=bamMapper.delIntegral();
+            log.info("积分表清空了"+cod+"条数据");
             //修改打卡类型
-            bamMapper.putSignIn(null, null);
+            cod=bamMapper.putSignIn(null, null);
+            log.info("修改了未激活的打卡类型"+cod+"条数据（此处一般为0，非0说明该用户在最后清空数据时产生了打卡/QL操作）");
             //新月期号
              period=Integer.parseInt(cycle.getMonthPeriod())+1;
             if(period<=9){

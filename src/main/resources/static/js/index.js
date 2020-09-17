@@ -38,7 +38,7 @@ function create(){
         return false;
     }
     if(isNaN(days)){
-        alert("只能输入数字！");
+        alert("天数只能输入数字！");
         return false;
     }
     if (!/(^[1-9]\d*$)/.test(days)){
@@ -52,27 +52,62 @@ function create(){
 }
 
 function create2(){
-    var maxUser = $("f input[name='maxUser']").val();
-    var integral = $("f input[name='integral']").val();
-    var days2 = $("f input[name='days2']").val();
+    var maxUser = $("#ql_QR input[name='maxUser']").val();
+    var integral = $("#ql_QR input[name='integral']").val();
+    var days2 = $("#ql_QR input[name='days2']").val();
     if(maxUser==''||maxUser==null||integral==''||integral==null){
         alert("提交数据不能为空");
         return false;
     }
-    if(isNaN(maxUser)||isNaN(integral)){
-        alert("只能输入数字！");
+    if(isNaN(maxUser)||isNaN(integral)||isNaN(days2)){
+        alert("请全部输入数字！");
         return false;
     }
-    if (!/(^[1-9]\d*$)/.test(maxUser)||!/(^[1-9]\d*$)/.test(integral)){
+    if (!/(^[1-9]\d*$)/.test(maxUser)||!/(^[1-9]\d*$)/.test(integral)||!/(^[1-9]\d*$)/.test(days2)){
         alert("请输入正整数！");
         return false;
     }
-    if(days2<0||days2>999){
-        alert("天数最多设置999天，最少设置1天");
+    if(integral>200){
+        alert("积分设定最大值为200");
         return false;
     }
-    if(maxUser<0||maxUser>99999){
-        alert("人数最大设置为99999天，最小设置1");
+    if(days2<0||days2>999){
+        alert("天数最大设置999天，最小设置1天");
+        return false;
+    }
+    if(maxUser<0||maxUser>1000000){
+        alert("人数最大设置为1000000，最小设置1");
+        return false;
+    }
+}
+
+function create3(){
+    var maxUser = $("#ql_kL input[name='maxUser']").val();
+    var integral = $("#ql_kL input[name='integral']").val();
+    var days2 = $("#ql_kL input[name='days2']").val();
+    var remark = $("#ql_kL input[name='remark']").val();
+    if(maxUser==''||maxUser==null||integral==''||integral==null){
+        alert("提交数据不能为空");
+        return false;
+    }
+    if(isNaN(maxUser)||isNaN(integral)||isNaN(days2)){
+        alert("只能输入数字！");
+        return false;
+    }
+    if (!/(^[1-9]\d*$)/.test(maxUser)||!/(^[1-9]\d*$)/.test(integral)||!/(^[1-9]\d*$)/.test(days2)){
+        alert("请输入正整数！");
+        return false;
+    }
+    if(integral>200){
+        alert("积分设定最大值为200");
+        return false;
+    }
+    if(days2<0||days2>999){
+        alert("天数最大设置999天，最小设置1天");
+        return false;
+    }
+    if(maxUser<0||maxUser>1000000){
+        alert("人数最大设置为1000000，最小设置1");
         return false;
     }
 }

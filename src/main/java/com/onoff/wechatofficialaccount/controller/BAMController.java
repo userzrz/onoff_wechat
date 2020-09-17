@@ -603,12 +603,11 @@ public class BAMController {
      *
      * @param admin
      * @param session
-     * @param response
      * @param model
      * @return
      */
     @PostMapping(value = "/login/verify")
-    public String loginVerify(@ModelAttribute Admin admin, HttpSession session, HttpServletResponse response, Model model) {
+    public String loginVerify(@ModelAttribute Admin admin, HttpSession session,Model model) {
         String pwd = MD5Utils.MD5Encode(admin.getPassWord(), "utf8");
         admin = service.getAdmin(admin.getAccount(), pwd);
         if (admin != null) {
