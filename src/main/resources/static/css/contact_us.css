@@ -54,12 +54,12 @@ html {
 #img2 {
     display: block;
     width: 90%;
-    margin: 1rem 0 4rem .5rem;
+    margin: 1rem 0 2rem .5rem;
 }
 
 #div_1 > div:nth-child(4) {
     text-align: center;
-    margin: 5rem 1rem 1rem 1rem;
+    margin: 4.2rem 1rem 2rem 1rem;
 }
 
 #div_1 > div:nth-child(4) > div {
@@ -93,4 +93,9 @@ html {
 #div_1 > div:last-child > div:first-child {
     border-top: #333333 1px solid;
     border-bottom: #333333 1px solid;
+}
+
+#span_business{
+    font-size: 10px;
+    transform: scale(.9);
 }

@@ -2,6 +2,7 @@ package com.onoff.wechatofficialaccount;
 
 
 import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
+import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,7 +19,6 @@ class WechatOfficialAccountApplicationTests {
     BAMDao dao;
     @Test
     public void test2() {
-
     }
 
 }

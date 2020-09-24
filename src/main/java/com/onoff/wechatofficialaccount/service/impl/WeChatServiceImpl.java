@@ -6,6 +6,7 @@ import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
 import com.onoff.wechatofficialaccount.entity.DO.Command;
+import com.onoff.wechatofficialaccount.entity.DO.KlRecord;
 import com.onoff.wechatofficialaccount.entity.DO.Poster;
 import com.onoff.wechatofficialaccount.entity.VO.Connect;
 import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
@@ -138,25 +139,30 @@ public class WeChatServiceImpl implements WeChatService {
                         break;
                     case "CLICK":
                         if (requestMap.get("EventKey").equals("WELFARE")) {
-                            String id=requestMap.get("FromUserName");
-                            Poster poster=dao.queryPoster(id);
-                            if (poster==null){
-                                dao.savePoster(new Poster(id,System.currentTimeMillis()));
-                            }else {
-                                if((poster.getTime()+10000)>System.currentTimeMillis()){
+                            String id = requestMap.get("FromUserName");
+                            Poster poster = dao.queryPoster(id);
+                            if (poster == null) {
+                                dao.savePoster(new Poster(id, System.currentTimeMillis(), 0));
+                            } else {
+                                if ((poster.getTime() + 10000) > System.currentTimeMillis() && poster.getTriesLimit() == 0) {
                                     String data = "{\n" +
                                             "    \"touser\":\"" + openId + "\",\n" +
                                             "    \"msgtype\":\"text\",\n" +
                                             "    \"text\":\n" +
                                             "    {\n" +
-                                            "         \"content\":\"" + "消息已发出，请"+(10-(System.currentTimeMillis()-poster.getTime())/1000)+"秒后再试" + "\"\n" +
+                                            "         \"content\":\"" + "如未接收到海报，请" + (10 - (System.currentTimeMillis() - poster.getTime()) / 1000) + "秒后重试" + "\"\n" +
                                             "    }\n" +
                                             "}";
                                     log.info(data);
+                                    dao.putTriesLimit(id);
                                     kfSendMsg(data);
                                     return "success";
-                                }else {
-                                   dao.putPoster(id);
+                                } else {
+                                    if((poster.getTime() + 10000) < System.currentTimeMillis()){
+                                        dao.putPoster(id);
+                                    }else {
+                                        return "success";
+                                    }
                                 }
                             }
                             sendmail(id);
@@ -313,33 +319,34 @@ public class WeChatServiceImpl implements WeChatService {
                 msg = new TextMessage(requestMap, "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>");
                 break;
             default:
-                Command command=dao.queryCommand(content);
-                if (command==null){
+                Command command = dao.queryCommand(content);
+                if (command == null) {
                     return null;
-                }else {
+                } else {
                     //计算二维码过期时间
                     Long validTime = command.getDays() * 86400000 + command.getTime();
                     if (validTime < System.currentTimeMillis()) {
-                        msg = new TextMessage(requestMap, "该口令已过期，无法获得积分");
+                        msg = new TextMessage(requestMap, "该口令已过期，无法使用");
                         return msg;
                     }
-                    int count = bamService.countQL(command.getTime()+"");
+                    int count = bamService.countQL(command.getId());
                     if (count >= command.getMaxUser()) {
                         msg = new TextMessage(requestMap, "该口令已达人数上限,无法使用");
                         return msg;
                     }
-                    int c=bamService.verifyKL(openId,command.getTime()+"");
-                    if (c>=1){
+                    int c = bamService.verifyKL(openId, command.getId());
+                    if (c==0) {
+                        Integral integral = new Integral(openId, command.getIntegral(), 4, System.currentTimeMillis() + "", CommonUtils.period, command.getTime() + "");
+                        msg = new TextMessage(requestMap, "您通过口令新增了 " + command.getIntegral() + " 积分\n前往" + "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>" + "查询您的积分吧");
+                        //新增一条口令记录
+                        bamService.saveKL(new KlRecord(openId,command.getId()));
+                        int res = bamService.saveIntegral(integral);
+                        if (res != 1) {
+                            log.error("用户："+openId+",通过口令:" + command.getId() + "加分失败,该口令设置积分为：" + command.getIntegral());
+                        }
+                    }else{
                         msg = new TextMessage(requestMap, "重复使用口令无效");
                         return msg;
-                    }
-                    Integral integral = new Integral(openId, command.getIntegral(), 4, System.currentTimeMillis()+"", CommonUtils.period,command.getTime()+"");
-                    msg = new TextMessage(requestMap, "您通过口令新增了 "+command.getIntegral()+" 积分\n前往"+"<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>"+"查询您的积分吧");
-                     int res= bamService.saveIntegral(integral);
-                    if (res == 1) {
-                        log.info("用户通过"+command.getRemark()+"加分成功" +command.getIntegral());
-                    } else {
-                        log.error("用户通过"+command.getRemark()+"加分成功失败" +command.getIntegral());
                     }
                 }
                 break;
@@ -409,7 +416,6 @@ public class WeChatServiceImpl implements WeChatService {
         String data = null;
         User user = bamService.getUser(openId);
         if (user == null) {
-            log.info("------------>非新用户，非参与活动，非二维码邀请进入的用户取消了关注");
             return "success";
         }
         //查询用户是否有关联关系
@@ -433,7 +439,7 @@ public class WeChatServiceImpl implements WeChatService {
                 integral = new Integral(inviterOpenId, -10, 2, System.currentTimeMillis() + "", period, user.getOpenId());
                 bamService.saveIntegral(integral);
             } else {
-                log.info("------------->用户隔月减分");
+                log.info("---------->用户隔月取关不减分");
                 return null;
             }
             //修改关系类型为2
@@ -534,16 +540,6 @@ public class WeChatServiceImpl implements WeChatService {
         if (user == null) {
             return null;
         }
-        String data = "{\n" +
-                "    \"touser\":\"" + openId + "\",\n" +
-                "    \"msgtype\":\"text\",\n" +
-                "    \"text\":\n" +
-                "    {\n" +
-                "         \"content\":\"" + "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>" + "\"\n" +
-                "    }\n" +
-                "}";
-        log.info(data);
-        kfSendMsg(data);
         //查询所有海报素材
         List<Material> list = bamService.getMaterial("2");
         int size = list.size();
@@ -559,7 +555,7 @@ public class WeChatServiceImpl implements WeChatService {
         String re = this.uploadMaterial(0, file, "image");
         JSONObject jsonObject = JSONObject.parseObject(re);
         String mediaId = jsonObject.getString("media_id");
-        data = "{\n" +
+        String data = "{\n" +
                 "    \"touser\":\"" + openId + "\",\n" +
                 "    \"msgtype\":\"image\",\n" +
                 "    \"image\":\n" +
@@ -569,7 +565,16 @@ public class WeChatServiceImpl implements WeChatService {
                 "}";
         log.info(data);
         kfSendMsg(data);
-
+        data = "{\n" +
+                "    \"touser\":\"" + openId + "\",\n" +
+                "    \"msgtype\":\"text\",\n" +
+                "    \"text\":\n" +
+                "    {\n" +
+                "         \"content\":\"" + "<a href='http://" + Https.domain + "/list.html/" + openId + "'>积分排行榜</a>" + "\"\n" +
+                "    }\n" +
+                "}";
+        log.info(data);
+        kfSendMsg(data);
         return "succeed";
     }
 

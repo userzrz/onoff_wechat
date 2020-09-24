@@ -25,8 +25,7 @@
 <div id="img_postion">
     <img id="img_2" src="../static/images/record_trophy.png" th:src="@{../static/images/record_trophy.png}">
 </div>
-<div id="sup-top"><div id="week_list"><span>本周积分</span></div><div id="month_list"><span>本月积分</span></div>
-</div>
+<div id="sup-top"><div id="week_list"><span>本周积分</span></div><div id="month_list"><span>本月积分</span></div></div>
 <div class="sup-sup">
     <div>
         <div class="div_week" th:if="${weekRecord!=null}" th:each="r,iterStat:${weekRecord}">
@@ -34,7 +33,7 @@
                 <span th:if="${r.getSource()==1}">邀请新用户</span>
                 <span th:if="${r.getSource()==2}">好友取消关注</span>
                 <span th:if="${r.getSource()==3}">签到打卡</span>
-                <span th:if="${r.getSource()==4}">QL邀请</span>
+                <span th:if="${r.getSource()==4}">KOL邀请</span>
                 <br/>
                 <span class="span_time" th:text="${r.getTime()}"></span>
             </div>
@@ -47,7 +46,7 @@
                 <span th:if="${r.getSource()==1}">邀请新用户</span>
                 <span th:if="${r.getSource()==2}">好友取消关注</span>
                 <span th:if="${r.getSource()==3}">签到打卡</span>
-                <span th:if="${r.getSource()==4}">QL邀请</span>
+                <span th:if="${r.getSource()==4}">KOL邀请</span>
                 <br/>
                 <span class="span_time" th:text="${r.getTime()}"></span>
             </div>

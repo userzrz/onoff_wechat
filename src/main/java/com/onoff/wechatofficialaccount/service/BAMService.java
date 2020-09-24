@@ -4,6 +4,8 @@ import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.DO.KlRecord;
+import com.onoff.wechatofficialaccount.entity.DO.Link;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.UserScene;
@@ -21,16 +23,36 @@ import java.util.List;
 public interface BAMService {
 
     /**
-     * 查询QL邀请总数
+     * 新增短链接信息
+     * @param link
      * @return
      */
-    int countQL(String remark);
+    int saveLink(Link link);
+
+    /**
+     * 查询链接
+     * @param shortUrl
+     * @return
+     */
+    String queryUrl(String shortUrl);
+
+    /**
+     * 查询QL使用总人数
+     * @return
+     */
+    int countQL(String klId);
+
+    /**
+     * 新增用户口令信息
+     * @return
+     */
+    int saveKL(KlRecord klRecord);
 
     /**
      * 查询用户是否获取了口令积分
      * @return
      */
-    int verifyKL(@Param("a") String openId, @Param("b") String remark);
+    int verifyKL(String openId, String klId);
 
     /**
      * 查询用户是否打卡
@@ -83,12 +105,23 @@ public interface BAMService {
     int middlePage(String state,String code);
 
     /**
+     * 修改用户关系
+     * @return
+     */
+    int putUserRelation(String openId,String unionId,String time);
+
+    /**
      * 保存海报素材信息
      *
      * @param material
      * @return
      */
     int saveMaterial(Material material);
+
+    /**
+     * 获取素材GIFT图URL
+     */
+    String getMaterialGIFT();
 
     /**
      * 获取用户信息

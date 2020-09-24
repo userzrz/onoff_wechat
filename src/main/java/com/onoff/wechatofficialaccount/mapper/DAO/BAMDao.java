@@ -56,13 +56,26 @@ public class BAMDao {
     }
 
     /**
-     * 修改用户请求海报时间
+     * 修改用户请求海报时间及清空次数
      * @return
      */
     public void putPoster(String id){
         Query query = new Query();
         query.addCriteria(Criteria.where("id").is(id));
         Update update = Update.update("time", System.currentTimeMillis());
+        this.mongoTemplate.upsert(query,update,Poster.class, CommonUtils.MONGODB_POSTER);
+        update = Update.update("triesLimit", 0);
+        this.mongoTemplate.upsert(query,update,Poster.class, CommonUtils.MONGODB_POSTER);
+    }
+
+    /**
+     * 设置次数限制
+     * @param id
+     */
+    public void putTriesLimit(String id){
+        Query query = new Query();
+        query.addCriteria(Criteria.where("id").is(id));
+        Update update = Update.update("triesLimit", 1);
         this.mongoTemplate.upsert(query,update,Poster.class, CommonUtils.MONGODB_POSTER);
     }
 

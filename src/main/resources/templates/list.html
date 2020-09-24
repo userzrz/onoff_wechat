@@ -22,12 +22,12 @@
 </head>
 <body style="background-color: #ebdccf;background-size: 100%;">
 <div id="div_first">
-    <img id="img_1" src="../static/images/GIFT.png" th:src="@{../static/images/GIFT.png}">
+    <img id="img_1" src="#" th:src="${GIFT}">
 </div>
 <div class="sup-container">
     <div id="carouselExampleCaptions" class="carousel slide slideshow" data-ride="carousel">
         <div class="carousel-inner">
-            <div class="active" th:class="carousel-item+${iterStat.count==1?' active' : ''}"
+            <div class="active" data-interval="3800" th:class="carousel-item+${iterStat.count==1?' active' : ''}"
                  th:each="m,iterStat:${Material}">
                 <img src="" th:src="${m.getUrl()}"
                      class="d-block w-100" alt="...">
@@ -53,6 +53,7 @@
         <button id="div_2_but_1" class="but_history btn dropdown-toggle" data-toggle="dropdown">
             查询往期周榜<span class="span_icon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
         </button>
+        <div style="width:.5rem;display: inline"></div>
         <button id="div_2_but_2" class="but_history btn dropdown-toggle" data-toggle="dropdown">
             查询往期月榜<span class="span_icon glyphicon glyphicon-triangle-bottom" aria-hidden="true"></span>
         </button>
@@ -80,8 +81,7 @@
     <div id="sup-top"><div id="week_list"><span>积分周榜</span></div><div id="month_list"><span>积分月榜</span></div></div>
     <div class="sup-sup">
         <div id="sup_sup_1" th:fragment="sup-sup">
-            <div class="paihang_daughter" th:if="${Relation!=null}"
-                 style="border-bottom-style:solid;border-width:1px;border-color: #888888">
+            <div class="paihang_daughter" th:if="${Relation!=null}" style="border-bottom-style:solid;border-width:1px;border-color: #888888">
                 <div>
                     <span class="span_RANK">RANK</span>
                     <div class="RANK_adjacent"><span th:text="${Relation!=null?Relation.getRanking():''}"></span>
@@ -172,26 +172,26 @@
     <div id="div_but">
         <div>
             <a th:href="@{/explain.html}">
-            <button>
+            <button id="but_ex">
                 如何获取更多积分
             </button>
             </a>
         </div>
         <div>
             <a th:href="@{/rule.html}">
-            <button >
-                积分规则
-            </button>
+                <button id="but_ru">
+                    积分规则
+                 </button>
             </a>
             <a th:href="@{/record/{code}(code=${Code})}">
-                <button>
+                <button id="but_re">
                     我的积分
                 </button>
             </a>
             <a th:href="@{/contact_us.html}">
-            <button>
-                联系我们
-            </button>
+                <button id="but_co">
+                 联系我们
+                </button>
             </a>
         </div>
     </div>

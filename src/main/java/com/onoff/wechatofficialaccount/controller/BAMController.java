@@ -61,27 +61,45 @@ public class BAMController {
     /**
      * 建立关系
      *
-     * @param state
-     * @param code
+     * @param state 邀请人openId
+     * @param code 网页授权code
      * @return
      */
     @GetMapping("/middle")
     public String middlePage(@RequestParam(value = "state") String state, @RequestParam(value = "code") String code) {
         int result = service.middlePage(state, code);
         if (result == 1) {
-            log.info("--------->用户关系存在了");
-        } else if (result == 4) {
-            log.info("--------->本人扫描无需建立关系---");
-        } else {
             log.info("--------->用户关系建立成功");
+        } else if (result == 2) {
+            log.info("--------->本人扫描无需建立关系---");
+        } else if (result==3){
+            log.info("--------->并未获取到邀请人信息，没有建立关系");
+        }else if (result==4){
+            log.error("--------->网页获取用户信息没有获取到unionid");
+        } else if (result==5){
+            log.info("--------->修改了用户的建立关系人");
+        }else if (result==6){
+            log.info("--------->用户重复对同一个邀请者建立关系");
         }
         return "middle";
+    }
+
+    @GetMapping("/oauth2/{code}")
+    public String forwardUrl(@PathVariable("code") String code){
+        if (code!=null&&!code.equals("")){
+            String url=service.queryUrl(code);
+            if(url==null||url.equals("")){
+                return "remind";
+            }
+            return "redirect:"+url;
+        }
+        return null;
     }
 
     /**
      * 查询积分
      *
-     * @param code
+     * @param code 用户openId
      * @param model
      * @return
      */
@@ -125,9 +143,8 @@ public class BAMController {
     /**
      * 异步查询历史榜单
      *
-     * @param id
+     * @param id 历史榜id 最后一个字符区分m：历史月 w:历史周 h:本月 k:本周
      * @param model
-     * m：历史月 w:历史周 h:本月 k:本周
      * @return
      */
     @GetMapping("/past/{id}")
@@ -276,6 +293,8 @@ public class BAMController {
         model.addAttribute("Code", openId);
         //查询奖品图
         model.addAttribute("Material", service.getMaterial("1"));
+        //查询GIFT图
+        model.addAttribute("GIFT", service.getMaterialGIFT());
         //获取本周排行榜
         List<Leaderboard> array = service.getLeaderboard(CommonUtils.period);
         Leaderboard Myleaderboard = CommonUtils.setRanking(array, openId);
@@ -315,7 +334,9 @@ public class BAMController {
 
     /**
      * 扫码获取积分
-     *
+     * @param state 查询二维码信息的id
+     * @param code 网页授权code值
+     * @param model
      * @return
      */
     @GetMapping("/sign_in")
@@ -331,7 +352,7 @@ public class BAMController {
         }
         if (signInQR != null) {
             if (signInQR.getOverTime() < System.currentTimeMillis()) {
-                model.addAttribute("msg", "二维码已失效（超过设定时间）");
+                model.addAttribute("msg", "二维码已过期");
                 return "sign_in";
             }
         }
@@ -339,7 +360,7 @@ public class BAMController {
             //计算二维码过期时间
             Long validTime = promotionQR.getDays() * 86400000 + promotionQR.getTime();
             if (validTime < System.currentTimeMillis()) {
-                model.addAttribute("msg", "二维码已失效（超过设定时间）");
+                model.addAttribute("msg", "二维码已过期");
                 return "sign_in";
             }
             int count = service.countSignIn(promotionQR.getTime() + "");
@@ -391,18 +412,18 @@ public class BAMController {
         } else {
             //验证是否已打卡
             List<SignIn> signIns = service.querySignIn(unionid, promotionQR.getTime() + "");
-            if (signIns.size() == 0) {
-                //存储打卡信息
-                SignIn signIn = new SignIn(unionid, System.currentTimeMillis(), promotionQR.getTime(), CommonUtils.period, 1);
-                int result = service.saveSignIn(signIn);
-                if (result > 0) {
-                    log.info("用户扫描推广码成功积分+" + promotionQR.getIntegral() + "；用户unionid=" + unionid);
-                    model.addAttribute("msg", "扫描推广码积分+"+ promotionQR.getIntegral());
+                if (signIns.size() == 0) {
+                    //存储打卡信息
+                    SignIn signIn = new SignIn(unionid, System.currentTimeMillis(), promotionQR.getTime(), CommonUtils.period, 1);
+                    int result = service.saveSignIn(signIn);
+                    if (result > 0) {
+                        log.info("用户扫描推广码成功积分+" + promotionQR.getIntegral() + "；用户unionid=" + unionid);
+                        model.addAttribute("msg", "KOL邀请积分+"+ promotionQR.getIntegral());
+                    } else {
+                        log.error("用户推广sign_in表积分建立失败;用户unionid=" + unionid + "积分应加" + promotionQR.getIntegral());
+                    }
                 } else {
-                    log.error("用户推广sign_in表积分建立失败;用户unionid=" + unionid + "积分应加" + promotionQR.getIntegral());
-                }
-            } else {
-                log.info("用户重复扫描推广码");
+                    log.info("用户重复扫描推广码");
                 model.addAttribute("msg", "重复扫码无效哦！");
                 return "sign_in";
             }
@@ -436,8 +457,14 @@ public class BAMController {
         String id = MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8");
         bamDao.saveSignInQR(new SignInQR(id, Long.parseLong(releaseTime), overTime));
         String http = service.generateHttp(id, Https.signIn_uri, "snsapi_userinfo");
+        //短链接参数
+        String code=CommonUtils.shortUrl(http);
+        //短链接
+        String shortHttp=Https.skb+code;
+        //保存链接信息
+        service.saveLink(new Link(code,http));
         //生成打卡二维码
-        BufferedImage qrImg = CommonUtils.createImage(http);
+        BufferedImage qrImg = CommonUtils.createImage(shortHttp);
         //BufferedImage 转 InputStream
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageOutputStream imageOutput = ImageIO.createImageOutputStream(byteArrayOutputStream);
@@ -476,8 +503,14 @@ public class BAMController {
         String id = MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8");
         bamDao.savePromotionQR(new PromotionQR(id, maxUser, integral, days2, System.currentTimeMillis()));
         String http = service.generateHttp(id, Https.signIn_uri, "snsapi_userinfo");
-        //生成二维码
-        BufferedImage qrImg = CommonUtils.createImage(http);
+        //短链接参数
+        String code=CommonUtils.shortUrl(http);
+        //短链接
+        String shortHttp=Https.skb+code;
+        //保存链接信息
+        service.saveLink(new Link(code,http));
+        //生成打卡二维码
+        BufferedImage qrImg = CommonUtils.createImage(shortHttp);
         //BufferedImage 转 InputStream
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageOutputStream imageOutput = ImageIO.createImageOutputStream(byteArrayOutputStream);
@@ -503,7 +536,7 @@ public class BAMController {
     }
 
     /**
-     *
+     *生成口令
      */
     @ResponseBody
     @PostMapping("/command")
@@ -551,7 +584,7 @@ public class BAMController {
      * @return
      */
     @PostMapping("/upload")
-    public String upload(@RequestParam(value = "inputGroupFile02", required = true) MultipartFile file, @RequestParam("imageType") int imageType, Model model) {
+    public String upload(@RequestParam(value = "inputGroupFile02") MultipartFile file, @RequestParam("imageType") int imageType, Model model) {
         //设置0为临时素材，设置1为永久素材
         int typeCode = 1;
         try {
@@ -565,6 +598,13 @@ public class BAMController {
             if (material.getMediaId() == null) {
                 model.addAttribute("msg", "本地数据库新增失败");
                 return "index";
+            }
+            if(imageType==3){
+                List<Material> list=service.getMaterial("3");
+                if (list.size()>0){
+                    model.addAttribute("msg", "当前存在GIFT图，请先移除之后再上传");
+                    return "index";
+                }
             }
             material.setType(imageType);
             int result2 = service.saveMaterial(material);

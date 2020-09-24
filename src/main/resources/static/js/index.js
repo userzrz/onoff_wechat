@@ -45,8 +45,8 @@ function create(){
         alert("请输入正整数！");
         return false;
     }
-    if(days<0||days>999){
-        alert("天数最多设置999天，最少设置1天");
+    if(days<3||days>999){
+        alert("天数最多设置999天，最少设置3天");
         return false;
     }
 }

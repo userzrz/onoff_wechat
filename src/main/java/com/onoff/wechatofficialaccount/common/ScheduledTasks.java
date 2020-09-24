@@ -13,6 +13,7 @@ import com.onoff.wechatofficialaccount.utils.CommonUtils;
 import com.onoff.wechatofficialaccount.utils.MD5Utils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.text.SimpleDateFormat;
@@ -37,7 +38,7 @@ public class ScheduledTasks {
 
     //59 59 23 *  * ?
     //0/20 * * *  * ?
-    //@Scheduled(cron = "0 0/10 * *  * ?")
+    @Scheduled(cron = "0 0 0/2 *  * ?")
     public void Time() {
         log.info("========================结算周期榜");
         //将打卡未激活数据的用户进行激活
@@ -55,7 +56,6 @@ public class ScheduledTasks {
                         integral = new Integral(user.getOpenId(), 9, 3, signIn.getTime().toString(), signIn.getPeriod());
                     } else {
                         integral = new Integral(user.getOpenId(), 18, 3, signIn.getTime().toString(), signIn.getPeriod());
-
                     }
                     int result = bamMapper.saveIntegral(integral);
                     if (result == 1) {
@@ -76,7 +76,7 @@ public class ScheduledTasks {
             }
         }
 
-        log.info("-------------->处理数据结束时间：" + new Date() + "当前时间戳:" + System.currentTimeMillis() + "所用毫秒数：" + (d - System.currentTimeMillis()));
+        log.info("-------------->处理数据结束时间：" + new Date() + "当前时间戳:" + System.currentTimeMillis() + "所用毫秒数：" + (System.currentTimeMillis()-d));
         //获取排行榜
         List<Leaderboard> array = bamMapper.getLeaderboard(CommonUtils.period);
         //排名
@@ -137,7 +137,7 @@ public class ScheduledTasks {
             log.info("积分表清空了"+cod+"条数据");
             //修改打卡类型
             cod=bamMapper.putSignIn(null, null);
-            log.info("修改了未激活的打卡类型"+cod+"条数据（此处一般为0，非0说明该用户在最后清空数据时产生了打卡/QL操作）");
+            log.info("修改了未激活的打卡类型"+cod+"条数据（此处一般为0，非0说明该用户在最后清空数据时产生了打卡/KOL操作）");
             //新月期号
              period=Integer.parseInt(cycle.getMonthPeriod())+1;
             if(period<=9){

@@ -5,6 +5,8 @@ import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
+import com.onoff.wechatofficialaccount.entity.DO.KlRecord;
+import com.onoff.wechatofficialaccount.entity.DO.Link;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.Https;
 import com.onoff.wechatofficialaccount.entity.Menus.Menus;
@@ -34,7 +36,8 @@ import java.util.List;
  **/
 @Slf4j
 @Service
-public class BAMServiceImpl implements BAMService {
+public class BAMServiceImpl implements BAMService
+{
 
     @Autowired
     BAMMapper mapper;
@@ -42,13 +45,28 @@ public class BAMServiceImpl implements BAMService {
     WeChatService service;
 
     @Override
-    public int countQL(String remark) {
-        return mapper.countQL(remark);
+    public int saveLink(Link link) {
+        return mapper.saveLink(link);
     }
 
     @Override
-    public int verifyKL(String openId, String remark) {
-        return mapper.verifyKL(openId,remark);
+    public String queryUrl(String shortUrl) {
+        return mapper.queryUrl(shortUrl);
+    }
+
+    @Override
+    public int countQL(String klId) {
+        return mapper.countQL(klId);
+    }
+
+    @Override
+    public int saveKL(KlRecord klRecord) {
+        return mapper.saveKL(klRecord);
+    }
+
+    @Override
+    public int verifyKL(String openId, String klId) {
+        return mapper.verifyKL(openId,klId);
     }
 
     @Override
@@ -106,10 +124,10 @@ public class BAMServiceImpl implements BAMService {
         User user = mapper.getUser(state);
         if (user != null) {
             if (user.getUnionId().equals(unionid)) {
-                return 4;
+                return 2;
             }
         } else {
-            return 4;
+            return 3;
         }
         //查询邀请人关系
         Relation relation = mapper.getRelation(unionid);
@@ -117,13 +135,27 @@ public class BAMServiceImpl implements BAMService {
             //建立用户关系
             return mapper.saveRelation(state, unionid, System.currentTimeMillis() + "");
         } else {
-            return 1;
+            if (!relation.getOpenId().equals(state)&&relation.getRType()==0){
+                mapper.putUserRelation(state,unionid,System.currentTimeMillis()+"");
+                return 5;
+            }
+            return 6;
         }
+    }
+
+    @Override
+    public int putUserRelation(String openId, String unionId, String time) {
+        return 0;
     }
 
     @Override
     public int saveMaterial(Material material) {
         return mapper.saveMaterial(material);
+    }
+
+    @Override
+    public String getMaterialGIFT() {
+        return mapper.getMaterialGIFT();
     }
 
     @Override

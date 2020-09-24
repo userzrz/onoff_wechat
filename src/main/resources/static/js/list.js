@@ -10,6 +10,7 @@ $(document).ready(function () {
     $("[title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
     //初始化隐藏月榜信息
     $("#sup_sup_2").hide();
+
     //点击积分周榜
     $("#week_list").click(function () {
         $("#sup_sup_2").hide();
@@ -37,29 +38,35 @@ $(document).ready(function () {
 
     var but1 = false;
     var but2 = false;
-    $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
+    $("#div_2_brother>div").css({"visibility": "hidden", "display": "none"});
     //点击历史周榜按钮
     $("#div_2_but_1").click(function () {
+        $("#div_2_but_2").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        $("#div_2_but_1").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
         if (but1) {
-            $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
+            $("#div_2_brother>div").css({"visibility": "hidden", "display": "none"});
             but1 = false;
             but2 = false;
+            $("#div_2_but_1").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
         } else {
             $("#div_2_brother_2").css({"visibility": "hidden"});
-            $("#div_2_brother_1").css({"display":"inline-block","visibility": "visible"});
+            $("#div_2_brother_1").css({"display": "inline-block", "visibility": "visible"});
             but1 = true;
             but2 = false;
         }
     });
     //点击历史月榜按钮
     $("#div_2_but_2").click(function () {
+        $("#div_2_but_1").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        $("#div_2_but_2").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
         if (but2) {
-            $("#div_2_brother>div").css({"visibility": "hidden","display": "none"});
+            $("#div_2_brother>div").css({"visibility": "hidden", "display": "none"});
             but2 = false;
             but1 = false;
+            $("#div_2_but_2").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
         } else {
             $("#div_2_brother_1").css({"visibility": "hidden"});
-            $("#div_2_brother_2").css({"display":"inline-block","visibility": "visible"});
+            $("#div_2_brother_2").css({"display": "inline-block", "visibility": "visible"});
             but2 = true;
             but1 = false;
         }
@@ -70,6 +77,8 @@ $(document).ready(function () {
         var id = $(this).attr("id");
         var type = $(this).attr("value");
         if (type == "week") {
+            //回弹按钮
+            $("#div_2_but_1").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
             url = '/past/' + id + "w";
             $.ajax({
                 url: url,
@@ -82,7 +91,7 @@ $(document).ready(function () {
                     if (value == 1) {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
-                    var Cycle=$("#Cycle").text();
+                    var Cycle = $("#Cycle").text();
                     $("#span_issue>span:eq(0)").text(Cycle);
                     console.log(Cycle);
                     $("#span_issue>span").hide();
@@ -91,7 +100,9 @@ $(document).ready(function () {
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
             $("#month_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
-        }else if (type == "month") {
+        } else if (type == "month") {
+            //回弹按钮
+            $("#div_2_but_2").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
             url = '/past/' + id + "m";
             $.ajax({
                 url: url,
@@ -104,7 +115,7 @@ $(document).ready(function () {
                     if (value == 1) {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
-                    var Cycle=$("#Cycle2").text();
+                    var Cycle = $("#Cycle2").text();
                     $("#span_issue>span:eq(1)").text(Cycle);
                     console.log(Cycle);
                     $("#span_issue>span").hide();
@@ -113,7 +124,9 @@ $(document).ready(function () {
             });
             $("#week_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
             $("#month_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
-        }else if (type=="thisWeek") {
+        } else if (type == "thisWeek") {
+            //回弹按钮
+            $("#div_2_but_1").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
             url = '/past/' + id + "k";
             $.ajax({
                 url: url,
@@ -127,7 +140,7 @@ $(document).ready(function () {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
                     $("#sup_sup_1 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
-                    var Cycle=$("#Cycle").text();
+                    var Cycle = $("#Cycle").text();
                     $("#span_issue>span:eq(0)").text(Cycle);
                     console.log(Cycle);
                     $("#span_issue>span").hide();
@@ -136,7 +149,9 @@ $(document).ready(function () {
             });
             $("#week_list").css({"background-color": "rgba(255, 255, 255, 0.5)", "color": "black"});
             $("#month_list").css({"background-color": "rgba(000, 000, 000, 0.5)", "color": "#efefef"});
-        }else if (type=="thisMonth") {
+        } else if (type == "thisMonth") {
+            //回弹按钮
+            $("#div_2_but_2").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
             url = '/past/' + id + "h";
             $.ajax({
                 url: url,
@@ -150,7 +165,7 @@ $(document).ready(function () {
                         $(".div_crown").parent().css({"padding-top": "1.5rem", "height": "4.3rem"});
                     }
                     $("#sup_sup_2 [title='me']").css("background-color", "rgba(000, 000, 000, 0.2)");
-                    var Cycle=$("#Cycle2").text();
+                    var Cycle = $("#Cycle2").text();
                     console.log(Cycle);
                     $("#span_issue>span:eq(1)").text(Cycle);
                     $("#span_issue>span").hide();
@@ -163,6 +178,32 @@ $(document).ready(function () {
         $("#div_2_brother>div").css({"visibility": "hidden"});
         but1 = false;
         but2 = false;
+    });
+
+    //点击按钮按压及回弹 but_ex but_ru but_re but_co
+    $("#but_ex").click(function () {
+        $("#but_ex").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
+        setTimeout(function () {
+            $("#but_ex").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        },500);
+    });
+    $("#but_ru").click(function () {
+        $("#but_ru").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
+        setTimeout(function () {
+            $("#but_ru").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        },500);
+    });
+    $("#but_re").click(function () {
+        $("#but_re").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
+        setTimeout(function () {
+            $("#but_re").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        },500);
+    });
+    $("#but_co").click(function () {
+        $("#but_co").css({"box-shadow": "none", "position": "relative","left":"3px","top":"2px"});
+        setTimeout(function () {
+            $("#but_co").css({"box-shadow": "3px 2px rgba(000, 000, 000, 0.7)","left":"0","top":"0"});
+        },500);
     });
 });
 

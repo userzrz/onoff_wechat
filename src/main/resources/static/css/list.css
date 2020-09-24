@@ -76,8 +76,7 @@ body {
 }
 
 #sup-top {
-    margin: 5.6rem 1.5rem 0rem 1.5rem;
-    height: 0.5rem;
+    margin: 5.6rem 1.5rem 0 1.5rem;
     text-align: center;
 }
 
@@ -107,8 +106,9 @@ body {
 .sup-sup {
     min-height: 21.42rem;
     background-color: rgba(255, 255, 255, 0.5);
-    margin: 2rem 1.5rem 1rem;
-    border-radius: 0px 0px 20px 20px;
+    margin: 0 1.5rem 1rem;
+    border-radius: 0 0 20px 20px;
+    display: grid;
 }
 
 .paihang_daughter {
@@ -222,9 +222,9 @@ body {
 #div_2 {
     position: absolute;
     width: 100%;
-    height: 2rem;
     text-align: center;
     z-index: 2;
+    height: 2rem;
 }
 
 #div_2 > button {
@@ -238,7 +238,6 @@ body {
     background-color: #ededed;
     box-shadow: 3px 2px rgba(000, 000, 000, 0.7);
     margin: 0 0.5rem;
-
 }
 
 #div_2_brother {
@@ -247,6 +246,7 @@ body {
     margin-top: 1rem;
     text-align: center;
     font-size: 17px;
+    z-index: 1;
 }
 
 #div_2_brother ul li {
@@ -275,11 +275,11 @@ body {
 }
 
 #div_2_brother > div:first-child {
-    margin-left: -8.6rem;
+    margin-left: -8.45rem;
 }
 
 #div_2_brother > div:last-child {
-    margin-left: 0.7rem;
+    margin-left: 0.83rem;
 }
 
 #div_2_brother > div:first-child > ul {

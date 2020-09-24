@@ -9,19 +9,22 @@ import java.io.Serializable;
 /**
  * @Description TODO
  * @Author ZHENG
- * @Data 2020/9/16 16:54
+ * @Data 2020/9/21 16:16
  * @VERSION 1.0
  **/
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class Poster implements Serializable {
-    //用户id
+public class KlRecord implements Serializable {
+
     private String id;
 
-    //请求时间
-    private Long time;
+    private String openId;
 
-    //次数限制
-    private int triesLimit;
+    private String klId;
+
+    public KlRecord(String openId, String klId) {
+        this.openId = openId;
+        this.klId = klId;
+    }
 }

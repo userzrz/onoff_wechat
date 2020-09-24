@@ -3,12 +3,23 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.onoff.wechatofficialaccount.mapper.BAMMapper">
 
+    <insert id="saveLink" parameterType="com.onoff.wechatofficialaccount.entity.DO.Link">
+        insert into links(short_url, url) values (#{short_url},#{url})
+    </insert>
+
+    <select id="queryUrl" resultType="String">
+        SELECT url from links where short_url=#{shortUrl}
+    </select>
     <select id="countQL" resultType="java.lang.Integer">
-        SELECT count(1) from integral where relationid=#{remark}
+        SELECT count(1) from kl_record where klid=#{klId}
     </select>
 
+    <insert id="saveKL" parameterType="com.onoff.wechatofficialaccount.entity.DO.KlRecord">
+        insert into kl_record (openid, klid) values (#{openId},#{klId});
+    </insert>
+
     <select id="verifyKL" resultType="java.lang.Integer">
-          SELECT count(1) from integral where openid=#{a} and relationid=#{b}
+          SELECT count(1) from kl_record where openid=#{a} and klid=#{b}
     </select>
     <select id="querySignIn" resultType="com.onoff.wechatofficialaccount.entity.DO.SignIn">
         select * from sign_in
@@ -66,7 +77,9 @@
             resultMap="getUserMap">
          SELECT * FROM user  WHERE unionid=#{unionId}
     </select>
-
+    <select id="getMaterialGIFT" resultType="string">
+        SELECT url FROM material where type=3
+    </select>
     <select id="getMaterial" resultType="com.onoff.wechatofficialaccount.entity.BAM.Material"
             resultMap="getMaterialMap">
         SELECT * FROM material
@@ -76,7 +89,6 @@
             </if>
         </where>
     </select>
-
     <insert id="saveMaterial" parameterType="com.onoff.wechatofficialaccount.entity.BAM.Material">
         INSERT INTO material(media_id,url,type)VALUES(#{mediaId},#{url},#{type})
     </insert>
@@ -88,6 +100,10 @@
     <insert id="saveRelation" parameterType="String">
         INSERT INTO relation(openid,unionid,time)VALUES(#{a},#{b},#{c})
     </insert>
+
+    <update id="putUserRelation">
+           update relation set openid=#{a},time=#{c} where unionid=#{b}
+    </update>
 
     <select id="getRelation" resultType="com.onoff.wechatofficialaccount.entity.BAM.Relation"
             resultMap="getRelationMap">

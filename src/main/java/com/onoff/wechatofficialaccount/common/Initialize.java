@@ -1,5 +1,6 @@
 package com.onoff.wechatofficialaccount.common;
 
+import com.onoff.wechatofficialaccount.entity.DO.Cycle;
 import com.onoff.wechatofficialaccount.mapper.BAMMapper;
 import com.onoff.wechatofficialaccount.mapper.DAO.BAMDao;
 import com.onoff.wechatofficialaccount.utils.CommonUtils;
@@ -8,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * @Description TODO

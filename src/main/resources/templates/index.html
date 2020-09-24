@@ -57,6 +57,7 @@
             <select class="custom-select" id="validatedInputGroupSelect" name="imageType" required>
                 <option value="1">奖品图片</option>
                 <option value="2">海报模板</option>
+                <option value="3">GIFT图</option>
             </select>
         </div>
         <div class="custom-file">
@@ -77,7 +78,7 @@
                 <img src="" th:src="${m.getUrl()}" class="card-img-top" alt="Responsive image">
                 <div class="card-body">
                     <button th:value="${m.getMediaId()}" class="btn btn-outline-danger" id="but_2">删除</button>
-                    <p class="p_type" th:text="${m.getType()==1?'奖品图' : '海报模板'}"></p>
+                    <p class="p_type" th:text="${m.getType()==1?'奖品图' : '海报模板'}" th:if="${m.getType()!=3}"></p>
                 </div>
             </div>
         </div>

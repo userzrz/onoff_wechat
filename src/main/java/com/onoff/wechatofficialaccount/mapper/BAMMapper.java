@@ -3,6 +3,8 @@ package com.onoff.wechatofficialaccount.mapper;
 import com.onoff.wechatofficialaccount.entity.BAM.Admin;
 import com.onoff.wechatofficialaccount.entity.BAM.Integral;
 import com.onoff.wechatofficialaccount.entity.BAM.Material;
+import com.onoff.wechatofficialaccount.entity.DO.KlRecord;
+import com.onoff.wechatofficialaccount.entity.DO.Link;
 import com.onoff.wechatofficialaccount.entity.DO.SignIn;
 import com.onoff.wechatofficialaccount.entity.User;
 import com.onoff.wechatofficialaccount.entity.BAM.Relation;
@@ -22,16 +24,36 @@ import java.util.List;
 public interface BAMMapper {
 
     /**
-     * 查询QL邀请总数
+     * 新增短链接信息
+     * @param link
      * @return
      */
-    int countQL(String remark);
+    int saveLink(Link link);
+
+    /**
+     * 查询链接
+     * @param shortUrl
+     * @return
+     */
+    String queryUrl(String shortUrl);
+
+    /**
+     * 查询QL使用总人数
+     * @return
+     */
+    int countQL(String klId);
+
+    /**
+     * 新增用户口令信息
+     * @return
+     */
+    int saveKL(KlRecord klRecord);
 
     /**
      * 查询用户是否获取了口令积分
      * @return
      */
-    int verifyKL(@Param("a") String openId,@Param("b") String remark);
+    int verifyKL(@Param("a") String openId,@Param("b") String klId);
 
     /**
      * 查询用户是否打卡
@@ -110,6 +132,11 @@ public interface BAMMapper {
     List<Material> getMaterial(String type);
 
     /**
+     * 获取素材GIFT图URL
+     */
+    String getMaterialGIFT();
+
+    /**
      * 删除素材信息
      * @return
      */
@@ -120,6 +147,12 @@ public interface BAMMapper {
      * @return
      */
     int saveRelation(@Param("a")String openId,@Param("b")String unionId,@Param("c")String time);
+
+    /**
+     * 修改用户关系
+     * @return
+     */
+    int putUserRelation(@Param("a")String openId,@Param("b")String unionId,@Param("c")String time);
 
     /**
      * 查询关系是否存在
@@ -165,7 +198,7 @@ public interface BAMMapper {
     int getIntegral(@Param("openId") String openId,@Param("period") int period);
 
     /**
-     * 获取积分排行榜前20
+     * 获取积分排行榜前100
      * @return
      */
     List<Leaderboard> getLeaderboard(int period);

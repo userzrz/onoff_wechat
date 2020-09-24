@@ -50,9 +50,51 @@ public class CommonUtils {
 
 
     /**
-     * 生成口令代码
+     * 返回一个短连接
+     * @param url
      * @return
      */
+    public static String shortUrl(String url) {
+        // 可以自定义生成 MD5 加密字符传前的混合 KEY
+        String key = "";
+        // 要使用生成 URL 的字符
+        String[] chars = new String[] { "a", "b", "c", "d", "e", "f", "g", "h",
+                "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+                "u", "v", "w", "x", "y", "z", "0", "1", "2", "3", "4", "5",
+                "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H",
+                "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T",
+                "U", "V", "W", "X", "Y", "Z" };
+
+        // 对传入网址进行 MD5 加密
+        String sMD5EncryptResult = MD5Utils.MD5Encode(key + url,"utf8");
+        String hex = sMD5EncryptResult;
+        String[] resUrl = new String[4];
+        for (int i = 0; i < 4; i++) {
+            // 把加密字符按照 8 位一组 16 进制与 0x3FFFFFFF 进行位与运算
+            String sTempSubString = hex.substring(i * 8, i * 8 + 8);
+            // 这里需要使用 long 型来转换，因为 Inteper .parseInt() 只能处理 31 位 , 首位为符号位 , 如果不用
+            // long ，则会越界
+            long lHexLong = 0x3FFFFFFF & Long.parseLong(sTempSubString, 16);
+            String outChars = "";
+            for (int j = 0; j < 6; j++) {
+                // 把得到的值与 0x0000003D 进行位与运算，取得字符数组 chars 索引
+                long index = 0x0000003D & lHexLong;
+                // 把取得的字符相加
+                outChars += chars[(int) index];
+                // 每次循环按位右移 5 位
+                lHexLong = lHexLong >> 5;
+            }
+
+            // 把字符串存入对应索引的输出数组
+            resUrl[i] = outChars;
+        }
+        return resUrl[0]+resUrl[1];
+    }
+
+        /**
+         * 生成口令代码
+         * @return
+         */
     public static String createCommand(){
         String val = "";
         Random random = new Random();
@@ -306,16 +348,18 @@ public class CommonUtils {
             g.drawImage(bigImage, 0, 0, null);
             //等比宽度
             int pWidth = width / 6;
-            g.drawImage(headImg, width - (pWidth + pWidth / 5), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
-            g.drawImage(qr, width - (pWidth * 2 + (pWidth / 5) * 2), height - (pWidth * 3 + pWidth / 20), pWidth, pWidth, null);
-            Font font = new Font("微软雅黑", Font.PLAIN, 35);
+            //y轴位置
+            int y=height - (pWidth * 3-pWidth/10);
+            g.drawImage(headImg, pWidth / 4, y, pWidth, pWidth, null);
+            g.drawImage(qr, (pWidth + (pWidth / 3)), y, pWidth, pWidth, null);
+            Font font = new Font("微软雅黑", Font.BOLD, 18);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
             if (nickname != null && nickname.length() > 10) {
-                nickname = nickname.substring(0, 8);
+                nickname = nickname.substring(0, 10);
                 nickname = nickname + "..";
             }
-            g.drawString(nickname, width - (pWidth * 2 + (pWidth / 5) * 2), height - (pWidth * 3 + pWidth / 5));
+            g.drawString(nickname, pWidth / 4, y+pWidth+pWidth/5);
             g.dispose();
             File outputfile = File.createTempFile("img", ".jpg");
             ImageIO.write(bufferedImage2, "jpg", outputfile);
