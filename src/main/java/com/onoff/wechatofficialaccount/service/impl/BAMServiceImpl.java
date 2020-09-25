@@ -123,6 +123,7 @@ public class BAMServiceImpl implements BAMService
         //获取邀请人信息
         User user = mapper.getUser(state);
         if (user != null) {
+            //判断是否为本人扫码
             if (user.getUnionId().equals(unionid)) {
                 return 2;
             }

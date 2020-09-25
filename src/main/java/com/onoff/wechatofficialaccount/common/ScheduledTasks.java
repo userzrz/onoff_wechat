@@ -29,16 +29,14 @@ import java.util.List;
 @Slf4j
 @Component
 public class ScheduledTasks {
-
     @Autowired
     BAMMapper bamMapper;
 
     @Autowired
     BAMDao bamDao;
 
-    //59 59 23 *  * ?
-    //0/20 * * *  * ?
-    @Scheduled(cron = "0 0 0/2 *  * ?")
+    //59 59 23 ? * 6   每周五23:59:59开始执行
+    @Scheduled(cron = "59 59 23 ? * 6")
     public void Time() {
         log.info("========================结算周期榜");
         //将打卡未激活数据的用户进行激活
@@ -137,7 +135,7 @@ public class ScheduledTasks {
             log.info("积分表清空了"+cod+"条数据");
             //修改打卡类型
             cod=bamMapper.putSignIn(null, null);
-            log.info("修改了未激活的打卡类型"+cod+"条数据（此处一般为0，非0说明该用户在最后清空数据时产生了打卡/KOL操作）");
+            log.info("修改了未激活的打卡类型"+cod+"条数据（此处条数代表非关注用户打卡及专属助力扫码的条数）");
             //新月期号
              period=Integer.parseInt(cycle.getMonthPeriod())+1;
             if(period<=9){

@@ -71,7 +71,7 @@ public class BAMController {
         if (result == 1) {
             log.info("--------->用户关系建立成功");
         } else if (result == 2) {
-            log.info("--------->本人扫描无需建立关系---");
+            log.info("--------->本人扫描无需建立关系");
         } else if (result==3){
             log.info("--------->并未获取到邀请人信息，没有建立关系");
         }else if (result==4){
@@ -265,9 +265,9 @@ public class BAMController {
                     integral = new Integral(user.getOpenId(), promotionQR.getIntegral(), 4, signIn.getTime().toString(), signIn.getPeriod());
                     int result = service.saveIntegral(integral);
                     if (result == 1) {
-                        log.info("用户扫描推广码加分成功" + signIn.toString());
+                        log.info("专属助力加分成功" + signIn.toString());
                     } else {
-                        log.error("用户扫描推广码加分失败" + signIn.toString());
+                        log.error("专属助力加分失败" + signIn.toString());
                     }
                 }
             }
@@ -418,7 +418,7 @@ public class BAMController {
                     int result = service.saveSignIn(signIn);
                     if (result > 0) {
                         log.info("用户扫描推广码成功积分+" + promotionQR.getIntegral() + "；用户unionid=" + unionid);
-                        model.addAttribute("msg", "KOL邀请积分+"+ promotionQR.getIntegral());
+                        model.addAttribute("msg", "专属助力积分+"+ promotionQR.getIntegral());
                     } else {
                         log.error("用户推广sign_in表积分建立失败;用户unionid=" + unionid + "积分应加" + promotionQR.getIntegral());
                     }

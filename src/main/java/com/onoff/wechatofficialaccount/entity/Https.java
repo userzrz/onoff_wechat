@@ -8,18 +8,18 @@ package com.onoff.wechatofficialaccount.entity;
  **/
 public class Https {
 
-//    public static String domain="onoffmedia.top";
-//    //绑定邀请关系回调地址(urlEncode)
-//    public static String redirect_uri="http%3a%2f%2fonoffmedia.top%2fmiddle";
-//    //签到地址(urlEncode)
-//    public static String signIn_uri="http%3a%2f%2fonoffmedia.top%2fsign_in";
-//    public static String skb="http://onoffmedia.top/oauth2/";
+    public static String domain="onoffmedia.top";
+    //绑定邀请关系回调地址(urlEncode)
+    public static String redirect_uri="http%3a%2f%2fonoffmedia.top%2fmiddle";
+    //签到地址(urlEncode)
+    public static String signIn_uri="http%3a%2f%2fonoffmedia.top%2fsign_in";
+    public static String skb="http://onoffmedia.top/oauth2/";
 
 
-    public static String domain="3281p3c855.zicp.vip";
-    public static String redirect_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fmiddle";
-    public static String signIn_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fsign_in";
-    public static String skb="http://3281p3c855.zicp.vip/oauth2/";
+//    public static String domain="3281p3c855.zicp.vip";
+//    public static String redirect_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fmiddle";
+//    public static String signIn_uri="http%3a%2f%2f3281p3c855.zicp.vip%2fsign_in";
+//    public static String skb="http://3281p3c855.zicp.vip/oauth2/";
 
     //更新菜单
     public static String menuHttps="https://api.weixin.qq.com/cgi-bin/menu/create?access_token=ACCESS_TOKEN";
