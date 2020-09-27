@@ -352,7 +352,7 @@ public class CommonUtils {
             int y=height - (pWidth * 3-pWidth/10);
             g.drawImage(headImg, pWidth / 4, y, pWidth, pWidth, null);
             g.drawImage(qr, (pWidth + (pWidth / 3)), y, pWidth, pWidth, null);
-            Font font = new Font("微软雅黑", Font.BOLD, 18);
+            Font font = new Font("微软雅黑", Font.BOLD, 30);
             g.setFont(font);
             g.setPaint(Color.DARK_GRAY);
             if (nickname != null && nickname.length() > 10) {

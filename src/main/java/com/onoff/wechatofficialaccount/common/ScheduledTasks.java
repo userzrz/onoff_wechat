@@ -35,10 +35,12 @@ public class ScheduledTasks {
     @Autowired
     BAMDao bamDao;
 
-    //59 59 23 ? * 6   每周五23:59:59开始执行
-    @Scheduled(cron = "59 59 23 ? * 6")
+    //59 59 23 ? * FRI   每周五23:59:59开始执行
+    @Scheduled(cron = "59 59 23 ? * FRI")
     public void Time() {
         log.info("========================结算周期榜");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        String date = formatter.format(new Date());
         //将打卡未激活数据的用户进行激活
         List<SignIn> list = bamMapper.querySignInNonactivated();
         long d = System.currentTimeMillis();
@@ -82,11 +84,10 @@ public class ScheduledTasks {
         WeekLeaderboard weekLeaderboard = new WeekLeaderboard();
         weekLeaderboard.setId(MD5Utils.MD5Encode(System.currentTimeMillis() + "", "utf8"));
         weekLeaderboard.setLeaderboards(array);
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String date = formatter.format(new Date());
         weekLeaderboard.setDate(date);
         //查询活动起始日期
         Cycle cycle = bamDao.queryCycle();
+        log.info("本周开始日期："+cycle.getWeekStartDate()+"本周活动期号："+cycle.getWeekPeriod());
         weekLeaderboard.setPeriod(cycle.getWeekPeriod());
         weekLeaderboard.setCycle("周榜第" + cycle.getWeekPeriod() + "期：" + CommonUtils.setCycle(cycle.getWeekStartDate(),0));
         //获取本周参与人数
@@ -119,8 +120,6 @@ public class ScheduledTasks {
             CommonUtils.setRanking(array);
             weekLeaderboard.setId(MD5Utils.MD5Encode(System.currentTimeMillis() + 1 + "", "utf8"));
             weekLeaderboard.setLeaderboards(array);
-            formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            date = formatter.format(new Date());
             weekLeaderboard.setDate(date);
             weekLeaderboard.setCycle("月榜第" + cycle.getMonthPeriod() + "期：" + CommonUtils.setCycle(cycle.getMonthStartDate(),1));
             weekLeaderboard.setPeriod(cycle.getMonthPeriod());

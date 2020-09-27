@@ -39,8 +39,8 @@ public class Initialize implements ApplicationRunner {
         int period=mapper.queryPeriod();
         CommonUtils.setPeriod(period);
         //首次项目启动开启；之后关闭
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Cycle cycle=new Cycle("1",formatter.format(new Date()),"01",formatter.format(new Date()),"01");
-        dao.putCycle(cycle);
+//        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        Cycle cycle=new Cycle("1",formatter.format(new Date()),"01",formatter.format(new Date()),"01");
+//        dao.putCycle(cycle);
     }
 }
